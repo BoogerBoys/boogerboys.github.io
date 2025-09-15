@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Booger Boys</title>
+  <title>hey lois im a HTML title</title>
   <style>
     body, html {
       margin: 0;
@@ -81,6 +81,16 @@
       font-size: 1.5rem;
     }
 
+    .friends a {
+      color: yellow;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .friends a:hover {
+      text-decoration: underline;
+    }
+
     /* Waves at bottom */
     .wave-container {
       position: absolute;
@@ -124,6 +134,20 @@
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
+
+    #jukebox button {
+      background: #222;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    #jukebox button:hover {
+      background: #444;
+    }
   </style>
 </head>
 <body>
@@ -141,17 +165,19 @@
 
   <!-- Jukebox -->
   <div id="jukebox" style="display:none;">
+    <button onclick="prevSong()">⏮️</button>
     <div id="song-info">Loading...</div>
+    <button onclick="nextSong()">⏭️</button>
     <img src="Juke.png" alt="Jukebox Icon">
   </div>
 
   <!-- Main -->
   <div id="main">
-    <h1>We’re just some friends doing cool stuff 😎</h1>
+    <h1>hi, welcome to our github page</h1>
     <div class="friends">
-      <p>👤 Alex</p>
-      <p>👤 Hoodie</p>
-      <p>👤 Riley</p>
+      <p><a href="alex.html">alex; midnight, any alias i do not care.</a></p>
+      <p><a href="hoodie.html">hoodie; hoobean, hoodieisadumbname, etc..</a></p>
+      <p><a href="riley.html">riley; willy william, the sigma.</a></p>
     </div>
 
     <!-- Waves -->
@@ -200,9 +226,18 @@
     }
 
     audio.addEventListener("ended", () => {
+      nextSong();
+    });
+
+    function nextSong() {
       let next = (currentSong + 1) % songs.length;
       playSong(next);
-    });
+    }
+
+    function prevSong() {
+      let prev = (currentSong - 1 + songs.length) % songs.length;
+      playSong(prev);
+    }
 
     /* Rain effect */
     const canvas = document.getElementById("rain-canvas");
