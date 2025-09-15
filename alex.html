@@ -16,7 +16,7 @@
       text-align: center;
     }
 
-    /* Yellow X */
+    /* Yellow X barrier */
     .barrier {
       position: absolute;
       top: 0;
@@ -28,16 +28,16 @@
     .line {
       position: absolute;
       width: 200%;
-      height: 8px;
+      height: 16px; /* thicker line */
       background: yellow;
       top: 50%;
       left: -50%;
       transform-origin: center;
-      font-size: 2rem;
+      font-size: 1.5rem;
       font-weight: bold;
       color: black;
       text-align: center;
-      line-height: 8px;
+      line-height: 16px;
       white-space: nowrap;
     }
 
@@ -65,13 +65,24 @@
       z-index: 2;
     }
 
-    /* Simple audio (no skip buttons) */
-    audio {
+    /* Media player */
+    .player {
       position: absolute;
-      bottom: 20px;
+      bottom: 30px;
       left: 50%;
       transform: translateX(-50%);
+      text-align: center;
+      z-index: 2;
+    }
+
+    audio {
       width: 300px;
+    }
+
+    .credit {
+      margin-top: 10px;
+      font-size: 1rem;
+      color: #ffcc00;
     }
   </style>
 </head>
@@ -80,13 +91,19 @@
     <div class="line line1"></div>
     <div class="line line2"></div>
   </div>
+
   <div class="message">
     still in development, check back later!!
   </div>
 
-  <audio controls autoplay loop>
-    <source src="Temporary.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
+  <div class="player">
+    <audio controls autoplay loop>
+      <source src="Temporary.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+    <div class="credit">
+      Roblox - Main Menu Theme Song - Xbox One
+    </div>
+  </div>
 </body>
 </html>
