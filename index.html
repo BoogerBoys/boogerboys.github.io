@@ -12,8 +12,9 @@
       padding: 0;
       height: 100%;
       font-family: 'Poppins', sans-serif;
-      background: lightblue;
+      background: linear-gradient(to bottom, #6ec6ff, #2196f3);
       overflow-x: hidden;
+      color: white;
     }
 
     /* Rain canvas */
@@ -35,7 +36,6 @@
       align-items: center;
       height: 100vh;
       text-align: center;
-      color: white;
       z-index: 2;
       position: relative;
       animation: fadeIn 1.5s ease;
@@ -59,6 +59,7 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.4);
       transition: 0.2s;
       font-weight: bold;
+      color: black;
     }
 
     #enter button:hover {
@@ -70,7 +71,6 @@
     #main {
       display: none;
       min-height: 100vh;
-      color: white;
       text-align: center;
       padding-top: 100px;
       position: relative;
@@ -83,31 +83,39 @@
       text-shadow: 3px 3px black;
       font-weight: 700;
       font-style: italic;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
       animation: float 6s ease-in-out infinite;
     }
 
     .friends {
       margin-top: 2rem;
-      font-size: 1.5rem;
+      font-size: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
     }
 
     .friends a {
-      display: block;
-      margin: 10px 0;
       text-decoration: none;
-      color: yellow;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 25px;
       font-weight: 600;
-      transition: 0.2s;
-      text-shadow: 2px 2px black;
+      background: #1976d2; /* default blue */
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
     }
+
+    .friends a:nth-child(2) { background: #43a047; } /* green */
+    .friends a:nth-child(3) { background: #8e24aa; } /* purple */
 
     .friends a:hover {
-      color: #fff176;
-      text-shadow: 0 0 10px white, 0 0 20px yellow;
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.5), 0 0 10px white;
     }
 
-    /* Waves at bottom */
+    /* Waves at bottom (CSS animation instead of SVG animate) */
     .wave-container {
       position: absolute;
       bottom: 0;
@@ -117,10 +125,30 @@
       z-index: 1;
     }
 
-    svg {
-      display: block;
-      width: 100%;
-      height: 100%;
+    .wave {
+      position: absolute;
+      bottom: 0;
+      width: 200%;
+      height: 100px;
+      background-repeat: repeat-x;
+      background-size: 50% 100px;
+      animation: waveMove 8s linear infinite;
+    }
+
+    .wave1 {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 100'><path fill='%230077ff' fill-opacity='0.7' d='M0 30 Q 300 90 600 30 T 1200 30 V100 H0 Z'/></svg>");
+      animation-duration: 10s;
+    }
+
+    .wave2 {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 100'><path fill='%230044aa' fill-opacity='0.5' d='M0 50 Q 300 10 600 50 T 1200 50 V100 H0 Z'/></svg>");
+      animation-duration: 15s;
+      opacity: 0.7;
+    }
+
+    @keyframes waveMove {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
     }
 
     /* Jukebox info */
@@ -189,29 +217,15 @@
   <div id="main">
     <h1>hi, welcome to our github page</h1>
     <div class="friends">
-      <p><a href="alex.html">alex; midnight, any alias i do not care.</a></p>
-      <p><a href="hoodie.html">hoodie; hoobean, hoodieisadumbname, etc..</a></p>
-      <p><a href="riley.html">riley; willy william, the sigma.</a></p>
+      <a href="alex.html">alex; midnight, any alias i do not care.</a>
+      <a href="hoodie.html">hoodie; hoobean, hoodieisadumbname, etc..</a>
+      <a href="riley.html">riley; willy william, the sigma.</a>
     </div>
 
     <!-- Waves -->
     <div class="wave-container">
-      <svg viewBox="0 0 1200 200" preserveAspectRatio="none">
-        <path d="M0,100 C300,200 900,0 1200,100 L1200,200 L0,200 Z" fill="#0077ff" opacity="0.7">
-          <animate attributeName="d" dur="8s" repeatCount="indefinite"
-            values="
-              M0,100 C300,200 900,0 1200,100 L1200,200 L0,200 Z;
-              M0,120 C300,100 900,150 1200,80 L1200,200 L0,200 Z;
-              M0,100 C300,200 900,0 1200,100 L1200,200 L0,200 Z"/>
-        </path>
-        <path d="M0,120 C400,0 800,200 1200,100 L1200,200 L0,200 Z" fill="#0044aa" opacity="0.5">
-          <animate attributeName="d" dur="12s" repeatCount="indefinite"
-            values="
-              M0,120 C400,0 800,200 1200,100 L1200,200 L0,200 Z;
-              M0,100 C400,150 800,50 1200,120 L1200,200 L0,200 Z;
-              M0,120 C400,0 800,200 1200,100 L1200,200 L0,200 Z"/>
-        </path>
-      </svg>
+      <div class="wave wave1"></div>
+      <div class="wave wave2"></div>
     </div>
   </div>
 
