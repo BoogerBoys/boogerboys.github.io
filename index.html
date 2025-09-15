@@ -10,11 +10,22 @@
       padding: 0;
       height: 100%;
       font-family: Arial, sans-serif;
-      background: teal;
+      background: lightblue;
       overflow-x: hidden;
     }
 
-    /* Centered intro screen */
+    /* Rain canvas */
+    #rain-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Intro screen */
     #enter {
       display: flex;
       flex-direction: column;
@@ -23,6 +34,8 @@
       height: 100vh;
       text-align: center;
       color: white;
+      z-index: 2;
+      position: relative;
     }
 
     #enter h1 {
@@ -47,13 +60,15 @@
       transform: scale(1.05);
     }
 
-    /* Main site content */
+    /* Main site */
     #main {
       display: none;
       min-height: 100vh;
       color: white;
       text-align: center;
       padding-top: 100px;
+      position: relative;
+      z-index: 2;
     }
 
     #main h1 {
@@ -66,62 +81,71 @@
       font-size: 1.5rem;
     }
 
-    /* Wave animation */
+    /* Waves at bottom */
     .wave-container {
       position: absolute;
       bottom: 0;
       width: 100%;
       height: 200px;
       overflow: hidden;
-      line-height: 0;
+      z-index: 1;
     }
 
-    .wave {
-      position: absolute;
-      left: 0;
-      width: 200%;
+    svg {
+      display: block;
+      width: 100%;
       height: 100%;
-      background-repeat: repeat-x;
-      background-size: 50% 100%;
     }
 
-    .wave1 {
-      background-image: radial-gradient(circle at 50% 40%, #0077ff 25%, transparent 26%),
-                        radial-gradient(circle at 50% 60%, #0077ff 25%, transparent 26%);
-      background-size: 50px 50px;
-      top: -30px;
-      opacity: 0.7;
-      animation: waveMove 12s linear infinite;
+    /* Jukebox info */
+    #jukebox {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 3;
+      font-size: 0.9rem;
     }
 
-    .wave2 {
-      background-image: radial-gradient(circle at 50% 40%, #0044aa 25%, transparent 26%),
-                        radial-gradient(circle at 50% 60%, #0044aa 25%, transparent 26%);
-      background-size: 50px 50px;
-      top: -20px;
-      opacity: 0.5;
-      animation: waveMove 20s linear infinite reverse;
+    #jukebox img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      animation: spin 6s linear infinite;
     }
 
-    @keyframes waveMove {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-25%); }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <!-- Intro screen -->
+  <!-- Rain -->
+  <canvas id="rain-canvas"></canvas>
+
+  <!-- Intro -->
   <div id="enter">
     <h1>Welcome to Booger Boys</h1>
     <button onclick="startSite()">Enter</button>
   </div>
 
-  <!-- Hidden background audio -->
-  <audio id="bg-music" loop>
-    <source src="music.mp3" type="audio/mpeg">
-  </audio>
+  <!-- Music -->
+  <audio id="bg-music"></audio>
 
-  <!-- Main content -->
+  <!-- Jukebox -->
+  <div id="jukebox" style="display:none;">
+    <div id="song-info">Loading...</div>
+    <img src="Juke.png" alt="Jukebox Icon">
+  </div>
+
+  <!-- Main -->
   <div id="main">
     <h1>We’re just some friends doing cool stuff 😎</h1>
     <div class="friends">
@@ -132,20 +156,93 @@
 
     <!-- Waves -->
     <div class="wave-container">
-      <div class="wave wave1"></div>
-      <div class="wave wave2"></div>
+      <svg viewBox="0 0 1200 200" preserveAspectRatio="none">
+        <path d="M0,100 C300,200 900,0 1200,100 L1200,200 L0,200 Z" fill="#0077ff" opacity="0.7">
+          <animate attributeName="d" dur="12s" repeatCount="indefinite"
+            values="M0,100 C300,200 900,0 1200,100 L1200,200 L0,200 Z;
+                    M0,120 C300,100 900,150 1200,80 L1200,200 L0,200 Z;
+                    M0,100 C300,200 900,0 1200,100 L1200,200 L0,200 Z"/>
+        </path>
+        <path d="M0,120 C400,0 800,200 1200,100 L1200,200 L0,200 Z" fill="#0044aa" opacity="0.5">
+          <animate attributeName="d" dur="18s" repeatCount="indefinite"
+            values="M0,120 C400,0 800,200 1200,100 L1200,200 L0,200 Z;
+                    M0,100 C400,150 800,50 1200,120 L1200,200 L0,200 Z;
+                    M0,120 C400,0 800,200 1200,100 L1200,200 L0,200 Z"/>
+        </path>
+      </svg>
     </div>
   </div>
 
   <script>
+    const songs = [
+      { file: "Music1.mp3", credit: "Donkey Kong Country 2 - Stickerbush Symphony - Nintendo" },
+      { file: "Music2.mp3", credit: "Lisa: The Pointless OST - Soft Hearts (World's Last Autumn Version)" },
+      { file: "Music3.mp3", credit: "Deltarune Chapter 3 + 4 - 12 am - Toby Fox" }
+    ];
+
+    let currentSong = 0;
+    const audio = document.getElementById("bg-music");
+    const songInfo = document.getElementById("song-info");
+    const jukebox = document.getElementById("jukebox");
+
+    function playSong(index) {
+      currentSong = index;
+      audio.src = songs[index].file;
+      audio.play();
+      songInfo.textContent = songs[index].credit;
+    }
+
     function startSite() {
-      const audio = document.getElementById("bg-music");
-      audio.play().catch(() => {
-        console.log("Autoplay blocked. User must interact.");
-      });
       document.getElementById("enter").style.display = "none";
       document.getElementById("main").style.display = "block";
+      jukebox.style.display = "flex";
+      playSong(0);
     }
+
+    audio.addEventListener("ended", () => {
+      let next = (currentSong + 1) % songs.length;
+      playSong(next);
+    });
+
+    /* Rain effect */
+    const canvas = document.getElementById("rain-canvas");
+    const ctx = canvas.getContext("2d");
+    let drops = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    for (let i = 0; i < 150; i++) {
+      drops.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        length: Math.random() * 20 + 10,
+        speed: Math.random() * 3 + 2
+      });
+    }
+
+    function drawRain() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = "rgba(255,255,255,0.6)";
+      ctx.lineWidth = 1;
+      drops.forEach(drop => {
+        ctx.beginPath();
+        ctx.moveTo(drop.x, drop.y);
+        ctx.lineTo(drop.x, drop.y + drop.length);
+        ctx.stroke();
+        drop.y += drop.speed;
+        if (drop.y > canvas.height) {
+          drop.y = -drop.length;
+          drop.x = Math.random() * canvas.width;
+        }
+      });
+      requestAnimationFrame(drawRain);
+    }
+    drawRain();
   </script>
 </body>
 </html>
