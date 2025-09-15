@@ -4,12 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>hey lois im a HTML title</title>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
-      font-family: Arial, sans-serif;
+      font-family: 'Poppins', sans-serif;
       background: lightblue;
       overflow-x: hidden;
     }
@@ -36,12 +38,15 @@
       color: white;
       z-index: 2;
       position: relative;
+      animation: fadeIn 1.5s ease;
     }
 
     #enter h1 {
-      font-size: 3rem;
+      font-size: 3.5rem;
       margin-bottom: 20px;
-      text-shadow: 2px 2px black;
+      text-shadow: 3px 3px black;
+      font-weight: 700;
+      animation: float 4s ease-in-out infinite;
     }
 
     #enter button {
@@ -53,6 +58,7 @@
       cursor: pointer;
       box-shadow: 0 4px 8px rgba(0,0,0,0.4);
       transition: 0.2s;
+      font-weight: bold;
     }
 
     #enter button:hover {
@@ -69,11 +75,16 @@
       padding-top: 100px;
       position: relative;
       z-index: 2;
+      animation: fadeIn 1.5s ease;
     }
 
     #main h1 {
       font-size: 3rem;
-      text-shadow: 2px 2px black;
+      text-shadow: 3px 3px black;
+      font-weight: 700;
+      font-style: italic;
+      margin-bottom: 20px;
+      animation: float 6s ease-in-out infinite;
     }
 
     .friends {
@@ -82,13 +93,18 @@
     }
 
     .friends a {
-      color: yellow;
+      display: block;
+      margin: 10px 0;
       text-decoration: none;
-      font-weight: bold;
+      color: yellow;
+      font-weight: 600;
+      transition: 0.2s;
+      text-shadow: 2px 2px black;
     }
 
     .friends a:hover {
-      text-decoration: underline;
+      color: #fff176;
+      text-shadow: 0 0 10px white, 0 0 20px yellow;
     }
 
     /* Waves at bottom */
@@ -121,6 +137,7 @@
       gap: 10px;
       z-index: 3;
       font-size: 0.9rem;
+      font-weight: bold;
     }
 
     #jukebox img {
@@ -130,23 +147,20 @@
       animation: spin 6s linear infinite;
     }
 
+    /* Animations */
     @keyframes spin {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
 
-    #jukebox button {
-      background: #222;
-      border: none;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
     }
 
-    #jukebox button:hover {
-      background: #444;
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
   </style>
 </head>
@@ -184,16 +198,18 @@
     <div class="wave-container">
       <svg viewBox="0 0 1200 200" preserveAspectRatio="none">
         <path d="M0,100 C300,200 900,0 1200,100 L1200,200 L0,200 Z" fill="#0077ff" opacity="0.7">
-          <animate attributeName="d" dur="12s" repeatCount="indefinite"
-            values="M0,100 C300,200 900,0 1200,100 L1200,200 L0,200 Z;
-                    M0,120 C300,100 900,150 1200,80 L1200,200 L0,200 Z;
-                    M0,100 C300,200 900,0 1200,100 L1200,200 L0,200 Z"/>
+          <animate attributeName="d" dur="8s" repeatCount="indefinite"
+            values="
+              M0,100 C300,200 900,0 1200,100 L1200,200 L0,200 Z;
+              M0,120 C300,100 900,150 1200,80 L1200,200 L0,200 Z;
+              M0,100 C300,200 900,0 1200,100 L1200,200 L0,200 Z"/>
         </path>
         <path d="M0,120 C400,0 800,200 1200,100 L1200,200 L0,200 Z" fill="#0044aa" opacity="0.5">
-          <animate attributeName="d" dur="18s" repeatCount="indefinite"
-            values="M0,120 C400,0 800,200 1200,100 L1200,200 L0,200 Z;
-                    M0,100 C400,150 800,50 1200,120 L1200,200 L0,200 Z;
-                    M0,120 C400,0 800,200 1200,100 L1200,200 L0,200 Z"/>
+          <animate attributeName="d" dur="12s" repeatCount="indefinite"
+            values="
+              M0,120 C400,0 800,200 1200,100 L1200,200 L0,200 Z;
+              M0,100 C400,150 800,50 1200,120 L1200,200 L0,200 Z;
+              M0,120 C400,0 800,200 1200,100 L1200,200 L0,200 Z"/>
         </path>
       </svg>
     </div>
@@ -225,10 +241,6 @@
       playSong(0);
     }
 
-    audio.addEventListener("ended", () => {
-      nextSong();
-    });
-
     function nextSong() {
       let next = (currentSong + 1) % songs.length;
       playSong(next);
@@ -238,6 +250,11 @@
       let prev = (currentSong - 1 + songs.length) % songs.length;
       playSong(prev);
     }
+
+    audio.addEventListener("ended", () => {
+      let next = (currentSong + 1) % songs.length;
+      playSong(next);
+    });
 
     /* Rain effect */
     const canvas = document.getElementById("rain-canvas");
