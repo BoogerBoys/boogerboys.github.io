@@ -92,7 +92,7 @@
       font-size: 1.2rem;
       display: flex;
       flex-direction: column;
-      gap: 25px; /* more space between buttons */
+      gap: 25px;
       align-items: center;
     }
 
@@ -120,7 +120,7 @@
       position: absolute;
       bottom: 0;
       width: 100%;
-      height: 200px;
+      height: 250px; /* taller */
       overflow: hidden;
       z-index: 1;
     }
@@ -204,18 +204,20 @@
 
     <!-- Waves -->
     <div class="wave-container">
-      <svg viewBox="0 0 1200 200" preserveAspectRatio="none">
-        <path d="M0,100 C300,200 900,0 1200,100 L1200,200 L0,200 Z" fill="#0077ff" opacity="0.7">
-          <animate attributeName="d" dur="6s" repeatCount="indefinite"
-            values="M0,100 C300,200 900,0 1200,100 L1200,200 L0,200 Z;
-                    M0,120 C300,100 900,150 1200,80 L1200,200 L0,200 Z;
-                    M0,100 C300,200 900,0 1200,100 L1200,200 L0,200 Z"/>
+      <svg viewBox="0 0 1200 250" preserveAspectRatio="none">
+        <!-- First wave -->
+        <path d="M0,150 C300,250 900,50 1200,150 L1200,250 L0,250 Z" fill="#0077ff" opacity="0.7">
+          <animate attributeName="d" dur="5s" repeatCount="indefinite"
+            values="M0,150 C300,250 900,50 1200,150 L1200,250 L0,250 Z;
+                    M0,170 C300,120 900,200 1200,100 L1200,250 L0,250 Z;
+                    M0,150 C300,250 900,50 1200,150 L1200,250 L0,250 Z"/>
         </path>
-        <path d="M0,120 C400,0 800,200 1200,100 L1200,200 L0,200 Z" fill="#0044aa" opacity="0.5">
-          <animate attributeName="d" dur="9s" repeatCount="indefinite"
-            values="M0,120 C400,0 800,200 1200,100 L1200,200 L0,200 Z;
-                    M0,100 C400,150 800,50 1200,120 L1200,200 L0,200 Z;
-                    M0,120 C400,0 800,200 1200,100 L1200,200 L0,200 Z"/>
+        <!-- Second wave -->
+        <path d="M0,170 C400,50 800,250 1200,150 L1200,250 L0,250 Z" fill="#0044aa" opacity="0.5">
+          <animate attributeName="d" dur="7s" repeatCount="indefinite"
+            values="M0,170 C400,50 800,250 1200,150 L1200,250 L0,250 Z;
+                    M0,150 C400,200 800,100 1200,180 L1200,250 L0,250 Z;
+                    M0,170 C400,50 800,250 1200,150 L1200,250 L0,250 Z"/>
         </path>
       </svg>
     </div>
@@ -244,7 +246,10 @@
       document.getElementById("enter").style.display = "none";
       document.getElementById("main").style.display = "block";
       jukebox.style.display = "flex";
-      playSong(0);
+
+      // Start on a random song
+      let randomIndex = Math.floor(Math.random() * songs.length);
+      playSong(randomIndex);
     }
 
     function nextSong() {
