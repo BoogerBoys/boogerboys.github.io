@@ -1,51 +1,266 @@
-<!-- Rose -->
-<div id="rose-wrap">
-  <svg id="rose-svg" viewBox="0 0 300 650" preserveAspectRatio="xMidYMid meet">
-    <defs>
-      <!-- Gradient for petals -->
-      <radialGradient id="gPetal" cx="50%" cy="50%" r="60%">
-        <stop offset="0%" stop-color="#fffde7"/>
-        <stop offset="40%" stop-color="#ffe082"/>
-        <stop offset="100%" stop-color="#fbc02d"/>
-      </radialGradient>
-      <!-- Gradient for stem -->
-      <linearGradient id="gStem" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#388e3c"/>
-        <stop offset="100%" stop-color="#1b5e20"/>
-      </linearGradient>
-    </defs>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saur</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      color: white;
+      overflow-x: hidden;
+      background: linear-gradient(to bottom right, #ffeb3b, #fbc02d, #ff9800);
+    }
 
-    <!-- Petal layers -->
-    <g transform="translate(150,200)">
-      <!-- Outer petals -->
-      <ellipse rx="110" ry="140" fill="url(#gPetal)" transform="rotate(0)" opacity="0.9"/>
-      <ellipse rx="105" ry="130" fill="url(#gPetal)" transform="rotate(25)" opacity="0.9"/>
-      <ellipse rx="105" ry="130" fill="url(#gPetal)" transform="rotate(-25)" opacity="0.9"/>
-      <ellipse rx="95" ry="120" fill="url(#gPetal)" transform="rotate(50)" opacity="0.85"/>
-      <ellipse rx="95" ry="120" fill="url(#gPetal)" transform="rotate(-50)" opacity="0.85"/>
+    /* Grainy wallpaper effect */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("grain.png"); /* add a grain texture file if desired */
+      background-size: cover;
+      background-repeat: repeat;
+      opacity: 0.2;
+      z-index: 0;
+      pointer-events: none;
+    }
 
-      <!-- Middle petals -->
-      <ellipse rx="70" ry="90" fill="url(#gPetal)" transform="rotate(15)" opacity="0.9"/>
-      <ellipse rx="70" ry="90" fill="url(#gPetal)" transform="rotate(-15)" opacity="0.9"/>
-      <ellipse rx="65" ry="85" fill="url(#gPetal)" transform="rotate(40)" opacity="0.85"/>
-      <ellipse rx="65" ry="85" fill="url(#gPetal)" transform="rotate(-40)" opacity="0.85"/>
+    /* Vignette */
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      box-shadow: inset 0 0 150px rgba(0,0,0,0.6);
+      z-index: 1;
+      pointer-events: none;
+    }
 
-      <!-- Inner petals -->
-      <ellipse rx="40" ry="55" fill="url(#gPetal)" transform="rotate(10)" opacity="0.95"/>
-      <ellipse rx="40" ry="55" fill="url(#gPetal)" transform="rotate(-10)" opacity="0.95"/>
+    /* Floating shimmer header */
+    h1 {
+      text-align: center;
+      margin-top: 100px;
+      font-size: 3rem;
+      font-weight: 700;
+      text-shadow: 0 0 10px yellow, 0 0 20px gold;
+      animation: float 6s ease-in-out infinite;
+      z-index: 3;
+      position: relative;
+    }
 
-      <!-- Bud center -->
-      <circle r="20" fill="#fff9c4" stroke="#fbc02d" stroke-width="3"/>
-    </g>
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
 
-    <!-- Stem with thorns -->
-    <path d="M150 260 C140 400 160 500 145 650"
-          stroke="url(#gStem)" stroke-width="14" fill="none"/>
+    /* Jukebox */
+    #jukebox {
+      position: fixed;
+      top: 100px;
+      left: 20px;
+      transform: scale(1.45);
+      background: linear-gradient(45deg, yellow, white, yellow);
+      color: black;
+      padding: 15px 20px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      z-index: 5;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+    }
 
-    <!-- Thorns -->
-    <path d="M145 320 l-12 8 l12 -20 z" fill="#1b5e20"/>
-    <path d="M155 380 l12 8 l-12 -20 z" fill="#1b5e20"/>
-    <path d="M145 450 l-12 8 l12 -20 z" fill="#1b5e20"/>
-    <path d="M155 520 l12 8 l-12 -20 z" fill="#1b5e20"/>
-  </svg>
-</div>
+    #jukebox img {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+    }
+
+    #song-info {
+      font-size: 0.9rem;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    #controls button {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    #volume {
+      width: 120px;
+    }
+
+    /* Falling petals */
+    .petal {
+      position: fixed;
+      top: -50px;
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle, #ffeb3b 40%, transparent 70%);
+      border-radius: 50%;
+      animation: fall linear infinite;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* Settings gear */
+    #settings-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      font-size: 1.8rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    #settings-panel {
+      position: fixed;
+      top: 60px;
+      right: 20px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 15px;
+      border-radius: 12px;
+      display: none;
+      z-index: 10;
+    }
+
+    #settings-panel label, 
+    #settings-panel input, 
+    #settings-panel button {
+      display: block;
+      margin: 8px 0;
+    }
+
+    /* Rose placeholder PNG */
+    #rose-img {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 40%;
+      opacity: 0.8;
+      z-index: 2;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Alexa; Saur, Fishy, etc.</h1>
+
+  <!-- Rose PNG placeholder -->
+  <img id="rose-img" src="rose.png" alt="Rose">
+
+  <!-- Jukebox -->
+  <div id="jukebox">
+    <img id="song-icon" src="Music1.png" alt="Song Icon">
+    <div id="song-info">Loading...</div>
+    <div id="controls">
+      <button onclick="prevSong()">⏮️</button>
+      <button onclick="nextSong()">⏭️</button>
+    </div>
+    <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+  </div>
+
+  <!-- Settings -->
+  <button id="settings-btn">⚙️</button>
+  <div id="settings-panel">
+    <label>Petal Intensity</label>
+    <input type="range" id="petal-intensity" min="5" max="50" value="20">
+    <button onclick="toggleEffects()">Toggle Effects</button>
+  </div>
+
+  <!-- Music -->
+  <audio id="bg-music"></audio>
+
+  <script>
+    const songs = [
+      { file: "Music1.mp3", credit: "Track 1", icon: "Music1.png" },
+      { file: "Music2.mp3", credit: "Track 2", icon: "Music2.png" },
+      { file: "Music3.mp3", credit: "Track 3", icon: "Music3.png" },
+      { file: "Music4.mp3", credit: "Track 4", icon: "Music4.png" }
+    ];
+
+    let currentSong = 0;
+    const audio = document.getElementById("bg-music");
+    const songInfo = document.getElementById("song-info");
+    const songIcon = document.getElementById("song-icon");
+
+    function playSong(index) {
+      currentSong = index;
+      audio.src = songs[index].file;
+      audio.play();
+      songInfo.textContent = songs[index].credit;
+      songIcon.src = songs[index].icon;
+    }
+
+    function nextSong() {
+      playSong((currentSong + 1) % songs.length);
+    }
+
+    function prevSong() {
+      playSong((currentSong - 1 + songs.length) % songs.length);
+    }
+
+    audio.addEventListener("ended", nextSong);
+
+    document.getElementById("volume").addEventListener("input", e => {
+      audio.volume = e.target.value;
+    });
+
+    // Start random song
+    playSong(Math.floor(Math.random() * songs.length));
+
+    // Petals
+    let petalsEnabled = true;
+    function createPetal() {
+      if (!petalsEnabled) return;
+      const petal = document.createElement("div");
+      petal.className = "petal";
+      petal.style.left = Math.random() * window.innerWidth + "px";
+      petal.style.animationDuration = (Math.random() * 5 + 5) + "s";
+      document.body.appendChild(petal);
+      setTimeout(() => petal.remove(), 10000);
+    }
+    setInterval(createPetal, 500);
+
+    // Settings toggle
+    const settingsBtn = document.getElementById("settings-btn");
+    const settingsPanel = document.getElementById("settings-panel");
+    settingsBtn.addEventListener("click", () => {
+      settingsPanel.style.display = 
+        settingsPanel.style.display === "block" ? "none" : "block";
+    });
+
+    document.getElementById("petal-intensity").addEventListener("input", e => {
+      clearInterval(petalInterval);
+      const speed = 60000 / e.target.value;
+      petalInterval = setInterval(createPetal, speed);
+    });
+
+    function toggleEffects() {
+      petalsEnabled = !petalsEnabled;
+    }
+  </script>
+</body>
+</html>
