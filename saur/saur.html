@@ -6,123 +6,80 @@
   <title>Saur's Page</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{
+    :root {
       --bg1:#fff9c4;
       --bg2:#ffeb3b;
       --bg3:#ffb300;
-      --jukebox-width:250px;
       --jukebox-scale:1.45;
     }
 
-    html,body{
-      height:100%;
+    html,body {
       margin:0;
-      font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
-      background: linear-gradient(to bottom, var(--bg1), var(--bg2), var(--bg3));
+      height:100%;
+      font-family:'Poppins',sans-serif;
+      background:linear-gradient(to bottom,var(--bg1),var(--bg2),var(--bg3));
       overflow:hidden;
       color:#201b17;
     }
 
     /* vignette */
-    body::before{
+    body::before {
       content:"";
       position:fixed;
       inset:0;
       pointer-events:none;
-      background: radial-gradient(60% 60% at 50% 40%, rgba(255,255,255,0) 55%, rgba(0,0,0,0.18) 100%);
+      background:radial-gradient(60% 60% at 50% 40%,rgba(255,255,255,0) 55%,rgba(0,0,0,0.18) 100%);
       z-index:20;
     }
 
-    #main{
+    #main {
       position:relative;
       z-index:6;
       text-align:center;
       padding-top:90px;
-      min-height:100vh;
-      box-sizing:border-box;
     }
 
-    /* floating header */
     h1 {
       margin:0;
       font-size:3rem;
       font-weight:700;
       color:#3b2f1f;
-      text-shadow: 0 6px 8px rgba(255,235,59,0.15);
+      text-shadow:0 6px 8px rgba(255,235,59,0.3);
       animation: floatHeader 6s ease-in-out infinite;
     }
     @keyframes floatHeader {
-      0%,100%{ transform: translateY(0) }
-      50%{ transform: translateY(-12px) }
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-12px)}
     }
 
-    /* Rose container centered */
-    #rose-wrap{
+    /* Rose wrapper auto scales */
+    #rose-wrap {
       position:fixed;
       left:50%;
       top:50%;
       transform:translate(-50%,-50%);
-      width:520px;
-      height:520px;
+      width:60vmin;
+      height:60vmin;
       z-index:0;
       pointer-events:none;
-      filter: drop-shadow(0 0 30px rgba(255,214,10,0.25));
-      opacity:0.95;
-      mix-blend-mode: screen;
+      filter:drop-shadow(0 0 40px rgba(255,200,0,0.4));
     }
 
-    /* pulse */
-    #rose-svg{
-      width:100%; height:100%;
-      transform-origin:center;
-      animation: rosePulse 8s ease-in-out infinite;
-    }
-    @keyframes rosePulse {
-      0%{ transform: scale(0.995); filter: drop-shadow(0 0 18px rgba(255,214,10,0.08)); }
-      50%{ transform: scale(1.01); filter: drop-shadow(0 0 40px rgba(255,214,10,0.16)); }
-      100%{ transform: scale(0.995); }
-    }
+    #rose-svg { width:100%; height:100%; }
 
-    /* Petal visuals (created dynamically) */
-    .petal{
-      position:fixed;
-      width:18px;
-      height:26px;
-      background: radial-gradient(circle at 35% 30%, #fff59d 0%, #ffd54f 45%, #ffb300 85%);
-      border-radius:50% 50% 40% 40%;
-      transform-origin:center;
-      pointer-events:none;
-      z-index:3;
-      opacity:0.95;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
-    }
-
-    /* shimmer particle */
-    .particle{
-      position:fixed;
-      width:6px;
-      height:6px;
-      border-radius:50%;
-      background: radial-gradient(circle, #fff59d, transparent);
-      opacity:0.9;
-      pointer-events:none;
-      z-index:3;
-      filter: blur(0.5px);
-    }
-
-    /* jukebox sticky left */
-    #jukebox{
+    /* jukebox left */
+    #jukebox {
       position:fixed;
       left:18px;
       top:50%;
-      transform: translateY(-50%) scale(var(--jukebox-scale));
-      transform-origin: left center;
+      transform:translateY(-50%) scale(var(--jukebox-scale));
+      transform-origin:left center;
       z-index:7;
-      width:var(--jukebox-width);
-      background: linear-gradient(90deg, #fff8e1, #fffde7 40%, #fff8e1);
+      width:240px;
+      background:linear-gradient(90deg,#fff8e1,#fffde7 40%,#fff8e1);
       padding:12px 16px;
       border-radius:14px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+      box-shadow:0 8px 30px rgba(0,0,0,0.18);
       display:flex;
       flex-direction:column;
       align-items:center;
@@ -135,212 +92,188 @@
 
     .controls { display:flex; align-items:center; gap:10px; }
     .controls button {
-      width:44px; height:44px; border-radius:50%; border:none; background:#f4c542; color:#201b17;
-      font-size:1.1rem; cursor:pointer; box-shadow:0 6px 16px rgba(244,197,66,0.25);
+      width:44px; height:44px; border-radius:50%; border:none;
+      background:#f4c542; color:#201b17; font-size:1.1rem; cursor:pointer;
     }
-    .controls button:hover { transform: scale(1.06); background:#ffda76; }
-
-    .disc { width:52px; height:52px; border-radius:50%; animation: spin 6s linear infinite; object-fit:cover; }
-    @keyframes spin { from { transform: rotate(0) } to { transform: rotate(360deg) } }
+    .controls button:hover { transform:scale(1.06); background:#ffda76; }
+    .disc { width:52px; height:52px; border-radius:50%; animation:spin 6s linear infinite; }
+    @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 
     .volume-row { width:100%; display:flex; align-items:center; gap:8px; }
     .volume-row input[type="range"] { flex:1; }
 
-    /* petal fall keyframe (used inline variables for x-drift) */
+    /* petals */
+    .petal {
+      position:fixed; width:18px; height:26px;
+      background:radial-gradient(circle at 35% 30%,#fff59d 0%,#ffd54f 45%,#ffb300 85%);
+      border-radius:50% 50% 40% 40%;
+      transform-origin:center;
+      pointer-events:none;
+      z-index:3; opacity:0.95;
+      box-shadow:0 2px 10px rgba(0,0,0,0.12);
+    }
     @keyframes petalFall {
-      0% { transform: translateX(0) translateY(0) rotate(0deg); opacity:1; }
-      30% { opacity:1; }
-      100% { transform: translateX(var(--xDrift)) translateY(110vh) rotate(360deg); opacity:0; }
+      0%{transform:translateX(0) translateY(0) rotate(0deg);opacity:1}
+      100%{transform:translateX(var(--xDrift)) translateY(110vh) rotate(360deg);opacity:0}
     }
 
-    /* small screens */
-    @media (max-width:520px){
-      #jukebox{ transform:translateY(-50%) scale(1.05); left:10px; width:200px; }
-      #rose-wrap{ width:360px; height:360px; }
-      h1{ font-size:2rem; }
+    .particle {
+      position:fixed; width:6px; height:6px;
+      border-radius:50%; background:radial-gradient(circle,#fff59d,transparent);
+      opacity:0.9; pointer-events:none; z-index:3;
     }
 
-    /* reduced motion: hide animations later via JS */
+    /* settings gear */
+    #settings-btn {
+      position:fixed; top:12px; right:12px;
+      background:rgba(0,0,0,0.5); color:white;
+      border:none; border-radius:50%; width:40px; height:40px;
+      cursor:pointer; font-size:1.2rem; z-index:30;
+    }
+    #settings-panel {
+      position:fixed; top:60px; right:12px;
+      background:rgba(255,255,255,0.9);
+      border-radius:12px; padding:12px; width:200px;
+      box-shadow:0 4px 16px rgba(0,0,0,0.2);
+      display:none; z-index:30; font-size:0.9rem; color:#333;
+    }
+    #settings-panel label { display:block; margin:6px 0 2px; font-weight:600; }
   </style>
 </head>
 <body>
-  <!-- Rose SVG (pure vector) -->
-  <div id="rose-wrap" aria-hidden="true">
-    <svg id="rose-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Yellow rose decorative background">
+  <!-- rose -->
+  <div id="rose-wrap">
+    <svg id="rose-svg" viewBox="0 0 300 300">
       <defs>
-        <radialGradient id="gCenter" cx="50%" cy="45%">
-          <stop offset="0%" stop-color="#fff9c4"/>
-          <stop offset="40%" stop-color="#ffe082"/>
-          <stop offset="100%" stop-color="#ffb300"/>
-        </radialGradient>
-        <radialGradient id="gPetal" cx="30%" cy="30%">
+        <radialGradient id="gPetal">
           <stop offset="0%" stop-color="#fff59d"/>
           <stop offset="50%" stop-color="#ffd54f"/>
-          <stop offset="100%" stop-color="#ffb300"/>
+          <stop offset="100%" stop-color="#f57f17"/>
         </radialGradient>
-        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="6" result="b"/>
-          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
       </defs>
-
-      <!-- background subtle circle -->
-      <circle cx="150" cy="150" r="110" fill="url(#gCenter)" opacity="0.95" />
-
-      <!-- layered petals (improved shape) -->
       <g transform="translate(150,150)">
-        <!-- outer petals -->
-        <path d="M -90 0 C -60 -60 -20 -80 0 -70 C 20 -80 60 -60 90 0 C 60 30 20 50 0 70 C -20 50 -60 30 -90 0 Z"
-              fill="url(#gPetal)" opacity="0.98" filter="url(#glow)"/>
-        <path d="M -70 20 C -50 -30 -15 -45 0 -40 C 15 -45 50 -30 70 20 C 45 38 15 55 0 70 C -15 55 -45 38 -70 20 Z"
-              fill="url(#gPetal)" opacity="0.98"/>
-        <!-- mid petals -->
-        <path d="M -40 10 C -30 -18 -10 -28 0 -26 C 10 -28 30 -18 40 10 C 25 22 10 30 0 36 C -10 30 -25 22 -40 10 Z"
-              fill="#fff59d" opacity="0.98"/>
-        <!-- center swirl -->
-        <g>
-          <ellipse cx="0" cy="-4" rx="12" ry="18" fill="#fff8b0" opacity="0.98"/>
-          <path d="M -6 -6 C -2 -12 2 -12 6 -6 C 4 -4 1 -2 -1 0 C -3 -2 -5 -4 -6 -6 Z" fill="#ffdb4d"/>
-        </g>
-        <!-- stem -->
-        <path d="M 0 70 C 2 95 6 140 0 170" stroke="#2e7d32" stroke-width="8" stroke-linecap="round" fill="none"/>
-        <path d="M -10 130 C -30 120 -40 140 -30 150" stroke="#2e7d32" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <circle r="110" fill="url(#gPetal)" opacity="0.95" />
+        <path d="M -90 0 C -60 -60 -20 -80 0 -70 C 20 -80 60 -60 90 0 C 60 30 20 50 0 70 C -20 50 -60 30 -90 0 Z" fill="url(#gPetal)" stroke="#5d4037" stroke-width="2"/>
+        <circle r="25" fill="#fff8b0" stroke="#fbc02d" stroke-width="2"/>
+        <path d="M0 70 C2 95 6 140 0 170" stroke="#2e7d32" stroke-width="8"/>
       </g>
     </svg>
   </div>
 
-  <!-- Main -->
   <div id="main">
     <h1>Welcome to Saur's Page 🌹</h1>
   </div>
 
-  <!-- Jukebox (left, scaled) -->
-  <aside id="jukebox" aria-label="Jukebox">
+  <!-- jukebox -->
+  <aside id="jukebox">
     <div class="song">
-      <img id="song-icon" src="Music1.png" alt="song icon">
+      <img id="song-icon" src="Music1.png" alt="">
       <div class="meta" id="song-info">Loading...</div>
     </div>
-
     <div class="controls">
       <button onclick="prevSong()">⏮️</button>
-      <img class="disc" id="discImg" src="juke.png" alt="Jukebox disc">
+      <img class="disc" id="discImg" src="juke.png" alt="">
       <button onclick="nextSong()">⏭️</button>
     </div>
-
     <div class="volume-row">
       <label for="volume">🔊</label>
       <input id="volume" type="range" min="0" max="1" step="0.01" value="1">
     </div>
   </aside>
 
-  <audio id="bg-music" preload="metadata"></audio>
+  <audio id="bg-music"></audio>
+
+  <!-- settings -->
+  <button id="settings-btn">⚙️</button>
+  <div id="settings-panel">
+    <label for="petal-density">🌹 Petal Density</label>
+    <input id="petal-density" type="range" min="500" max="4000" step="100" value="1500">
+    <label for="particle-density">✨ Particle Density</label>
+    <input id="particle-density" type="range" min="800" max="4000" step="100" value="2000">
+    <button id="toggle-effects" style="margin-top:10px;width:100%;">Disable Effects</button>
+  </div>
 
   <script>
-    // ----- jukebox / audio -----
-    const songs = [
-      { file: "Music1.mp3", credit: "Song 1", icon: "Music1.png" },
-      { file: "Music2.mp3", credit: "Song 2", icon: "Music2.png" },
-      { file: "Music3.mp3", credit: "Song 3", icon: "Music3.png" },
-      { file: "Music4.mp3", credit: "Song 4", icon: "Music4.png" }
+    /* jukebox */
+    const songs=[
+      {file:"Music1.mp3",credit:"Song 1",icon:"Music1.png"},
+      {file:"Music2.mp3",credit:"Song 2",icon:"Music2.png"},
+      {file:"Music3.mp3",credit:"Song 3",icon:"Music3.png"},
+      {file:"Music4.mp3",credit:"Song 4",icon:"Music4.png"}
     ];
-
-    const audio = document.getElementById('bg-music');
-    const songInfo = document.getElementById('song-info');
-    const songIcon = document.getElementById('song-icon');
-    const vol = document.getElementById('volume');
-
-    let current = Math.floor(Math.random()*songs.length);
-
+    const audio=document.getElementById("bg-music");
+    const songInfo=document.getElementById("song-info");
+    const songIcon=document.getElementById("song-icon");
+    const vol=document.getElementById("volume");
+    let current=Math.floor(Math.random()*songs.length);
     function playSong(i){
-      current = (i + songs.length) % songs.length;
-      audio.src = songs[current].file;
-      // attempt to play; may be blocked until user interaction
+      current=(i+songs.length)%songs.length;
+      audio.src=songs[current].file;
       audio.play().catch(()=>{});
-      songInfo.textContent = songs[current].credit;
-      songIcon.src = songs[current].icon;
+      songInfo.textContent=songs[current].credit;
+      songIcon.src=songs[current].icon;
     }
-    function nextSong(){ playSong(current+1); }
-    function prevSong(){ playSong(current-1); }
-
-    audio.addEventListener('ended', nextSong);
-    vol.addEventListener('input', ()=> audio.volume = vol.value );
-
-    // start random
+    function nextSong(){playSong(current+1);}
+    function prevSong(){playSong(current-1);}
+    audio.addEventListener("ended",nextSong);
+    vol.addEventListener("input",()=>audio.volume=vol.value);
     playSong(current);
 
-    // ----- petal effect (spawn from rose center) -----
-    function createPetal() {
-      const petal = document.createElement("div");
-      petal.className = "petal";
-
-      const rose = document.getElementById('rose-wrap');
-      const r = rose.getBoundingClientRect();
-
-      // spawn near the top half of the rose
-      const startX = r.left + r.width * 0.5 + (Math.random() - 0.5) * 80;
-      const startY = r.top + r.height * 0.3 + (Math.random() - 0.5) * 30;
-
-      petal.style.left = startX + "px";
-      petal.style.top = startY + "px";
-
-      const dur = 4 + Math.random() * 5; // 4-9s
-      petal.style.animation = `petalFall ${dur}s linear forwards`;
-
-      // horizontal drift
-      const drift = (Math.random() * 300 - 150).toFixed(0) + "px";
-      petal.style.setProperty('--xDrift', drift);
-
+    /* petals */
+    let petalInterval,particleInterval;
+    function createPetal(){
+      const petal=document.createElement("div");
+      petal.className="petal";
+      const r=document.getElementById("rose-wrap").getBoundingClientRect();
+      petal.style.left=(r.left+r.width/2)+"px";
+      petal.style.top=(r.top+r.height/2-40)+"px";
+      const dur=4+Math.random()*5;
+      petal.style.animation=`petalFall ${dur}s linear forwards`;
+      petal.style.setProperty("--xDrift",(Math.random()*200-100)+"px");
       document.body.appendChild(petal);
-
-      // cleanup
-      setTimeout(() => petal.remove(), (dur + 0.6) * 1000);
+      setTimeout(()=>petal.remove(),dur*1000);
     }
-
-    let petalInterval = setInterval(createPetal, 1500);
-
-    // ----- particle shimmer (rising sparkles) -----
     function createParticle(){
-      const p = document.createElement('div');
-      p.className = 'particle';
-
-      const rose = document.getElementById('rose-wrap');
-      const r = rose.getBoundingClientRect();
-      const left = r.left + r.width * (0.2 + Math.random() * 0.6);
-      const top = r.top + r.height - 20 + Math.random()*30;
-
-      p.style.left = left + 'px';
-      p.style.top = top + 'px';
-
-      const dur = 2.5 + Math.random()*3;
-      // animate via CSS insertion
-      p.style.transition = `transform ${dur}s ease-out, opacity ${dur}s ease-out`;
-      requestAnimationFrame(()=> {
-        p.style.transform = `translateY(-${80 + Math.random()*80}px)`;
-        p.style.opacity = '0';
+      const p=document.createElement("div");
+      p.className="particle";
+      const r=document.getElementById("rose-wrap").getBoundingClientRect();
+      p.style.left=(r.left+r.width/2+Math.random()*60-30)+"px";
+      p.style.top=(r.top+r.height/2)+"px";
+      const dur=2+Math.random()*3;
+      p.style.transition=`transform ${dur}s ease-out,opacity ${dur}s ease-out`;
+      requestAnimationFrame(()=>{
+        p.style.transform=`translateY(-${80+Math.random()*60}px)`;
+        p.style.opacity="0";
       });
-
       document.body.appendChild(p);
-      setTimeout(()=> p.remove(), (dur + 0.3) * 1000);
+      setTimeout(()=>p.remove(),dur*1000);
     }
-    let particleInterval = setInterval(createParticle, 1000);
-
-    // ----- respects reduced-motion -----
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    function applyReducedMotion() {
-      if (mq.matches) {
-        clearInterval(petalInterval);
-        clearInterval(particleInterval);
-        document.getElementById('rose-svg').style.animation = 'none';
-        document.querySelectorAll('.particle,.petal').forEach(e => e.remove());
-      }
+    function startEffects(petalMs,particleMs){
+      stopEffects();
+      petalInterval=setInterval(createPetal,petalMs);
+      particleInterval=setInterval(createParticle,particleMs);
     }
-    if (mq.addEventListener) mq.addEventListener('change', applyReducedMotion);
-    applyReducedMotion();
+    function stopEffects(){
+      clearInterval(petalInterval);
+      clearInterval(particleInterval);
+    }
+    startEffects(1500,2000);
 
-    // ----- responsive resize for rose center accuracy -----
-    window.addEventListener('resize', () => {
-      // nothing special required; petal spawn uses fresh bounding rect each spawn
-    });
+    /* settings */
+    const settingsBtn=document.getElementById("settings-btn");
+    const settingsPanel=document.getElementById("settings-panel");
+    const petalDensity=document.getElementById("petal-density");
+    const particleDensity=document.getElementById("particle-density");
+    const toggleEffects=document.getElementById("toggle-effects");
+    let effectsEnabled=true;
+
+    settingsBtn.onclick=()=>settingsPanel.style.display=settingsPanel.style.display==="block"?"none":"block";
+    petalDensity.oninput=()=>{if(effectsEnabled)startEffects(petalDensity.value,particleDensity.value);}
+    particleDensity.oninput=()=>{if(effectsEnabled)startEffects(petalDensity.value,particleDensity.value);}
+    toggleEffects.onclick=()=>{
+      if(effectsEnabled){stopEffects();effectsEnabled=false;toggleEffects.textContent="Enable Effects";}
+      else{startEffects(petalDensity.value,particleDensity.value);effectsEnabled=true;toggleEffects.textContent="Disable Effects";}
+    }
   </script>
 </body>
 </html>
