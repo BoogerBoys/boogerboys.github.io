@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Saur’s Page</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: linear-gradient(to bottom, #ffeb3b, #ffffff, #ffeb3b);
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+      color: black;
+    }
+
+    /* Jukebox */
+    #jukebox {
+      margin: 50px auto;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 20px;
+      width: 80%;
+      max-width: 600px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    #jukebox h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    /* Song list */
+    .song {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+    .song img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .controls button {
+      border: none;
+      background: #fbc02d;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    }
+
+    .controls button:hover {
+      transform: scale(1.1);
+      background: #ffe082;
+    }
+
+    /* Volume slider */
+    .volume-container {
+      width: 100%;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .volume-container input[type="range"] {
+      flex: 1;
+    }
+
+    /* Yellow rose background */
+    #rose {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 500px;
+      height: 500px;
+      transform: translate(-50%, -50%);
+      opacity: 0.08;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Jukebox -->
+  <div id="jukebox">
+    <h2>🎵 Now Playing</h2>
+    <div class="song">
+      <img id="song-icon" src="Music1.png" alt="Song Icon">
+      <div id="song-info">Loading...</div>
+    </div>
+    <div class="controls">
+      <button onclick="prevSong()">⏮️</button>
+      <img src="juke.png" alt="Jukebox Icon" style="width:50px;height:50px;border-radius:50%;animation:spin 6s linear infinite;">
+      <button onclick="nextSong()">⏭️</button>
+    </div>
+    <div class="volume-container">
+      <label for="volume">🔊</label>
+      <input id="volume" type="range" min="0" max="1" step="0.01" value="1">
+    </div>
+  </div>
+
+  <!-- Music -->
+  <audio id="bg-music"></audio>
+
+  <!-- Yellow Rose SVG -->
+  <svg id="rose" viewBox="0 0 512 512">
+    <path fill="#FFD700" d="M256 32c-70.7 0-128 57.3-128 128 0 50.1 29.1 93.4 71.3 114.2C181.2 311.8 128 374.9 128 448c0 17.7 14.3 32 32 32h192c17.7 0 32-14.3 32-32 0-73.1-53.2-136.2-71.3-173.8C354.9 253.4 384 210.1 384 160c0-70.7-57.3-128-128-128z"/>
+  </svg>
+
+  <script>
+    const songs = [
+      { file: "Music1.mp3", credit: "Song 1", icon: "Music1.png" },
+      { file: "Music2.mp3", credit: "Song 2", icon: "Music2.png" },
+      { file: "Music3.mp3", credit: "Song 3", icon: "Music3.png" },
+      { file: "Music4.mp3", credit: "Song 4", icon: "Music4.png" }
+    ];
+
+    let currentSong = 0;
+    const audio = document.getElementById("bg-music");
+    const songInfo = document.getElementById("song-info");
+    const songIcon = document.getElementById("song-icon");
+    const volumeSlider = document.getElementById("volume");
+
+    function playSong(index) {
+      currentSong = index;
+      audio.src = songs[index].file;
+      audio.play();
+      songInfo.textContent = songs[index].credit;
+      songIcon.src = songs[index].icon;
+    }
+
+    function nextSong() {
+      let next = (currentSong + 1) % songs.length;
+      playSong(next);
+    }
+
+    function prevSong() {
+      let prev = (currentSong - 1 + songs.length) % songs.length;
+      playSong(prev);
+    }
+
+    audio.addEventListener("ended", nextSong);
+    volumeSlider.addEventListener("input", () => {
+      audio.volume = volumeSlider.value;
+    });
+
+    // Start random song
+    window.onload = () => {
+      let randomIndex = Math.floor(Math.random() * songs.length);
+      playSong(randomIndex);
+    };
+
+    // Spin animation for the jukebox disc
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
