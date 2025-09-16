@@ -22,7 +22,7 @@
       color:#201b17;
     }
 
-    /* Grainy wallpaper effect */
+    /* Grain + vignette combined */
     body::before {
       content: "";
       position: fixed;
@@ -30,22 +30,12 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-image: url("grain.png");
+      background: radial-gradient(60% 60% at 50% 40%, rgba(255,255,255,0) 55%, rgba(0,0,0,0.2) 100%), url("grain.png");
       background-size: cover;
       background-repeat: repeat;
       opacity: 0.2;
-      z-index: 0;
       pointer-events: none;
-    }
-
-    /* vignette */
-    body::before {
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      background:radial-gradient(60% 60% at 50% 40%,rgba(255,255,255,0) 55%,rgba(0,0,0,0.2) 100%);
-      z-index:2;
+      z-index: 1;
     }
 
     #main {
@@ -159,12 +149,39 @@
       display:none; z-index:30; font-size:0.9rem; color:#333;
     }
     #settings-panel label { display:block; margin:6px 0 2px; font-weight:600; }
+
+    /* notice above jukebox */
+    #jukebox-notice {
+      position: fixed;
+      top: 50px;
+      left: 18px;
+      background: rgba(255, 255, 255, 0.95);
+      color: #201b17;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 8px 12px;
+      border-radius: 10px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: floatHeader 6s ease-in-out infinite;
+    }
+    #jukebox-notice button {
+      background:none; border:none; font-size:1rem; cursor:pointer; color:#201b17;
+    }
   </style>
 </head>
 <body>
 
   <div id="main">
     <h1>🌹 welcome to saur's page 🌹</h1>
+  </div>
+
+  <!-- jukebox notice -->
+  <div id="jukebox-notice">
+    If the music doesn't play, click the fast forward button. 💛
+    <button onclick="this.parentElement.style.display='none'">✖</button>
   </div>
 
   <!-- jukebox -->
@@ -199,10 +216,10 @@
   <script>
     /* jukebox */
     const songs=[
-      {file:"Music1.mp3",credit:"Song 1",icon:"Music1.png"},
-      {file:"Music2.mp3",credit:"Song 2",icon:"Music2.png"},
-      {file:"Music3.mp3",credit:"Song 3",icon:"Music3.png"},
-      {file:"Music4.mp3",credit:"Song 4",icon:"Music4.png"}
+      {file:"Music1.mp3",credit:"Punchline - Pop Club, Bianco Niño",icon:"Music1.png"},
+      {file:"Music2.mp3",credit:"Tiddy Middy - Paulie Leparik",icon:"Music2.png"},
+      {file:"Music3.mp3",credit:"An Honest Mistake - The Bravery",icon:"Music3.png"},
+      {file:"Music4.mp3",credit:"(Don't Fear) The Reaper - Blue Öyster Cult",icon:"Music4.png"}
     ];
     const audio=document.getElementById("bg-music");
     const songInfo=document.getElementById("song-info");
@@ -242,10 +259,7 @@
       p.style.top=Math.random()*window.innerHeight+"px";
       const dur=2+Math.random()*3;
       p.style.transition=`transform ${dur}s ease-out,opacity ${dur}s ease-out`;
-      requestAnimationFrame(()=>{
-        p.style.transform=`translateY(-${80+Math.random()*60}px)`;
-        p.style.opacity="0";
-      });
+      requestAnimationFrame(()=>{ p.style.transform=`translateY(-${80+Math.random()*60}px)`; p.style.opacity="0"; });
       document.body.appendChild(p);
       setTimeout(()=>p.remove(),dur*1000);
     }
@@ -271,10 +285,14 @@
     settingsBtn.onclick=()=>settingsPanel.style.display=settingsPanel.style.display==="block"?"none":"block";
     petalDensity.oninput=()=>{if(effectsEnabled)startEffects(petalDensity.value,particleDensity.value);}
     particleDensity.oninput=()=>{if(effectsEnabled)startEffects(petalDensity.value,particleDensity.value);}
-    toggleEffects.onclick=()=>{
-      if(effectsEnabled){stopEffects();effectsEnabled=false;toggleEffects.textContent="Enable Effects";}
-      else{startEffects(petalDensity.value,particleDensity.value);effectsEnabled=true;toggleEffects.textContent="Disable Effects";}
-    }
+    toggleEffects.onclick=()=>{if(effectsEnabled){stopEffects();effectsEnabled=false;toggleEffects.textContent="Enable Effects";}
+      else{startEffects(petalDensity.value,particleDensity.value);effectsEnabled=true;toggleEffects.textContent="Disable Effects";}}
+
+    // Auto-hide notice after 20s
+    setTimeout(() => {
+      const notice = document.getElementById('jukebox-notice');
+      if (notice) notice.style.display = 'none';
+    }, 20000);
   </script>
 </body>
 </html>
