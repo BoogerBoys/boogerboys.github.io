@@ -149,32 +149,52 @@
       100% { transform: translateX(-50%) rotate(-5deg); }
     }
 
-    /* Jukebox info */
+    /* Jukebox */
     #jukebox {
       position: fixed;
       top: 20px;
       left: 20px;
       background: rgba(0,0,0,0.6);
       color: white;
-      padding: 10px 15px;
+      padding: 12px 18px;
       border-radius: 16px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       z-index: 3;
       font-size: 0.9rem;
       font-weight: bold;
+      width: 250px;
     }
 
-    #jukebox img {
+    .song {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .song img {
+      width: 35px;
+      height: 35px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #jukebox img.disc {
       width: 45px;
       height: 45px;
       border-radius: 50%;
       animation: spin 6s linear infinite;
     }
 
-    /* Circle buttons */
-    #jukebox button {
+    .controls button {
       width: 40px;
       height: 40px;
       border-radius: 50%;
@@ -187,10 +207,21 @@
       transition: transform 0.2s, background 0.2s;
     }
 
-    #jukebox button:hover {
+    .controls button:hover {
       background: #42a5f5;
       transform: scale(1.1);
       box-shadow: 0 0 15px #42a5f5, 0 0 25px rgba(66,165,245,0.7);
+    }
+
+    .volume-container {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .volume-container input[type="range"] {
+      flex: 1;
     }
 
     /* Animations */
@@ -225,20 +256,29 @@
 
   <!-- Jukebox -->
   <div id="jukebox" style="display:none;">
-    <button onclick="prevSong()">⏮️</button>
-    <div id="song-info">Loading...</div>
-    <button onclick="nextSong()">⏭️</button>
-    <img src="Juke.png" alt="Jukebox Icon">
+    <div class="song">
+      <img id="song-icon" src="Music1.png" alt="Song Icon">
+      <div id="song-info">Loading...</div>
+    </div>
+    <div class="controls">
+      <button onclick="prevSong()">⏮️</button>
+      <img class="disc" src="Juke.png" alt="Jukebox Icon">
+      <button onclick="nextSong()">⏭️</button>
+    </div>
+    <div class="volume-container">
+      <label for="volume">🔊</label>
+      <input id="volume" type="range" min="0" max="1" step="0.01" value="1">
+    </div>
   </div>
 
   <!-- Main -->
   <div id="main">
     <h1>hi, welcome to our github page</h1>
     <div class="friends">
-      <a href="alex.html">alex; midnight, any alias i do not care.</a>
-      <a href="hoodie.html">hoodie; hoobean, hoodieisadumbname, etc..</a>
-      <a href="riley.html">riley; willy william, the sigma.</a>
-      <a href="saur.html">Alexa; Saur, Fishy, etc.</a>
+      <a href="temporary.html">alex; midnight, any alias i do not care.</a>
+      <a href="temporary.html">hoodie; hoobean, hoodieisadumbname, etc..</a>
+      <a href="temporary.html">riley; willy william, the sigma.</a>
+      <a href="saur/saur.html">Saur; Fishy, etc.</a>
     </div>
 
     <!-- Waves -->
@@ -246,14 +286,14 @@
       <svg viewBox="0 0 1200 250" preserveAspectRatio="none">
         <!-- First wave -->
         <path d="M0,150 C300,250 900,50 1200,150 L1200,250 L0,250 Z" fill="#0077ff" opacity="0.7">
-          <animate attributeName="d" dur="5s" repeatCount="indefinite"
+          <animate attributeName="d" dur="4s" repeatCount="indefinite"
             values="M0,150 C300,250 900,50 1200,150 L1200,250 L0,250 Z;
                     M0,170 C300,120 900,200 1200,100 L1200,250 L0,250 Z;
                     M0,150 C300,250 900,50 1200,150 L1200,250 L0,250 Z"/>
         </path>
         <!-- Second wave -->
         <path d="M0,170 C400,50 800,250 1200,150 L1200,250 L0,250 Z" fill="#0044aa" opacity="0.5">
-          <animate attributeName="d" dur="7s" repeatCount="indefinite"
+          <animate attributeName="d" dur="6s" repeatCount="indefinite"
             values="M0,170 C400,50 800,250 1200,150 L1200,250 L0,250 Z;
                     M0,150 C400,200 800,100 1200,180 L1200,250 L0,250 Z;
                     M0,170 C400,50 800,250 1200,150 L1200,250 L0,250 Z"/>
@@ -267,14 +307,16 @@
 
   <script>
     const songs = [
-      { file: "Music1.mp3", credit: "Donkey Kong Country 2 - Stickerbush Symphony - Nintendo" },
-      { file: "Music2.mp3", credit: "Lisa: The Pointless OST - Soft Hearts (World's Last Autumn Version)" },
-      { file: "Music3.mp3", credit: "Deltarune Chapter 3 + 4 - 12 am - Toby Fox" }
+      { file: "Music1.mp3", credit: "Donkey Kong Country 2 - Stickerbush Symphony - Nintendo", icon: "Music1.png" },
+      { file: "Music2.mp3", credit: "Lisa: The Pointless OST - Soft Hearts (World's Last Autumn Version)", icon: "Music2.png" },
+      { file: "Music3.mp3", credit: "Deltarune Chapter 3 + 4 - 12 am - Toby Fox", icon: "Music3.png" }
     ];
 
     let currentSong = 0;
     const audio = document.getElementById("bg-music");
     const songInfo = document.getElementById("song-info");
+    const songIcon = document.getElementById("song-icon");
+    const volumeSlider = document.getElementById("volume");
     const jukebox = document.getElementById("jukebox");
 
     function playSong(index) {
@@ -282,6 +324,7 @@
       audio.src = songs[index].file;
       audio.play();
       songInfo.textContent = songs[index].credit;
+      songIcon.src = songs[index].icon;
     }
 
     function startSite() {
@@ -307,6 +350,10 @@
     audio.addEventListener("ended", () => {
       let next = (currentSong + 1) % songs.length;
       playSong(next);
+    });
+
+    volumeSlider.addEventListener("input", () => {
+      audio.volume = volumeSlider.value;
     });
 
     /* Rain effect */
