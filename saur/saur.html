@@ -22,28 +22,54 @@
       color:#201b17;
     }
 
-    /* Grainy wallpaper effect */
-    body::after {
+    /* 🌹 Rose field as tiled background */
+    body::before {
       content:"";
       position:fixed;
       inset:0;
-      background-image:
-        radial-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
-        radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
-      background-size:3px 3px, 5px 5px;
-      pointer-events:none;
-      z-index:1;
-      opacity:0.4;
+      background-image: url('data:image/svg+xml;utf8,
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+          <defs>
+            <radialGradient id="petal" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="%23fff59d"/>
+              <stop offset="60%" stop-color="%23ffd54f"/>
+              <stop offset="100%" stop-color="%23ffb300"/>
+            </radialGradient>
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <!-- center -->
+          <circle cx="60" cy="60" r="20" fill="url(%23petal)" filter="url(%23glow)"/>
+          <!-- petals around -->
+          <ellipse cx="60" cy="30" rx="20" ry="28" fill="url(%23petal)" filter="url(%23glow)"/>
+          <ellipse cx="60" cy="90" rx="20" ry="28" fill="url(%23petal)" filter="url(%23glow)"/>
+          <ellipse cx="30" cy="60" rx="28" ry="20" fill="url(%23petal)" filter="url(%23glow)"/>
+          <ellipse cx="90" cy="60" rx="28" ry="20" fill="url(%23petal)" filter="url(%23glow)"/>
+          <!-- diagonal petals -->
+          <ellipse cx="35" cy="35" rx="18" ry="24" fill="url(%23petal)" filter="url(%23glow)"/>
+          <ellipse cx="85" cy="35" rx="18" ry="24" fill="url(%23petal)" filter="url(%23glow)"/>
+          <ellipse cx="35" cy="85" rx="18" ry="24" fill="url(%23petal)" filter="url(%23glow)"/>
+          <ellipse cx="85" cy="85" rx="18" ry="24" fill="url(%23petal)" filter="url(%23glow)"/>
+        </svg>');
+      background-repeat: repeat;
+      background-size: 12vw 12vw; /* scales roses relative to screen */
+      z-index:0;
+      opacity:0.9;
     }
 
     /* vignette */
-    body::before {
+    body::after {
       content:"";
       position:fixed;
       inset:0;
       pointer-events:none;
       background: radial-gradient(60% 60% at 50% 40%, rgba(255,255,255,0) 65%, rgba(0,0,0,0.35) 100%);
-      z-index:2;
+      z-index:1;
     }
 
     #main {
@@ -60,78 +86,12 @@
       font-size:3rem;
       font-weight:700;
       color:#3b2f1f;
-      text-shadow:0 6px 10px rgba(255,235,59,0.2);
+      text-shadow:0 6px 10px rgba(255,235,59,0.4);
       animation: floatHeader 6s ease-in-out infinite;
     }
     @keyframes floatHeader {
       0%,100% { transform:translateY(0); }
       50% { transform:translateY(-12px); }
-    }
-
-    /* Rose field */
-    #rose-field {
-      position:fixed;
-      inset:0;
-      z-index:0;
-      display:grid;
-      grid-template-columns:repeat(auto-fill, 120px);
-      grid-auto-rows:140px;
-      justify-content:center;
-      pointer-events:none;
-    }
-
-    .rose {
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      animation: sway 8s ease-in-out infinite;
-      position:relative;
-      filter: drop-shadow(0 0 10px rgba(255,230,100,0.6))
-              drop-shadow(0 0 25px rgba(255,240,160,0.3));
-    }
-
-    @keyframes sway {
-      0%,100% { transform:translateY(0) rotate(0deg); }
-      50% { transform:translateY(-4px) rotate(-2deg); }
-    }
-
-    .rose svg {
-      width:60px;
-      height:auto;
-    }
-
-    /* shimmer sweep */
-    .shimmer {
-      position:absolute;
-      top:0; left:0; right:0; bottom:0;
-      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.7) 40%, transparent 80%);
-      background-size:200% 200%;
-      animation: shimmerMove 8s linear infinite;
-      border-radius:50%;
-      pointer-events:none;
-    }
-    @keyframes shimmerMove {
-      0% { background-position:-150% -150%; }
-      100% { background-position:150% 150%; }
-    }
-
-    /* Petals */
-    .petal {
-      position:fixed;
-      width:18px;
-      height:26px;
-      background: radial-gradient(circle at 35% 30%, #fff59d 0%, #ffd54f 45%, #ffb300 85%);
-      border-radius:50% 50% 40% 40%;
-      transform-origin:center;
-      pointer-events:none;
-      z-index:4;
-      opacity:0.95;
-      box-shadow:0 2px 10px rgba(0,0,0,0.12);
-    }
-    @keyframes petalFall {
-      0% { transform: translateX(0) translateY(0) rotate(0deg); opacity:1; }
-      30% { opacity:1; }
-      100% { transform: translateX(var(--xDrift)) translateY(110vh) rotate(360deg); opacity:0; }
     }
 
     /* jukebox */
@@ -174,45 +134,9 @@
     @media(max-width:520px) {
       #jukebox { transform:translateY(-50%) scale(1.05); width:200px; }
     }
-
-    /* Settings button */
-    #settings-btn {
-      position:fixed;
-      top:12px;
-      right:12px;
-      z-index:15;
-      font-size:1.6rem;
-      cursor:pointer;
-      background:#fff8e1;
-      border:none;
-      border-radius:50%;
-      width:42px;
-      height:42px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.25);
-    }
-    #settings-panel {
-      position:fixed;
-      top:60px;
-      right:12px;
-      background:#fff8e1;
-      border-radius:10px;
-      padding:12px;
-      width:220px;
-      z-index:15;
-      display:none;
-      flex-direction:column;
-      gap:10px;
-      font-size:0.9rem;
-      box-shadow:0 6px 20px rgba(0,0,0,0.25);
-    }
-    #settings-panel label { font-weight:600; }
-    #settings-panel input[type=range] { width:100%; }
   </style>
 </head>
 <body>
-  <!-- Rose Field -->
-  <div id="rose-field" aria-hidden="true"></div>
-
   <!-- Main content -->
   <div id="main">
     <h1>Welcome to Saur's Page 🌹</h1>
@@ -236,16 +160,6 @@
       <input id="volume" type="range" min="0" max="1" step="0.01" value="1">
     </div>
   </aside>
-
-  <!-- Settings -->
-  <button id="settings-btn">⚙️</button>
-  <div id="settings-panel">
-    <label>Rose Density</label>
-    <input id="roseDensity" type="range" min="20" max="150" value="80">
-    <label>Petal Intensity</label>
-    <input id="petalRate" type="range" min="200" max="2000" value="700">
-    <button onclick="toggleEffects()">Toggle Effects</button>
-  </div>
 
   <audio id="bg-music" preload="metadata"></audio>
 
@@ -275,80 +189,6 @@
     audio.addEventListener('ended', nextSong);
     vol.addEventListener('input', ()=> audio.volume = vol.value );
     playSong(current);
-
-    /* Rose SVG template (more petals) */
-    const roseSVG = `
-      <div class="rose-wrap">
-        <svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
-          <g filter="url(#glow)">
-            <path d="M50,60 C30,40 20,70 40,85 C60,100 70,70 50,60Z" fill="#ffc107"/>
-            <path d="M50,60 C70,40 80,70 60,85 C40,100 30,70 50,60Z" fill="#ffb300"/>
-            <ellipse cx="50" cy="60" rx="18" ry="22" fill="#fff59d"/>
-          </g>
-          <rect x="47" y="95" width="6" height="85" fill="#388e3c"/>
-          <path d="M50,120 C20,130 20,150 50,150" fill="none" stroke="#2e7d32" stroke-width="8" stroke-linecap="round"/>
-          <path d="M50,140 C80,150 80,170 50,170" fill="none" stroke="#2e7d32" stroke-width="8" stroke-linecap="round"/>
-          <defs>
-            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="3" result="b"/>
-              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-          </defs>
-        </svg>
-        <div class="shimmer"></div>
-      </div>`;
-
-    const field = document.getElementById('rose-field');
-    function fillRoses(count){
-      field.innerHTML="";
-      for(let i=0;i<count;i++){
-        const div = document.createElement('div');
-        div.className='rose';
-        div.innerHTML=roseSVG;
-        field.appendChild(div);
-      }
-    }
-    fillRoses(80);
-
-    /* Petals */
-    let petalInterval;
-    function startPetals(rate){
-      if(petalInterval) clearInterval(petalInterval);
-      petalInterval=setInterval(()=>{
-        const petal=document.createElement('div');
-        petal.className='petal';
-        petal.style.left=(Math.random()*window.innerWidth)+'px';
-        petal.style.top='-20px';
-        petal.style.setProperty('--xDrift',(Math.random()*200-100)+'px');
-        const dur=5+Math.random()*6;
-        petal.style.animation=`petalFall ${dur}s linear forwards`;
-        document.body.appendChild(petal);
-        setTimeout(()=>petal.remove(), (dur+0.5)*1000);
-      },rate);
-    }
-    startPetals(700);
-
-    /* Settings */
-    const settingsBtn=document.getElementById('settings-btn');
-    const settingsPanel=document.getElementById('settings-panel');
-    let effectsEnabled=true;
-
-    settingsBtn.onclick=()=> {
-      settingsPanel.style.display = settingsPanel.style.display==="flex" ? "none":"flex";
-      if(settingsPanel.style.display==="flex"){ settingsPanel.style.flexDirection="column"; }
-    };
-    document.getElementById('roseDensity').oninput=e=> fillRoses(e.target.value);
-    document.getElementById('petalRate').oninput=e=> startPetals(e.target.value);
-    function toggleEffects(){
-      effectsEnabled=!effectsEnabled;
-      if(!effectsEnabled){
-        field.innerHTML="";
-        if(petalInterval) clearInterval(petalInterval);
-      } else {
-        fillRoses(document.getElementById('roseDensity').value);
-        startPetals(document.getElementById('petalRate').value);
-      }
-    }
   </script>
 </body>
 </html>
