@@ -109,6 +109,7 @@
 
     .friends a:nth-child(2) { background: #43a047; } /* green */
     .friends a:nth-child(3) { background: #8e24aa; } /* purple */
+    .friends a:nth-child(4) { background: #fbc02d; color: black; } /* yellow */
 
     .friends a:hover {
       transform: translateY(-3px) scale(1.05);
@@ -129,6 +130,23 @@
       display: block;
       width: 100%;
       height: 100%;
+    }
+
+    /* Boat */
+    #boat {
+      position: absolute;
+      bottom: 140px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      z-index: 2;
+      animation: rock 4s ease-in-out infinite;
+    }
+
+    @keyframes rock {
+      0% { transform: translateX(-50%) rotate(-5deg); }
+      50% { transform: translateX(-50%) rotate(5deg); }
+      100% { transform: translateX(-50%) rotate(-5deg); }
     }
 
     /* Jukebox info */
@@ -220,6 +238,7 @@
       <a href="alex.html">alex; midnight, any alias i do not care.</a>
       <a href="hoodie.html">hoodie; hoobean, hoodieisadumbname, etc..</a>
       <a href="riley.html">riley; willy william, the sigma.</a>
+      <a href="saur.html">Alexa; Saur, Fishy, etc.</a>
     </div>
 
     <!-- Waves -->
@@ -241,6 +260,9 @@
         </path>
       </svg>
     </div>
+
+    <!-- Boat -->
+    <img id="boat" src="boat.png" alt="Boat">
   </div>
 
   <script>
@@ -311,7 +333,7 @@
     function drawRain() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.strokeStyle = "rgba(255,255,255,0.6)";
-      ctx.lineWidth = 1;
+      ctx.lineWidth = 1.5;
       drops.forEach(drop => {
         ctx.beginPath();
         ctx.moveTo(drop.x, drop.y);
