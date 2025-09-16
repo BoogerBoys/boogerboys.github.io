@@ -1,298 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Saur's Page</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg1:#fff9c4;
-      --bg2:#ffeb3b;
-      --bg3:#ffb300;
-      --jukebox-scale:1.45;
-    }
+<!-- Rose -->
+<div id="rose-wrap">
+  <svg id="rose-svg" viewBox="0 0 300 650" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <!-- Gradient for petals -->
+      <radialGradient id="gPetal" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="#fffde7"/>
+        <stop offset="40%" stop-color="#ffe082"/>
+        <stop offset="100%" stop-color="#fbc02d"/>
+      </radialGradient>
+      <!-- Gradient for stem -->
+      <linearGradient id="gStem" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#388e3c"/>
+        <stop offset="100%" stop-color="#1b5e20"/>
+      </linearGradient>
+    </defs>
 
-    html,body {
-      margin:0;
-      height:100%;
-      font-family:'Poppins',sans-serif;
-      background:linear-gradient(to bottom,var(--bg1),var(--bg2),var(--bg3));
-      overflow-x:hidden;
-      color:#201b17;
-    }
+    <!-- Petal layers -->
+    <g transform="translate(150,200)">
+      <!-- Outer petals -->
+      <ellipse rx="110" ry="140" fill="url(#gPetal)" transform="rotate(0)" opacity="0.9"/>
+      <ellipse rx="105" ry="130" fill="url(#gPetal)" transform="rotate(25)" opacity="0.9"/>
+      <ellipse rx="105" ry="130" fill="url(#gPetal)" transform="rotate(-25)" opacity="0.9"/>
+      <ellipse rx="95" ry="120" fill="url(#gPetal)" transform="rotate(50)" opacity="0.85"/>
+      <ellipse rx="95" ry="120" fill="url(#gPetal)" transform="rotate(-50)" opacity="0.85"/>
 
-    /* grain overlay */
-    body::after {
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      background:url('https://www.transparenttextures.com/patterns/noise.png');
-      opacity:0.15;
-      z-index:1;
-    }
+      <!-- Middle petals -->
+      <ellipse rx="70" ry="90" fill="url(#gPetal)" transform="rotate(15)" opacity="0.9"/>
+      <ellipse rx="70" ry="90" fill="url(#gPetal)" transform="rotate(-15)" opacity="0.9"/>
+      <ellipse rx="65" ry="85" fill="url(#gPetal)" transform="rotate(40)" opacity="0.85"/>
+      <ellipse rx="65" ry="85" fill="url(#gPetal)" transform="rotate(-40)" opacity="0.85"/>
 
-    /* vignette */
-    body::before {
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      background:radial-gradient(60% 60% at 50% 40%,rgba(255,255,255,0) 55%,rgba(0,0,0,0.2) 100%);
-      z-index:2;
-    }
+      <!-- Inner petals -->
+      <ellipse rx="40" ry="55" fill="url(#gPetal)" transform="rotate(10)" opacity="0.95"/>
+      <ellipse rx="40" ry="55" fill="url(#gPetal)" transform="rotate(-10)" opacity="0.95"/>
 
-    #main {
-      position:relative;
-      z-index:6;
-      text-align:center;
-      padding-top:90px;
-    }
+      <!-- Bud center -->
+      <circle r="20" fill="#fff9c4" stroke="#fbc02d" stroke-width="3"/>
+    </g>
 
-    h1 {
-      margin:0;
-      font-size:3rem;
-      font-weight:700;
-      color:#3b2f1f;
-      text-shadow:0 6px 8px rgba(255,235,59,0.3);
-      animation: floatHeader 6s ease-in-out infinite;
-    }
-    @keyframes floatHeader {
-      0%,100%{transform:translateY(0)}
-      50%{transform:translateY(-12px)}
-    }
+    <!-- Stem with thorns -->
+    <path d="M150 260 C140 400 160 500 145 650"
+          stroke="url(#gStem)" stroke-width="14" fill="none"/>
 
-    /* rose wrapper auto scales */
-    #rose-wrap {
-      position:fixed;
-      left:50%;
-      top:50%;
-      transform:translate(-50%,-50%);
-      width:65vmin;
-      height:65vmin;
-      z-index:0;
-      pointer-events:none;
-      filter:drop-shadow(0 0 40px rgba(255,200,0,0.5));
-      animation:pulseGlow 4s ease-in-out infinite;
-    }
-    @keyframes pulseGlow {
-      0%,100%{filter:drop-shadow(0 0 40px rgba(255,200,0,0.5))}
-      50%{filter:drop-shadow(0 0 80px rgba(255,220,100,0.8))}
-    }
-
-    #rose-svg { width:100%; height:100%; }
-
-    /* jukebox left */
-    #jukebox {
-      position:fixed;
-      left:18px;
-      top:50%;
-      transform:translateY(-50%) scale(var(--jukebox-scale));
-      transform-origin:left center;
-      z-index:7;
-      width:240px;
-      background:linear-gradient(90deg,#fff8e1,#fffde7 40%,#fff8e1);
-      padding:12px 16px;
-      border-radius:14px;
-      box-shadow:0 8px 30px rgba(0,0,0,0.18);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:10px;
-    }
-
-    .song { display:flex; align-items:center; gap:10px; width:100%; }
-    .song img { width:40px; height:40px; border-radius:8px; object-fit:cover; }
-    .meta { font-weight:700; font-size:0.95rem; color:#3b2f1f; }
-
-    .controls { display:flex; align-items:center; gap:10px; }
-    .controls button {
-      width:44px; height:44px; border-radius:50%; border:none;
-      background:#f4c542; color:#201b17; font-size:1.1rem; cursor:pointer;
-    }
-    .controls button:hover { transform:scale(1.06); background:#ffda76; }
-    .disc { width:52px; height:52px; border-radius:50%; animation:spin 6s linear infinite; }
-    @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-
-    .volume-row { width:100%; display:flex; align-items:center; gap:8px; }
-    .volume-row input[type="range"] { flex:1; }
-
-    /* petals */
-    .petal {
-      position:fixed; width:18px; height:26px;
-      background:radial-gradient(circle at 35% 30%,#fff59d 0%,#ffd54f 45%,#ffb300 85%);
-      border-radius:50% 50% 40% 40%;
-      transform-origin:center;
-      pointer-events:none;
-      z-index:3; opacity:0.95;
-      box-shadow:0 2px 10px rgba(0,0,0,0.12);
-    }
-    @keyframes petalFall {
-      0%{transform:translateX(0) translateY(-5vh) rotate(0deg);opacity:1}
-      100%{transform:translateX(var(--xDrift)) translateY(110vh) rotate(360deg);opacity:0}
-    }
-
-    .particle {
-      position:fixed; width:6px; height:6px;
-      border-radius:50%; background:radial-gradient(circle,#fff59d,transparent);
-      opacity:0.9; pointer-events:none; z-index:3;
-    }
-
-    /* settings gear */
-    #settings-btn {
-      position:fixed; top:12px; right:12px;
-      background:rgba(0,0,0,0.5); color:white;
-      border:none; border-radius:50%; width:40px; height:40px;
-      cursor:pointer; font-size:1.2rem; z-index:30;
-    }
-    #settings-panel {
-      position:fixed; top:60px; right:12px;
-      background:rgba(255,255,255,0.9);
-      border-radius:12px; padding:12px; width:200px;
-      box-shadow:0 4px 16px rgba(0,0,0,0.2);
-      display:none; z-index:30; font-size:0.9rem; color:#333;
-    }
-    #settings-panel label { display:block; margin:6px 0 2px; font-weight:600; }
-  </style>
-</head>
-<body>
-  <!-- rose -->
-  <div id="rose-wrap">
-    <svg id="rose-svg" viewBox="0 0 300 600" preserveAspectRatio="xMidYMid meet">
-      <defs>
-        <radialGradient id="gPetal">
-          <stop offset="0%" stop-color="#fff59d"/>
-          <stop offset="50%" stop-color="#ffd54f"/>
-          <stop offset="100%" stop-color="#f57f17"/>
-        </radialGradient>
-      </defs>
-      <g transform="translate(150,200)">
-        <!-- multiple petals -->
-        <ellipse rx="100" ry="120" fill="url(#gPetal)" opacity="0.9"/>
-        <ellipse rx="90" ry="110" fill="url(#gPetal)" transform="rotate(25)" opacity="0.9"/>
-        <ellipse rx="90" ry="110" fill="url(#gPetal)" transform="rotate(-25)" opacity="0.9"/>
-        <ellipse rx="80" ry="100" fill="url(#gPetal)" transform="rotate(50)" opacity="0.85"/>
-        <ellipse rx="80" ry="100" fill="url(#gPetal)" transform="rotate(-50)" opacity="0.85"/>
-        <circle r="30" fill="#fff8b0" stroke="#fbc02d" stroke-width="3"/>
-      </g>
-      <!-- stem all the way down -->
-      <path d="M150 230 C145 400 155 500 150 600" stroke="#2e7d32" stroke-width="12"/>
-    </svg>
-  </div>
-
-  <div id="main">
-    <h1>Welcome to Saur's Page 🌹</h1>
-  </div>
-
-  <!-- jukebox -->
-  <aside id="jukebox">
-    <div class="song">
-      <img id="song-icon" src="Music1.png" alt="">
-      <div class="meta" id="song-info">Loading...</div>
-    </div>
-    <div class="controls">
-      <button onclick="prevSong()">⏮️</button>
-      <img class="disc" id="discImg" src="juke.png" alt="">
-      <button onclick="nextSong()">⏭️</button>
-    </div>
-    <div class="volume-row">
-      <label for="volume">🔊</label>
-      <input id="volume" type="range" min="0" max="1" step="0.01" value="1">
-    </div>
-  </aside>
-
-  <audio id="bg-music"></audio>
-
-  <!-- settings -->
-  <button id="settings-btn">⚙️</button>
-  <div id="settings-panel">
-    <label for="petal-density">🌹 Petal Density</label>
-    <input id="petal-density" type="range" min="300" max="2000" step="100" value="1200">
-    <label for="particle-density">✨ Particle Density</label>
-    <input id="particle-density" type="range" min="500" max="2500" step="100" value="1500">
-    <button id="toggle-effects" style="margin-top:10px;width:100%;">Disable Effects</button>
-  </div>
-
-  <script>
-    /* jukebox */
-    const songs=[
-      {file:"Music1.mp3",credit:"Song 1",icon:"Music1.png"},
-      {file:"Music2.mp3",credit:"Song 2",icon:"Music2.png"},
-      {file:"Music3.mp3",credit:"Song 3",icon:"Music3.png"},
-      {file:"Music4.mp3",credit:"Song 4",icon:"Music4.png"}
-    ];
-    const audio=document.getElementById("bg-music");
-    const songInfo=document.getElementById("song-info");
-    const songIcon=document.getElementById("song-icon");
-    const vol=document.getElementById("volume");
-    let current=Math.floor(Math.random()*songs.length);
-    function playSong(i){
-      current=(i+songs.length)%songs.length;
-      audio.src=songs[current].file;
-      audio.play().catch(()=>{});
-      songInfo.textContent=songs[current].credit;
-      songIcon.src=songs[current].icon;
-    }
-    function nextSong(){playSong(current+1);}
-    function prevSong(){playSong(current-1);}
-    audio.addEventListener("ended",nextSong);
-    vol.addEventListener("input",()=>audio.volume=vol.value);
-    playSong(current);
-
-    /* petals */
-    let petalInterval,particleInterval;
-    function createPetal(){
-      const petal=document.createElement("div");
-      petal.className="petal";
-      petal.style.left=Math.random()*window.innerWidth+"px";
-      petal.style.top="-20px";
-      const dur=5+Math.random()*6;
-      petal.style.animation=`petalFall ${dur}s linear forwards`;
-      petal.style.setProperty("--xDrift",(Math.random()*200-100)+"px");
-      document.body.appendChild(petal);
-      setTimeout(()=>petal.remove(),dur*1000);
-    }
-    function createParticle(){
-      const p=document.createElement("div");
-      p.className="particle";
-      p.style.left=Math.random()*window.innerWidth+"px";
-      p.style.top=Math.random()*window.innerHeight+"px";
-      const dur=2+Math.random()*3;
-      p.style.transition=`transform ${dur}s ease-out,opacity ${dur}s ease-out`;
-      requestAnimationFrame(()=>{
-        p.style.transform=`translateY(-${80+Math.random()*60}px)`;
-        p.style.opacity="0";
-      });
-      document.body.appendChild(p);
-      setTimeout(()=>p.remove(),dur*1000);
-    }
-    function startEffects(petalMs,particleMs){
-      stopEffects();
-      petalInterval=setInterval(createPetal,petalMs);
-      particleInterval=setInterval(createParticle,particleMs);
-    }
-    function stopEffects(){
-      clearInterval(petalInterval);
-      clearInterval(particleInterval);
-    }
-    startEffects(1200,1500);
-
-    /* settings */
-    const settingsBtn=document.getElementById("settings-btn");
-    const settingsPanel=document.getElementById("settings-panel");
-    const petalDensity=document.getElementById("petal-density");
-    const particleDensity=document.getElementById("particle-density");
-    const toggleEffects=document.getElementById("toggle-effects");
-    let effectsEnabled=true;
-
-    settingsBtn.onclick=()=>settingsPanel.style.display=settingsPanel.style.display==="block"?"none":"block";
-    petalDensity.oninput=()=>{if(effectsEnabled)startEffects(petalDensity.value,particleDensity.value);}
-    particleDensity.oninput=()=>{if(effectsEnabled)startEffects(petalDensity.value,particleDensity.value);}
-    toggleEffects.onclick=()=>{
-      if(effectsEnabled){stopEffects();effectsEnabled=false;toggleEffects.textContent="Enable Effects";}
-      else{startEffects(petalDensity.value,particleDensity.value);effectsEnabled=true;toggleEffects.textContent="Disable Effects";}
-    }
-  </script>
-</body>
-</html>
+    <!-- Thorns -->
+    <path d="M145 320 l-12 8 l12 -20 z" fill="#1b5e20"/>
+    <path d="M155 380 l12 8 l-12 -20 z" fill="#1b5e20"/>
+    <path d="M145 450 l-12 8 l12 -20 z" fill="#1b5e20"/>
+    <path d="M155 520 l12 8 l-12 -20 z" fill="#1b5e20"/>
+  </svg>
+</div>
