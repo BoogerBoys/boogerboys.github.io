@@ -1,19 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>~ my page ~</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: 'Poppins', sans-serif;
-      color: white;
-      overflow-x: hidden;
-      background: linear-gradient(to bottom right, #ffeb3b, #fbc02d, #ff9800);
+    :root {
+      --bg1:#fff9c4;
+      --bg2:#ffeb3b;
+      --bg3:#ffb300;
+      --jukebox-scale:1.45;
+    }
+
+    html,body {
+      margin:0;
+      height:100%;
+      font-family:'Poppins',sans-serif;
+      background:linear-gradient(to bottom,var(--bg1),var(--bg2),var(--bg3));
+      overflow-x:hidden;
+      color:#201b17;
     }
 
     /* Grainy wallpaper effect */
@@ -24,7 +30,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-image: url("grain.png"); 
+      background-image: url("grain.png");
       background-size: cover;
       background-repeat: repeat;
       opacity: 0.2;
@@ -32,254 +38,242 @@
       pointer-events: none;
     }
 
-    /* Vignette */
-    body::after {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      box-shadow: inset 0 0 150px rgba(0,0,0,0.6);
-      z-index: 1;
-      pointer-events: none;
+    /* vignette */
+    body::before {
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:radial-gradient(60% 60% at 50% 40%,rgba(255,255,255,0) 55%,rgba(0,0,0,0.2) 100%);
+      z-index:2;
     }
 
-    /* Floating shimmer header */
+    #main {
+      position:relative;
+      z-index:6;
+      text-align:center;
+      padding-top:90px;
+    }
+
     h1 {
-      text-align: center;
-      margin-top: 100px;
-      font-size: 3rem;
-      font-weight: 700;
-      text-shadow: 0 0 10px yellow, 0 0 20px gold;
-      animation: float 6s ease-in-out infinite;
-      z-index: 3;
-      position: relative;
+      margin:0;
+      font-size:3rem;
+      font-weight:700;
+      color:#3b2f1f;
+      text-shadow:0 6px 8px rgba(255,235,59,0.3);
+      animation: floatHeader 6s ease-in-out infinite;
+    }
+    @keyframes floatHeader {
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-12px)}
     }
 
-    @keyframes float {
-      0%,100% { transform: translateY(0); }
-      50% { transform: translateY(-12px); }
+    /* rose wrapper auto scales */
+    #rose-wrap {
+      position:fixed;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+      width:65vmin;
+      height:65vmin;
+      z-index:0;
+      pointer-events:none;
+      filter:drop-shadow(0 0 40px rgba(255,200,0,0.5));
+      animation:pulseGlow 4s ease-in-out infinite;
+    }
+    @keyframes pulseGlow {
+      0%,100%{filter:drop-shadow(0 0 40px rgba(255,200,0,0.5))}
+      50%{filter:drop-shadow(0 0 80px rgba(255,220,100,0.8))}
     }
 
-    /* Jukebox */
+    #rose-svg { width:100%; height:100%; }
+
+    /* jukebox left */
     #jukebox {
-      position: fixed;
-      top: 100px;
-      left: 20px;
-      transform: scale(1.45);
-      background: linear-gradient(45deg, yellow, white, yellow);
-      color: black;
-      padding: 15px 20px;
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      z-index: 5;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+      position:fixed;
+      left:18px;
+      top:50%;
+      transform:translateY(-50%) scale(var(--jukebox-scale));
+      transform-origin:left center;
+      z-index:7;
+      width:240px;
+      background:linear-gradient(90deg,#fff8e1,#fffde7 40%,#fff8e1);
+      padding:12px 16px;
+      border-radius:14px;
+      box-shadow:0 8px 30px rgba(0,0,0,0.18);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
     }
 
-    #jukebox img {
-      width: 60px;
-      height: 60px;
-      border-radius: 12px;
-    }
+    .song { display:flex; align-items:center; gap:10px; width:100%; }
+    .song img { width:40px; height:40px; border-radius:8px; object-fit:cover; }
+    .meta { font-weight:700; font-size:0.95rem; color:#3b2f1f; }
 
-    #song-info {
-      font-size: 0.9rem;
-      font-weight: bold;
-      text-align: center;
+    .controls { display:flex; align-items:center; gap:10px; }
+    .controls button {
+      width:44px; height:44px; border-radius:50%; border:none;
+      background:#f4c542; color:#201b17; font-size:1.1rem; cursor:pointer;
     }
+    .controls button:hover { transform:scale(1.06); background:#ffda76; }
+    .disc { width:52px; height:52px; border-radius:50%; animation:spin 6s linear infinite; }
+    @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 
-    #controls button {
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
+    .volume-row { width:100%; display:flex; align-items:center; gap:8px; }
+    .volume-row input[type="range"] { flex:1; }
 
-    #volume {
-      width: 120px;
-    }
-
-    /* Floating notice above jukebox */
-    #jukebox-notice {
-      position: fixed;
-      left: 20px;
-      top: 70px;  /* slightly above jukebox */
-      font-size: 0.95rem;
-      font-weight: 600;
-      background: rgba(255, 255, 255, 0.85);
-      color: #222;
-      padding: 6px 12px;
-      border-radius: 10px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
-      z-index: 6;
-      pointer-events: none;
-      animation: float 6s ease-in-out infinite;
-    }
-
-    /* Falling petals */
+    /* petals */
     .petal {
-      position: fixed;
-      top: -50px;
-      width: 20px;
-      height: 20px;
-      background: radial-gradient(circle, #ffeb3b 40%, transparent 70%);
-      border-radius: 50%;
-      animation: fall linear infinite;
-      z-index: 2;
-      pointer-events: none;
+      position:fixed; width:18px; height:26px;
+      background:radial-gradient(circle at 35% 30%,#fff59d 0%,#ffd54f 45%,#ffb300 85%);
+      border-radius:50% 50% 40% 40%;
+      transform-origin:center;
+      pointer-events:none;
+      z-index:3; opacity:0.95;
+      box-shadow:0 2px 10px rgba(0,0,0,0.12);
+    }
+    @keyframes petalFall {
+      0%{transform:translateX(0) translateY(-5vh) rotate(0deg);opacity:1}
+      100%{transform:translateX(var(--xDrift)) translateY(110vh) rotate(360deg);opacity:0}
     }
 
-    @keyframes fall {
-      0% { transform: translateY(0) rotate(0); opacity: 1; }
-      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    .particle {
+      position:fixed; width:6px; height:6px;
+      border-radius:50%; background:radial-gradient(circle,#fff59d,transparent);
+      opacity:0.9; pointer-events:none; z-index:3;
     }
 
-    /* Settings gear */
+    /* settings gear */
     #settings-btn {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      font-size: 1.8rem;
-      background: none;
-      border: none;
-      cursor: pointer;
-      z-index: 10;
+      position:fixed; top:12px; right:12px;
+      background:rgba(0,0,0,0.5); color:white;
+      border:none; border-radius:50%; width:40px; height:40px;
+      cursor:pointer; font-size:1.2rem; z-index:30;
     }
-
     #settings-panel {
-      position: fixed;
-      top: 60px;
-      right: 20px;
-      background: rgba(0,0,0,0.7);
-      color: white;
-      padding: 15px;
-      border-radius: 12px;
-      display: none;
-      z-index: 10;
+      position:fixed; top:60px; right:12px;
+      background:rgba(255,255,255,0.9);
+      border-radius:12px; padding:12px; width:200px;
+      box-shadow:0 4px 16px rgba(0,0,0,0.2);
+      display:none; z-index:30; font-size:0.9rem; color:#333;
     }
-
-    #settings-panel label, 
-    #settings-panel input, 
-    #settings-panel button {
-      display: block;
-      margin: 8px 0;
-    }
-
-    /* Rose PNG placeholder */
-    #rose-img {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      max-width: 40%;
-      opacity: 0.8;
-      z-index: 2;
-      pointer-events: none;
-    }
+    #settings-panel label { display:block; margin:6px 0 2px; font-weight:600; }
   </style>
 </head>
 <body>
-  <h1>🌹 welcome to my page 🌹</h1>
 
-  <!-- Floating notice -->
-  <div id="jukebox-notice">If the music doesn't play, click the fast forward button. 💛</div>
+  <div id="main">
+    <h1>🌹 welcome to saur's page 🌹</h1>
+  </div>
 
-  <!-- Rose PNG placeholder -->
-  <img id="rose-img" src="rose.png" alt="Rose">
-
-  <!-- Jukebox -->
-  <div id="jukebox">
-    <img id="song-icon" src="Music1.png" alt="Song Icon">
-    <div id="song-info">Loading...</div>
-    <div id="controls">
+  <!-- jukebox -->
+  <aside id="jukebox">
+    <div class="song">
+      <img id="song-icon" src="Music1.png" alt="">
+      <div class="meta" id="song-info">Loading...</div>
+    </div>
+    <div class="controls">
       <button onclick="prevSong()">⏮️</button>
+      <img class="disc" id="discImg" src="juke.png" alt="">
       <button onclick="nextSong()">⏭️</button>
     </div>
-    <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
-  </div>
+    <div class="volume-row">
+      <label for="volume">🔊</label>
+      <input id="volume" type="range" min="0" max="1" step="0.01" value="1">
+    </div>
+  </aside>
 
-  <!-- Settings -->
-  <button id="settings-btn">⚙️</button>
-  <div id="settings-panel">
-    <label>Petal Intensity</label>
-    <input type="range" id="petal-intensity" min="5" max="50" value="20">
-    <button onclick="toggleEffects()">Toggle Effects</button>
-  </div>
-
-  <!-- Music -->
   <audio id="bg-music"></audio>
 
+  <!-- settings -->
+  <button id="settings-btn">⚙️</button>
+  <div id="settings-panel">
+    <label for="petal-density">🌹 Petal Density</label>
+    <input id="petal-density" type="range" min="300" max="2000" step="100" value="1200">
+    <label for="particle-density">✨ Particle Density</label>
+    <input id="particle-density" type="range" min="500" max="2500" step="100" value="1500">
+    <button id="toggle-effects" style="margin-top:10px;width:100%;">Disable Effects</button>
+  </div>
+
   <script>
-    const songs = [
-      {file:"Music1.mp3",credit:"Punchline - Pop Club, Bianco Niño",icon:"Music1.png"},
-      {file:"Music2.mp3",credit:"Tiddy Middy - Paulie Leparik",icon:"Music2.png"},
-      {file:"Music3.mp3",credit:"An Honest Mistake - The Bravery",icon:"Music3.png"},
-      {file:"Music4.mp3",credit:"(Don't Fear) The Reaper - Blue Öyster Cult",icon:"Music4.png"}
+    /* jukebox */
+    const songs=[
+      {file:"Music1.mp3",credit:"Song 1",icon:"Music1.png"},
+      {file:"Music2.mp3",credit:"Song 2",icon:"Music2.png"},
+      {file:"Music3.mp3",credit:"Song 3",icon:"Music3.png"},
+      {file:"Music4.mp3",credit:"Song 4",icon:"Music4.png"}
     ];
-
-    let currentSong = 0;
-    const audio = document.getElementById("bg-music");
-    const songInfo = document.getElementById("song-info");
-    const songIcon = document.getElementById("song-icon");
-
-    function playSong(index) {
-      currentSong = index;
-      audio.src = songs[index].file;
-      audio.play();
-      songInfo.textContent = songs[index].credit;
-      songIcon.src = songs[index].icon;
+    const audio=document.getElementById("bg-music");
+    const songInfo=document.getElementById("song-info");
+    const songIcon=document.getElementById("song-icon");
+    const vol=document.getElementById("volume");
+    let current=Math.floor(Math.random()*songs.length);
+    function playSong(i){
+      current=(i+songs.length)%songs.length;
+      audio.src=songs[current].file;
+      audio.play().catch(()=>{});
+      songInfo.textContent=songs[current].credit;
+      songIcon.src=songs[current].icon;
     }
+    function nextSong(){playSong(current+1);}
+    function prevSong(){playSong(current-1);}
+    audio.addEventListener("ended",nextSong);
+    vol.addEventListener("input",()=>audio.volume=vol.value);
+    playSong(current);
 
-    function nextSong() {
-      playSong((currentSong + 1) % songs.length);
-    }
-
-    function prevSong() {
-      playSong((currentSong - 1 + songs.length) % songs.length);
-    }
-
-    audio.addEventListener("ended", nextSong);
-
-    document.getElementById("volume").addEventListener("input", e => {
-      audio.volume = e.target.value;
-    });
-
-    // Start random song
-    playSong(Math.floor(Math.random() * songs.length));
-
-    // Petals
-    let petalsEnabled = true;
-    function createPetal() {
-      if (!petalsEnabled) return;
-      const petal = document.createElement("div");
-      petal.className = "petal";
-      petal.style.left = Math.random() * window.innerWidth + "px";
-      petal.style.animationDuration = (Math.random() * 5 + 5) + "s";
+    /* petals */
+    let petalInterval,particleInterval;
+    function createPetal(){
+      const petal=document.createElement("div");
+      petal.className="petal";
+      petal.style.left=Math.random()*window.innerWidth+"px";
+      petal.style.top="-20px";
+      const dur=5+Math.random()*6;
+      petal.style.animation=`petalFall ${dur}s linear forwards`;
+      petal.style.setProperty("--xDrift",(Math.random()*200-100)+"px");
       document.body.appendChild(petal);
-      setTimeout(() => petal.remove(), 10000);
+      setTimeout(()=>petal.remove(),dur*1000);
     }
-    let petalInterval = setInterval(createPetal, 500);
-
-    // Settings toggle
-    const settingsBtn = document.getElementById("settings-btn");
-    const settingsPanel = document.getElementById("settings-panel");
-    settingsBtn.addEventListener("click", () => {
-      settingsPanel.style.display = 
-        settingsPanel.style.display === "block" ? "none" : "block";
-    });
-
-    document.getElementById("petal-intensity").addEventListener("input", e => {
+    function createParticle(){
+      const p=document.createElement("div");
+      p.className="particle";
+      p.style.left=Math.random()*window.innerWidth+"px";
+      p.style.top=Math.random()*window.innerHeight+"px";
+      const dur=2+Math.random()*3;
+      p.style.transition=`transform ${dur}s ease-out,opacity ${dur}s ease-out`;
+      requestAnimationFrame(()=>{
+        p.style.transform=`translateY(-${80+Math.random()*60}px)`;
+        p.style.opacity="0";
+      });
+      document.body.appendChild(p);
+      setTimeout(()=>p.remove(),dur*1000);
+    }
+    function startEffects(petalMs,particleMs){
+      stopEffects();
+      petalInterval=setInterval(createPetal,petalMs);
+      particleInterval=setInterval(createParticle,particleMs);
+    }
+    function stopEffects(){
       clearInterval(petalInterval);
-      const speed = 60000 / e.target.value;
-      petalInterval = setInterval(createPetal, speed);
-    });
+      clearInterval(particleInterval);
+    }
+    startEffects(1200,1500);
 
-    function toggleEffects() {
-      petalsEnabled = !petalsEnabled;
+    /* settings */
+    const settingsBtn=document.getElementById("settings-btn");
+    const settingsPanel=document.getElementById("settings-panel");
+    const petalDensity=document.getElementById("petal-density");
+    const particleDensity=document.getElementById("particle-density");
+    const toggleEffects=document.getElementById("toggle-effects");
+    let effectsEnabled=true;
+
+    settingsBtn.onclick=()=>settingsPanel.style.display=settingsPanel.style.display==="block"?"none":"block";
+    petalDensity.oninput=()=>{if(effectsEnabled)startEffects(petalDensity.value,particleDensity.value);}
+    particleDensity.oninput=()=>{if(effectsEnabled)startEffects(petalDensity.value,particleDensity.value);}
+    toggleEffects.onclick=()=>{
+      if(effectsEnabled){stopEffects();effectsEnabled=false;toggleEffects.textContent="Enable Effects";}
+      else{startEffects(petalDensity.value,particleDensity.value);effectsEnabled=true;toggleEffects.textContent="Disable Effects";}
     }
   </script>
 </body>
