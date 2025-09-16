@@ -3,121 +3,194 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Saur’s Page</title>
+  <title>Saur's Page</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
-      background: linear-gradient(to bottom, #ffeb3b, #ffffff, #ffeb3b);
       font-family: 'Poppins', sans-serif;
-      overflow-x: hidden;
+      background: linear-gradient(to bottom, #fff59d, #fbc02d, #f57f17);
+      overflow: hidden;
       color: black;
     }
 
-    /* Jukebox */
+    /* Vignette */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 70%, rgba(0,0,0,0.4) 100%);
+      z-index: 10;
+    }
+
+    /* Rose backdrop */
+    #rose {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.2;
+      width: 500px;
+      z-index: 0;
+      pointer-events: none;
+      filter: drop-shadow(0 0 30px gold) drop-shadow(0 0 60px #ffeb3b);
+    }
+
+    /* Petal style */
+    .petal {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle at center, #ffeb3b 0%, #fbc02d 70%, #f57f17 100%);
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(45deg);
+      opacity: 0.9;
+      z-index: 1;
+      animation: fall linear forwards;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* Particle shimmer */
+    .particle {
+      position: fixed;
+      width: 6px;
+      height: 6px;
+      background: radial-gradient(circle, #fff59d, transparent);
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: shimmer linear forwards;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateY(0px) scale(1); opacity: 0.8; }
+      100% { transform: translateY(-100vh) scale(0.5); opacity: 0; }
+    }
+
+    /* Content */
+    #main {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding-top: 100px;
+    }
+
+    #main h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      text-shadow: 2px 2px #fff176;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
+
+    /* Jukebox (sticky on right side) */
     #jukebox {
-      margin: 50px auto;
-      background: rgba(255, 255, 255, 0.8);
-      border-radius: 20px;
-      width: 80%;
-      max-width: 600px;
-      padding: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      position: fixed;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      background: linear-gradient(90deg, #fff176, #fff, #fff176);
+      padding: 12px 18px;
+      border-radius: 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 15px;
-    }
-
-    #jukebox h2 {
-      margin: 0;
-      font-size: 1.5rem;
+      gap: 10px;
       font-weight: bold;
-      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      z-index: 5;
     }
 
-    /* Song list */
     .song {
       display: flex;
       align-items: center;
       gap: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      width: 100%;
-      justify-content: flex-start;
     }
 
     .song img {
-      width: 40px;
-      height: 40px;
+      width: 35px;
+      height: 35px;
       border-radius: 8px;
       object-fit: cover;
     }
 
-    /* Controls */
     .controls {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 10px;
     }
 
     .controls button {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
       border: none;
       background: #fbc02d;
-      border-radius: 50%;
-      width: 45px;
-      height: 45px;
+      color: white;
       font-size: 1.2rem;
-      font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      transition: transform 0.2s;
+      transition: transform 0.2s, background 0.2s;
     }
 
     .controls button:hover {
+      background: #fdd835;
       transform: scale(1.1);
-      background: #ffe082;
     }
 
-    /* Volume slider */
+    .disc {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      animation: spin 6s linear infinite;
+    }
+
     .volume-container {
       width: 100%;
-      margin-top: 10px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .volume-container input[type="range"] {
       flex: 1;
     }
 
-    /* Yellow rose background */
-    #rose {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      width: 500px;
-      height: 500px;
-      transform: translate(-50%, -50%);
-      opacity: 0.08;
-      z-index: -1;
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
+  <!-- Yellow Rose -->
+  <img id="rose" src="rose.png" alt="Yellow Rose">
+
+  <!-- Main -->
+  <div id="main">
+    <h1>Welcome to Saur's Page 🌹</h1>
+  </div>
 
   <!-- Jukebox -->
   <div id="jukebox">
-    <h2>🎵 Now Playing</h2>
     <div class="song">
       <img id="song-icon" src="Music1.png" alt="Song Icon">
       <div id="song-info">Loading...</div>
     </div>
     <div class="controls">
       <button onclick="prevSong()">⏮️</button>
-      <img src="juke.png" alt="Jukebox Icon" style="width:50px;height:50px;border-radius:50%;animation:spin 6s linear infinite;">
+      <img class="disc" src="juke.png" alt="Jukebox Icon">
       <button onclick="nextSong()">⏭️</button>
     </div>
     <div class="volume-container">
@@ -126,13 +199,7 @@
     </div>
   </div>
 
-  <!-- Music -->
   <audio id="bg-music"></audio>
-
-  <!-- Yellow Rose SVG -->
-  <svg id="rose" viewBox="0 0 512 512">
-    <path fill="#FFD700" d="M256 32c-70.7 0-128 57.3-128 128 0 50.1 29.1 93.4 71.3 114.2C181.2 311.8 128 374.9 128 448c0 17.7 14.3 32 32 32h192c17.7 0 32-14.3 32-32 0-73.1-53.2-136.2-71.3-173.8C354.9 253.4 384 210.1 384 160c0-70.7-57.3-128-128-128z"/>
-  </svg>
 
   <script>
     const songs = [
@@ -166,26 +233,40 @@
       playSong(prev);
     }
 
-    audio.addEventListener("ended", nextSong);
+    audio.addEventListener("ended", () => {
+      let next = (currentSong + 1) % songs.length;
+      playSong(next);
+    });
+
     volumeSlider.addEventListener("input", () => {
       audio.volume = volumeSlider.value;
     });
 
-    // Start random song
-    window.onload = () => {
-      let randomIndex = Math.floor(Math.random() * songs.length);
-      playSong(randomIndex);
-    };
+    // Start on random song
+    playSong(Math.floor(Math.random() * songs.length));
 
-    // Spin animation for the jukebox disc
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-      }
-    `;
-    document.head.appendChild(style);
+    /* Rose petal effect */
+    function createPetal() {
+      const petal = document.createElement("div");
+      petal.classList.add("petal");
+      petal.style.left = Math.random() * window.innerWidth + "px";
+      petal.style.animationDuration = (5 + Math.random() * 5) + "s";
+      document.body.appendChild(petal);
+      setTimeout(() => petal.remove(), 10000);
+    }
+    setInterval(createPetal, 1500);
+
+    /* Particle shimmer */
+    function createParticle() {
+      const particle = document.createElement("div");
+      particle.classList.add("particle");
+      particle.style.left = Math.random() * window.innerWidth + "px";
+      particle.style.top = window.innerHeight + "px";
+      particle.style.animationDuration = (3 + Math.random() * 3) + "s";
+      document.body.appendChild(particle);
+      setTimeout(() => particle.remove(), 6000);
+    }
+    setInterval(createParticle, 1000);
   </script>
 </body>
 </html>
