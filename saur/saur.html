@@ -153,22 +153,38 @@
     /* notice above jukebox */
     #jukebox-notice {
       position: fixed;
-      top: 50px;
       left: 18px;
+      top: calc(50% - 180px); /* sits above jukebox */
+      width: 240px; /* match jukebox width */
       background: rgba(255, 255, 255, 0.95);
       color: #201b17;
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       padding: 8px 12px;
       border-radius: 10px;
       z-index: 100;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 10px;
       animation: floatHeader 6s ease-in-out infinite;
+      box-sizing: border-box;
+      text-align: center;
     }
     #jukebox-notice button {
       background:none; border:none; font-size:1rem; cursor:pointer; color:#201b17;
+    }
+
+    /* Mobile scaling */
+    @media (max-width: 600px) {
+      #jukebox {
+        transform:translateY(-50%) scale(1.1);
+        width: 200px;
+      }
+      #jukebox-notice {
+        width: 200px;
+        font-size: 0.8rem;
+        top: calc(50% - 150px);
+      }
     }
   </style>
 </head>
@@ -180,7 +196,7 @@
 
   <!-- jukebox notice -->
   <div id="jukebox-notice">
-    If the music doesn't play, click the fast forward button. 💛
+    <span>If the music doesn't play, click the fast forward button. 💛</span>
     <button onclick="this.parentElement.style.display='none'">✖</button>
   </div>
 
