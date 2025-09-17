@@ -1,1 +1,633 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>WoahItsMyReallyCoolSiteThatYouShouldStayOnForAReallyReallyLongTimeFromJustHowAwesomeItIs</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* -------------------------
+     Basic / XP-ish styling
+     ------------------------- */
+  :root{
+    --xp-blue:#0A64A4;
+    --panel:#e9f5ff;
+    --bg-grad: linear-gradient(#6ec6ff,#2196f3);
+    --ui-font: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  html,body{height:100%;margin:0;font-family:var(--ui-font);background:var(--bg-grad);color:#111;overflow:hidden;-webkit-tap-highlight-color:transparent}
+  img{max-width:100%;display:block}
+
+  /* custom cursor */
+  body{ cursor: url('cursor.png'), auto; }
+
+  /* -------------------------
+     LOGIN SCREEN
+     ------------------------- */
+  #login-screen{
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    background: linear-gradient(180deg,#0f5fa3,#1d82c6);
+    z-index:9999;
+  }
+  .login-card{
+    width:520px; max-width:92vw; background: rgba(255,255,255,0.06); border-radius:8px;
+    padding:28px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); text-align:center; color:white;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .user-tile{ display:flex; gap:18px; align-items:center; justify-content:center; margin-bottom:12px}
+  .user-tile img{ width:96px; height:96px; border-radius:6px; object-fit:cover; border:3px solid rgba(255,255,255,0.12) }
+  .user-tile .name{ font-size:1.6rem; font-weight:700; text-shadow:0 1px 3px rgba(0,0,0,0.6) }
+
+  .pw-row{ display:flex; gap:10px; align-items:center; justify-content:center; margin-top:14px }
+  .pw-row input[type="password"]{
+    padding:12px 14px; border-radius:8px; border:1px solid rgba(0,0,0,0.2);
+    width:260px; font-size:1rem;
+  }
+  .pw-row button{ padding:10px 16px; border-radius:8px; border:none; background:#4CAF50; color:white; cursor:pointer; font-weight:600 }
+
+  .login-hint{ margin-top:12px; font-size:0.9rem; color:rgba(255,255,255,0.9) }
+
+  .login-footer { margin-top:16px; display:flex; gap:8px; justify-content:center; align-items:center }
+  .shutdown-btn { background:#ef5350; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:700 }
+
+  /* -------------------------
+     Desktop + CRT overlay (stays after login)
+     ------------------------- */
+  #desktop{ position:fixed; inset:0; overflow:hidden; display:none; z-index:1; }
+  #wallpaper{ position:absolute; inset:0; z-index:1; display:flex; align-items:center; justify-content:center; }
+  #wallpaper .center-label{ font-weight:700; color:rgba(255,255,255,0.95); text-shadow:0 3px 10px rgba(0,0,0,0.4); font-size:2.4rem }
+
+  /* CRT overlay */
+  #crt-overlay{
+    pointer-events:none; position:fixed; inset:0; z-index:2000;
+    background:
+      linear-gradient(rgba(0,0,0,0.04), rgba(0,0,0,0.04)),
+      radial-gradient(1200px 600px at 50% 30%, rgba(255,255,255,0.01), rgba(0,0,0,0.06));
+    mix-blend-mode: multiply;
+  }
+  #crt-overlay::after{
+    content:""; position:absolute; inset:0;
+    background-image: repeating-linear-gradient(transparent 0 2px, rgba(0,0,0,0.04) 2px 4px);
+    opacity:0.25;
+  }
+
+  /* -------------------------
+     Left-side buttons (open windows)
+     ------------------------- */
+  #left-buttons{ position:fixed; left:12px; top:120px; display:flex; flex-direction:column; gap:12px; z-index:1100 }
+  .left-btn{ padding:8px 12px; background:linear-gradient(#fff,#e6f6ff); border-radius:6px; cursor:pointer; color:#083a6b; font-weight:700; box-shadow:0 6px 12px rgba(0,0,0,0.08) }
+
+  /* -------------------------
+     Taskbar + Start
+     ------------------------- */
+  #taskbar{
+    position:fixed; left:0; right:0; bottom:0; height:44px;
+    background: linear-gradient(#d9eefc,#cfe8ff);
+    border-top:1px solid rgba(0,0,0,0.08);
+    display:flex; align-items:center; gap:12px; padding:6px 10px; z-index:1500;
+    box-shadow:0 -3px 8px rgba(0,0,0,0.12);
+  }
+  #start-button{ display:flex; gap:8px; align-items:center; padding:6px 10px; background:linear-gradient(#fff,#e6f6ff); border-radius:6px; cursor:pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.08) }
+  #start-button img{ width:26px; height:26px; border-radius:4px }
+  #task-buttons{ display:flex; gap:6px; flex:1; align-items:center }
+
+  /* -------------------------
+     Window styling (draggable)
+     ------------------------- */
+  .win{
+    position:absolute; width:520px; min-width:320px; min-height:180px;
+    background:#f7fbff; border:1px solid rgba(0,0,0,0.12); border-radius:6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow:hidden; z-index:1000; display:flex; flex-direction:column;
+    touch-action:none; /* better touch drag */
+  }
+  .win .titlebar{
+    height:38px; display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:0 8px; background:linear-gradient(#dff3ff,#cfe8ff); border-bottom:1px solid rgba(0,0,0,0.06);
+    cursor:grab;
+  }
+  .win .title{ font-weight:700; color:#083a6b; display:flex; gap:8px; align-items:center }
+  .win .title img{ width:20px;height:20px; border-radius:4px }
+  .win .titlebar .controls{ display:flex; gap:6px; align-items:center }
+  .win .titlebar button{ width:28px; height:26px; border-radius:4px; border:none; cursor:pointer; background:transparent; font-weight:700 }
+  .win .content{ padding:12px; background:white; flex:1; overflow:auto; position:relative }
+
+  .gif-slot{ position:absolute; top:8px; right:8px; width:96px; height:56px; border-radius:6px; overflow:hidden; background:#000; border:1px solid rgba(0,0,0,0.06); }
+  .gif-slot img{ width:100%; height:100%; object-fit:cover }
+
+  .resize-handle{ position:absolute; width:16px; height:16px; bottom:4px; right:4px; cursor:se-resize; opacity:0.001 }
+
+  /* entry rows (8 per window) */
+  .entry-row{ display:flex; gap:10px; align-items:center; margin:8px 0; }
+  .entry-row img { width:64px; height:48px; object-fit:cover; border-radius:6px; border:1px solid rgba(0,0,0,0.06) }
+  .entry-row .text { flex:1; padding:6px 8px; border-radius:6px; background:#fff; border:1px solid rgba(0,0,0,0.04) }
+  .entry-row .text[contenteditable]{ min-height:36px; outline:none }
+
+  /* movement preview box */
+  #move-preview{
+    position:fixed; border:2px dashed rgba(10,64,164,0.7); background:rgba(10,64,164,0.03); z-index:9998; pointer-events:none; display:none;
+  }
+
+  /* jukebox xp window */
+  #jukebox-win{
+    position:fixed; right:18px; top:18px; width:260px; z-index:1600;
+    background:#f7fbff; border:1px solid rgba(0,0,0,0.12); border-radius:6px; box-shadow:0 8px 30px rgba(0,0,0,0.2);
+    overflow:hidden; display:flex; flex-direction:column;
+  }
+  #jukebox-win .titlebar{ height:34px; padding:6px 8px; background:linear-gradient(#dff3ff,#cfe8ff); display:flex; align-items:center; justify-content:space-between }
+  #jukebox-win .content{ padding:10px; display:flex; gap:8px; align-items:center }
+  #jukebox-win img.disc{ width:48px; height:48px; border-radius:50%; animation:spin 6s linear infinite }
+
+  @keyframes spin{ from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+  /* NO.png hover for expand button style: when hovered, display as image by CSS background (btn has data-no attribute) */
+  .no-hover { position:relative }
+  .no-hover:hover::after {
+    content: ""; position:absolute; inset:0; background-image:url('No.png'); background-size:contain; background-repeat:no-repeat; background-position:center; opacity:0.95;
+  }
+
+  /* sticky note */
+  .sticky{ position:fixed; right:18px; bottom:84px; width:180px; height:140px; background:#fff7b3; border:1px solid #e5d368; box-shadow: 0 10px 30px rgba(0,0,0,0.18); padding:14px; font-weight:700; color:#433200; z-index:1550; border-radius:6px; transform: rotate(-3deg); }
+
+  /* responsive */
+  @media (max-width:900px){
+    #left-buttons{ left:8px; top:80px }
+    #jukebox-win{ right:8px; width:220px }
+    .win{ width:80vw !important; left:10vw !important }
+    #taskbar{ padding:6px 6px }
+  }
+  @media (max-width:520px){
+    #left-buttons{ display:none }
+    #jukebox-win{ right:6px; top:6px; width:180px; transform:scale(0.95) }
+    #taskbar{ height:56px; gap:6px; padding:6px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="login-screen" role="dialog" aria-label="Sign in">
+  <div class="login-card" role="document">
+    <div class="user-tile">
+      <img src="alex.png" alt="alex">
+      <div class="name">alex</div>
+    </div>
+
+    <div class="pw-row">
+      <input id="pw" type="password" placeholder="Password (boogieboy)" autocomplete="off" />
+      <button id="signin-btn">Sign in</button>
+    </div>
+
+    <div class="login-footer">
+      <div class="login-hint">The password is also on the sticky note after sign-in.</div>
+      <button class="shutdown-btn" id="shutdown-btn">Shutdown (Back to site)</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DESKTOP ===== -->
+<div id="desktop" aria-hidden="true">
+  <div id="wallpaper">
+    <div class="center-label">Welcome to your retro desktop</div>
+  </div>
+
+  <!-- left buttons -->
+  <div id="left-buttons">
+    <div class="left-btn" data-open="bio">Bio</div>
+    <div class="left-btn" data-open="interests">Interests</div>
+    <div class="left-btn" data-open="dni">DNI</div>
+    <div class="left-btn" data-open="journal">Journal</div>
+    <div class="left-btn" data-open="drawings">Drawings</div>
+    <div class="left-btn" data-open="games">Games</div>
+    <div class="left-btn" data-open="explorer">Explorer</div>
+  </div>
+
+  <!-- jukebox (XP window) -->
+  <div id="jukebox-win" role="region" aria-label="Jukebox">
+    <div class="titlebar"><div style="font-weight:700;color:#083a6b">Jukebox</div><div style="font-size:0.9rem;color:#083a6b">♫</div></div>
+    <div class="content">
+      <img id="jukebox-disc" class="disc" src="7.png" alt="disc">
+      <div style="flex:1">
+        <div id="jukebox-song" style="font-weight:700;color:#083a6b">Loading...</div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+          <button id="jukebox-prev" title="Previous">⏮️</button>
+          <button id="jukebox-next" title="Next">⏭️</button>
+          <input id="jukebox-vol" type="range" min="0" max="1" step="0.01" value="1" style="flex:1">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- sticky note -->
+  <div id="sticky-note" class="sticky" style="display:none">
+    password: <br><span id="sticky-pw" style="font-size:1rem;color:#6b4f00">boogieboy</span>
+  </div>
+
+  <!-- move preview outline -->
+  <div id="move-preview"></div>
+
+  <!-- taskbar -->
+  <div id="taskbar" role="navigation">
+    <div id="start-button"><img src="alex.png" alt="" /><div style="font-weight:700;color:#083a6b">alex</div></div>
+    <div id="task-buttons" style="display:flex;gap:6px;flex:1;align-items:center;padding-left:8px"></div>
+    <div style="display:flex;gap:8px;align-items:center"><div id="clock" style="font-weight:700;color:#083a6b">12:00 PM</div></div>
+  </div>
+
+  <!-- CRT overlay (stays active) -->
+  <div id="crt-overlay" aria-hidden="true"></div>
+</div>
+
+<!-- audio elements for open/close sounds (preloaded) -->
+<audio id="sound-open" src="open.mp3" preload="auto"></audio>
+<audio id="sound-close" src="close.mp3" preload="auto"></audio>
+
+<script>
+/* =========================================================
+   Data & resources (edit here)
+   - numerical icons: 1.png .. 8.png (per your request)
+   - gif placeholders gif1.gif .. gif8.gif (optional)
+   - jukebox uses the 7.png as its default disc image
+   - startup sound: alex/XPstartup.mp3
+   ========================================================= */
+
+const correctPassword = 'boogieboy';
+const songs = [
+  { file: "Music1.mp3", credit: "Stickerbush Symphony - DKC2", icon: "1.png" },
+  { file: "Music2.mp3", credit: "Soft Hearts - Lisa", icon: "2.png" },
+  { file: "Music3.mp3", credit: "12 am - Deltarune", icon: "3.png" },
+  { file: "Music4.mp3", credit: "Custom Track", icon: "4.png" }
+];
+const gifPlaceholder = 'gif1.gif'; // generic placeholder GIF used in top-right slots
+
+/* ---------------------------
+   Helper references
+   --------------------------- */
+const loginScreen = document.getElementById('login-screen');
+const desktop = document.getElementById('desktop');
+const signinBtn = document.getElementById('signin-btn');
+const pwInput = document.getElementById('pw');
+const shutdownBtn = document.getElementById('shutdown-btn');
+const stickyNote = document.getElementById('sticky-note');
+const movePreview = document.getElementById('move-preview');
+const openSound = document.getElementById('sound-open');
+const closeSound = document.getElementById('sound-close');
+
+/* ---------------------------
+   Small UI helpers
+   --------------------------- */
+function playOpen(){ openSound.currentTime=0; openSound.play().catch(()=>{}); }
+function playClose(){ closeSound.currentTime=0; closeSound.play().catch(()=>{}); }
+
+/* ---------------------------
+   Jukebox (top-right)
+   --------------------------- */
+const jukeboxAudio = new Audio();
+const jukeboxDisc = document.getElementById('jukebox-disc');
+const jukeboxSong = document.getElementById('jukebox-song');
+let currentJukebox = Math.floor(Math.random() * songs.length);
+
+function playJukebox(i){
+  currentJukebox = (i + songs.length) % songs.length;
+  jukeboxAudio.src = songs[currentJukebox].file;
+  jukeboxAudio.play().catch(()=>{});
+  jukeboxSong.textContent = songs[currentJukebox].credit;
+  jukeboxDisc.src = songs[currentJukebox].icon || '7.png';
+}
+document.getElementById('jukebox-next').addEventListener('click', ()=> playJukebox(currentJukebox+1));
+document.getElementById('jukebox-prev').addEventListener('click', ()=> playJukebox(currentJukebox-1));
+document.getElementById('jukebox-vol').addEventListener('input', (e)=> jukeboxAudio.volume = e.target.value);
+playJukebox(currentJukebox);
+
+/* ---------------------------
+   Login flow + shutdown
+   --------------------------- */
+signinBtn.addEventListener('click', trySignIn);
+pwInput.addEventListener('keydown', (e)=> { if(e.key === 'Enter') trySignIn(); });
+
+shutdownBtn.addEventListener('click', ()=> {
+  // go back to main site index
+  // this will navigate away from this page:
+  location.href = 'index.html';
+});
+
+function trySignIn(){
+  const v = pwInput.value;
+  if(v === correctPassword){
+    // success: hide login, show desktop, play startup sound, show sticky note
+    loginScreen.style.display = 'none';
+    desktop.style.display = 'block';
+    stickyNote.style.display = 'block';
+    const startup = new Audio('alex/XPstartup.mp3');
+    startup.play().catch(()=>{});
+    // small delay and open a sample window
+    setTimeout(()=> openInterests(), 700);
+  } else {
+    // shake animation
+    const c = document.querySelector('.login-card');
+    c.animate([{ transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],{duration:300});
+  }
+}
+
+/* ---------------------------
+   Window manager & movement preview
+   - create windows with makeWindow(id,title,type)
+   - each window contains 8 rows, each row has image slot and editable text div
+   --------------------------- */
+
+let zCounter = 1000;
+const taskButtons = document.getElementById('task-buttons');
+
+// keep track of windows
+function makeWindow(id, title, slotIconNum, left=120, top=80, w=520, h=360){
+  // if exists, bring to front
+  if(document.getElementById(id)){ focusWindow(id); return; }
+
+  // main window container
+  const win = document.createElement('div');
+  win.className = 'win';
+  win.id = id;
+  win.style.left = left + 'px';
+  win.style.top = top + 'px';
+  win.style.width = w + 'px';
+  win.style.height = h + 'px';
+  win.style.zIndex = ++zCounter;
+  win.setAttribute('data-minimized','false');
+
+  // create 8 entry rows html (editable text + img slot)
+  let rowsHtml = '';
+  for(let i=1;i<=8;i++){
+    // numeric image name: for example images "1.png".."8.png" (you can replace)
+    const imgName = `${i}.png`;
+    rowsHtml += `
+      <div class="entry-row">
+        <img src="${imgName}" alt="img${i}" data-img="${imgName}">
+        <div class="text" contenteditable="true">Editable entry ${i} — click to edit text. Add more lines as needed.</div>
+      </div>
+    `;
+  }
+
+  // insert window inner HTML (gif slot uses gifPlaceholder)
+  win.innerHTML = `
+    <div class="titlebar" role="toolbar">
+      <div class="title"><img src="${slotIconNum}.png" alt=""><span>${title}</span></div>
+      <div class="controls">
+        <button class="min-btn" title="Minimize">─</button>
+        <button class="max-btn no-hover" title="No-op (disabled)"></button>
+        <button class="close-btn" title="Close">✖</button>
+      </div>
+    </div>
+    <div class="content">
+      ${rowsHtml}
+      <div class="gif-slot"><img src="${gifPlaceholder}" alt="gif"></div>
+    </div>
+    <div class="resize-handle" aria-hidden="true"></div>
+  `;
+
+  document.body.appendChild(win);
+
+  // add taskbar button
+  const tb = document.createElement('div');
+  tb.className = 'task-btn';
+  tb.id = 'task-'+id;
+  tb.innerText = title;
+  tb.style.padding = '6px 10px';
+  tb.style.borderRadius = '6px';
+  tb.style.cursor = 'pointer';
+  taskButtons.appendChild(tb);
+
+  // event bindings
+  focusWindow(id);
+  // drag via titlebar (mouse + touch)
+  const titlebar = win.querySelector('.titlebar');
+  attachDragHandling(titlebar, win);
+
+  // minimize
+  win.querySelector('.min-btn').addEventListener('click', ()=>{
+    minimizeWindow(id);
+    playClose(); // play close to mimic minimize sound
+  });
+
+  // max button is disabled; show No.png on hover via CSS class .no-hover
+  win.querySelector('.max-btn').addEventListener('click', ()=> {
+    // intentionally no-op
+  });
+
+  // close
+  win.querySelector('.close-btn').addEventListener('click', ()=>{
+    closeWindow(id);
+    playClose();
+  });
+
+  // taskbar toggles
+  tb.addEventListener('click', ()=>{
+    const w = document.getElementById(id);
+    if(!w) return;
+    if(w.getAttribute('data-minimized') === 'true') restoreWindow(id);
+    else minimizeWindow(id);
+  });
+
+  // resize handle (mouse only)
+  const rh = win.querySelector('.resize-handle');
+  let resizing=false, startX, startY, startW, startH;
+  rh.addEventListener('mousedown', e=>{
+    resizing = true; startX = e.clientX; startY = e.clientY;
+    startW = win.offsetWidth; startH = win.offsetHeight;
+    e.preventDefault(); document.body.style.userSelect='none';
+  });
+  window.addEventListener('mousemove', e=>{
+    if(resizing){
+      const dx = e.clientX - startX, dy = e.clientY - startY;
+      win.style.width = Math.max(320, startW + dx) + 'px';
+      win.style.height = Math.max(160, startH + dy) + 'px';
+    }
+  });
+  window.addEventListener('mouseup', ()=>{ resizing=false; document.body.style.userSelect='auto' });
+
+  // touch resize (simple)
+  rh.addEventListener('touchstart', e=>{
+    const t = e.touches[0];
+    resizing = true; startX = t.clientX; startY = t.clientY;
+    startW = win.offsetWidth; startH = win.offsetHeight;
+  });
+  window.addEventListener('touchmove', e=>{
+    if(resizing){
+      const t = e.touches[0];
+      const dx = t.clientX - startX, dy = t.clientY - startY;
+      win.style.width = Math.max(320, startW + dx) + 'px';
+      win.style.height = Math.max(160, startH + dy) + 'px';
+    }
+  }, { passive:false });
+  window.addEventListener('touchend', ()=> { resizing=false; });
+
+  // focus on click/touch
+  win.addEventListener('mousedown', ()=> focusWindow(id));
+  win.addEventListener('touchstart', ()=> focusWindow(id));
+  playOpen(); // play open sound
+  return win;
+}
+
+function focusWindow(id){
+  const w = document.getElementById(id);
+  if(!w) return;
+  w.style.zIndex = ++zCounter;
+  // highlight task button
+  [...taskButtons.children].forEach(c=>c.classList.remove('active'));
+  const t = document.getElementById('task-'+id);
+  if(t) t.classList.add('active');
+  w.setAttribute('data-minimized','false'); w.style.display='flex';
+}
+
+function minimizeWindow(id){
+  const w = document.getElementById(id); if(!w) return;
+  w.setAttribute('data-minimized','true'); w.style.display='none';
+  const t = document.getElementById('task-'+id); if(t) t.classList.remove('active');
+}
+function restoreWindow(id){
+  const w = document.getElementById(id); if(!w) return;
+  w.setAttribute('data-minimized','false'); w.style.display='flex'; focusWindow(id);
+}
+function closeWindow(id){
+  const w = document.getElementById(id); if(!w) return;
+  const t = document.getElementById('task-'+id); if(t) t.remove();
+  w.remove();
+}
+
+/* ---------------------------
+   Drag handling with movement preview
+   - on drag start, show movePreview at window size
+   - move preview follows pointer
+   - on drop, set window to preview pos
+   - supports mouse & touch
+   --------------------------- */
+function attachDragHandling(handle, win){
+  let dragging=false, startX=0, startY=0, offsetX=0, offsetY=0, startLeft=0, startTop=0;
+  handle.addEventListener('mousedown', (e)=>{
+    dragging=true;
+    startX = e.clientX; startY = e.clientY;
+    const rect = win.getBoundingClientRect();
+    startLeft = rect.left; startTop = rect.top;
+    offsetX = startX - startLeft; offsetY = startY - startTop;
+    // show preview box
+    movePreview.style.width = rect.width + 'px';
+    movePreview.style.height = rect.height + 'px';
+    movePreview.style.display = 'block';
+    movePreview.style.left = rect.left + 'px';
+    movePreview.style.top = rect.top + 'px';
+    document.body.style.userSelect = 'none';
+  });
+  window.addEventListener('mousemove', (e)=>{
+    if(!dragging) return;
+    const x = Math.max(8, e.clientX - offsetX);
+    const y = Math.max(8, e.clientY - offsetY);
+    movePreview.style.left = x + 'px';
+    movePreview.style.top = y + 'px';
+  });
+  window.addEventListener('mouseup', (e)=>{
+    if(!dragging) return;
+    dragging=false;
+    // apply preview pos to window
+    const left = parseInt(movePreview.style.left,10);
+    const top = parseInt(movePreview.style.top,10);
+    win.style.left = left + 'px';
+    win.style.top = top + 'px';
+    movePreview.style.display = 'none';
+    document.body.style.userSelect = 'auto';
+  });
+
+  /* touch support */
+  handle.addEventListener('touchstart', (ev)=>{
+    const t = ev.touches[0];
+    dragging=true; startX = t.clientX; startY = t.clientY;
+    const rect = win.getBoundingClientRect();
+    offsetX = startX - rect.left; offsetY = startY - rect.top;
+    movePreview.style.width = rect.width + 'px';
+    movePreview.style.height = rect.height + 'px';
+    movePreview.style.display = 'block';
+    movePreview.style.left = rect.left + 'px';
+    movePreview.style.top = rect.top + 'px';
+    ev.preventDefault();
+  }, { passive:false });
+
+  window.addEventListener('touchmove', (ev)=>{
+    if(!dragging) return;
+    const t = ev.touches[0];
+    const x = Math.max(8, t.clientX - offsetX);
+    const y = Math.max(8, t.clientY - offsetY);
+    movePreview.style.left = x + 'px';
+    movePreview.style.top = y + 'px';
+    ev.preventDefault();
+  }, { passive:false });
+
+  window.addEventListener('touchend', (ev)=>{
+    if(!dragging) return;
+    dragging=false;
+    const left = parseInt(movePreview.style.left,10);
+    const top = parseInt(movePreview.style.top,10);
+    win.style.left = left + 'px';
+    win.style.top = top + 'px';
+    movePreview.style.display = 'none';
+  });
+}
+
+/* ---------------------------
+   Pre-built window open functions (all use numeric icons)
+   --------------------------- */
+function openBio(){ makeWindow('win-bio','Bio', 1, 140, 90, 760, 520); }
+function openInterests(){ makeWindow('win-interests','Interests', 2, 180, 120, 520, 360); }
+function openDNI(){ makeWindow('win-dni','DNI', 3, 220, 150, 520, 300); }
+function openJournal(){ makeWindow('win-journal','Journal', 4, 160, 140, 640, 420); }
+function openDrawings(){ makeWindow('win-drawings','Drawings', 5, 200, 160, 740, 420); }
+function openGames(){ makeWindow('win-games','Games', 6, 240, 180, 760, 420); }
+function openExplorer(){ makeWindow('win-explorer','Explorer', 8, 260, 200, 640, 420); }
+
+/* link left-buttons */
+document.querySelectorAll('#left-buttons .left-btn').forEach(el=>{
+  el.addEventListener('click', ()=> {
+    const which = el.dataset.open;
+    if(which === 'bio') openBio();
+    if(which === 'interests') openInterests();
+    if(which === 'dni') openDNI();
+    if(which === 'journal') openJournal();
+    if(which === 'drawings') openDrawings();
+    if(which === 'games') openGames();
+    if(which === 'explorer') openExplorer();
+  });
+});
+
+/* ---------------------------
+   Auto-hide sticky after a while: still accessible by re-opening via start menu if you want
+   --------------------------- */
+setTimeout(()=> { if(stickyNote) stickyNote.style.display='none'; }, 25000);
+
+/* ---------------------------
+   Taskbar clock (simple)
+   --------------------------- */
+function updateClock(){ const el = document.getElementById('clock'); const d = new Date(); let hh = d.getHours(), mm = d.getMinutes(); let am = hh>=12?'PM':'AM'; hh = hh % 12 || 12; mm = mm.toString().padStart(2,'0'); el.textContent = `${hh}:${mm} ${am}`; }
+updateClock(); setInterval(updateClock, 60000);
+
+/* ---------------------------
+   Accessibility: Escape closes topmost window
+   --------------------------- */
+window.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){
+    const wins = [...document.querySelectorAll('.win')];
+    if(wins.length){
+      const top = wins.reduce((a,b)=> a.style.zIndex > b.style.zIndex ? a : b);
+      top.querySelector('.close-btn').click();
+    }
+  }
+});
+
+/* ---------------------------
+   Preload sounds (open/close) - supply open.mp3 and close.mp3
+   --------------------------- */
+openSound.volume = 0.8; closeSound.volume = 0.8;
+
+/* =========================
+   End of core logic
+   ========================= */
+
+</script>
+
+</body>
+</html>
