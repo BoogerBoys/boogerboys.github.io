@@ -6,184 +6,202 @@
 <title>Windows XP Replica</title>
 <link href="https://fonts.googleapis.com/css2?family=Tahoma&family=Trebuchet+MS&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --taskbar-blue: #0a246a;
-    --taskbar-gradient: linear-gradient(to bottom, #245edb, #0a246a);
-    --start-green: #3cb371;
-    --highlight-blue: rgba(135,206,250,0.45);
-  }
-  body, html {
-    margin: 0;
-    height: 100%;
-    font-family: Tahoma, sans-serif;
-    overflow: hidden;
-    background: url("XP.png") no-repeat center center fixed;
-    background-size: cover;
-  }
+:root {
+  --taskbar-blue: #0a246a;
+  --taskbar-gradient: linear-gradient(to bottom, #245edb, #0a246a);
+  --start-green: #3cb371;
+  --highlight-blue: rgba(135,206,250,0.45);
+}
+body, html {
+  margin:0; height:100%;
+  font-family:Tahoma, sans-serif;
+  overflow:hidden;
+  background:url("XP.png") no-repeat center center fixed;
+  background-size:cover;
+}
 
-  /* CRT effect */
-  body::before {
-    content:"";
-    position:fixed;top:0;left:0;width:100%;height:100%;
-    background: repeating-linear-gradient(
-      to bottom,
-      rgba(0,0,0,0.2) 0px,
-      rgba(0,0,0,0.2) 2px,
-      transparent 3px,
-      transparent 4px
-    );
-    mix-blend-mode: multiply;
-    pointer-events:none;
-    z-index:9999;
-    animation: flicker 0.2s infinite alternate;
-  }
-  @keyframes flicker {
-    from { opacity:0.15; }
-    to { opacity:0.25; }
-  }
+/* CRT effect */
+body::before {
+  content:"";
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.35) 0px,
+    rgba(0,0,0,0.35) 2px,
+    transparent 3px,
+    transparent 4px
+  );
+  mix-blend-mode:multiply;
+  pointer-events:none;
+  z-index:9999;
+  animation: flicker 0.15s infinite alternate;
+  filter:blur(0.3px) contrast(1.05);
+}
+@keyframes flicker { from{opacity:0.15;} to{opacity:0.3;} }
 
-  /* LOGIN SCREEN */
-  #login-screen {
-    position: absolute;
-    top:0;left:0;width:100%;height:100%;
-    background: #00309c url("XP.png") no-repeat center center;
-    background-size: cover;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    color:white;
-  }
-  .user-tile {
-    display:flex;flex-direction:column;align-items:center;
-    background:rgba(0,0,0,0.3);
-    padding:20px;border-radius:8px;
-    cursor:pointer;
-  }
-  .user-tile img { width:100px;height:100px;border-radius:10px; }
-  .sticky-note {
-    margin-top:20px;
-    background:#fff59d;
-    padding:12px 16px;
-    font-family:"Comic Sans MS",cursive;
-    color:#000;border:1px solid #ccc;
-    transform:rotate(-3deg);
-  }
-  #password-box {
-    margin-top:15px;
-    display:none;
-  }
-  #password-input {
-    padding:6px;font-size:1rem;
-  }
-  #shutdown {
-    margin-top:30px;
-    display:flex;align-items:center;
-    gap:10px;cursor:pointer;
-  }
-  #shutdown img { width:28px;height:28px; }
+/* LOGIN SCREEN */
+#login-screen {
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  background:linear-gradient(to bottom,#245edb,#0a246a);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:white;font-size:1rem;
+}
+#login-logo {margin-bottom:30px;}
+.user-tile {
+  display:flex;align-items:center;gap:12px;
+  background:rgba(0,0,0,0.3);
+  padding:16px;border-radius:6px;
+  cursor:pointer;
+}
+.user-tile img {width:64px;height:64px;border-radius:8px;}
+#password-box {margin-top:15px;display:none;}
+#password-input {padding:6px;font-size:1rem;}
+.sticky-note {
+  margin-top:20px;background:#fff59d;padding:10px 14px;
+  font-family:"Comic Sans MS",cursive;color:#000;
+  transform:rotate(-3deg);border:1px solid #ccc;
+}
+#shutdown-login {
+  position:absolute;bottom:20px;left:20px;
+  display:flex;align-items:center;gap:8px;cursor:pointer;
+  color:orange;font-weight:bold;
+}
+#shutdown-login img{width:24px;height:24px;}
 
-  /* DESKTOP */
-  #desktop { display:none; width:100%; height:100%; position:relative; }
+/* SHUTDOWN SCREEN */
+#shutdown-screen {
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  background:linear-gradient(to bottom,#245edb,#0a246a);
+  display:none;align-items:center;justify-content:center;flex-direction:column;
+  color:white;font-size:1.5rem;
+}
 
-  /* Desktop icons */
-  .icon {
-    width:70px;
-    text-align:center;
-    color:white;
-    font-size:0.85rem;
-    margin:15px;
-    cursor:pointer;
-  }
-  .icon img { width:48px;height:48px; }
-  .icon:hover { background:var(--highlight-blue); border-radius:6px; }
+/* DESKTOP */
+#desktop {display:none;width:100%;height:100%;position:relative;}
 
-  /* Taskbar */
-  #taskbar {
-    position:absolute;bottom:0;left:0;width:100%;height:40px;
-    background:var(--taskbar-gradient);
-    display:flex;align-items:center;
-    justify-content:space-between;
-    color:white;font-family:Tahoma;
-  }
-  #start-btn {
-    background:var(--start-green);
-    border-radius:20px 20px 20px 20px;
-    padding:4px 14px;
-    display:flex;align-items:center;
-    gap:6px;
-    margin-left:6px;
-    cursor:pointer;
-  }
-  #start-btn img { width:20px;height:20px; }
-  #taskbar-time {
-    margin-right:8px;
-    padding:2px 6px;
-    background:#5c9ccc;
-    border:1px solid #3973ac;
-    border-radius:3px;
-    font-size:0.85rem;
-  }
+/* Desktop icons */
+.icon {
+  width:80px;text-align:center;color:white;
+  font-size:0.85rem;margin:20px;cursor:pointer;
+  position:absolute;
+}
+.icon img {width:48px;height:48px;}
+.icon:hover {background:var(--highlight-blue);border-radius:6px;}
 
-  /* Windows */
-  .window {
-    position:absolute;
-    top:100px;left:100px;
-    width:400px;height:300px;
-    background:#ece9d8;
-    border:2px solid #00309c;
-    display:flex;flex-direction:column;
-    box-shadow:4px 4px 12px rgba(0,0,0,0.4);
-  }
-  .title-bar {
-    background:linear-gradient(to bottom,#245edb,#0a246a);
-    color:white;
-    font-family:"Trebuchet MS",sans-serif;
-    padding:4px 8px;
-    display:flex;justify-content:space-between;align-items:center;
-  }
-  .title-bar .controls img {
-    width:16px;height:16px;margin-left:6px;cursor:pointer;
-  }
-  .title-bar .controls img:hover { filter:brightness(1.2); }
-  .content { flex:1; padding:8px; overflow:auto; }
-  .gif-slot { float:right; width:80px;height:80px; margin:4px; background:#ddd; }
+/* Taskbar */
+#taskbar {
+  position:absolute;bottom:0;left:0;width:100%;height:40px;
+  background:var(--taskbar-gradient);
+  display:flex;align-items:center;justify-content:space-between;
+  color:white;font-family:Tahoma;
+}
+#start-btn {
+  background:var(--start-green);
+  border-radius:20px;padding:4px 14px;
+  display:flex;align-items:center;gap:6px;margin-left:6px;
+  cursor:pointer;height:30px;
+}
+#start-btn img{width:20px;height:20px;}
+#taskbar-time {
+  margin-right:8px;padding:2px 6px;background:#5c9ccc;
+  border:1px solid #3973ac;border-radius:3px;font-size:0.85rem;
+}
 
-  /* No maximize */
-  .no-max:hover { content:url("No.png"); }
+/* Start menu */
+#start-menu {
+  position:absolute;bottom:40px;left:0;width:420px;height:480px;
+  display:none;z-index:1000;
+  background:rgba(240,248,255,0.95);border:2px solid #00309c;
+  display:grid;grid-template-columns:2fr 1fr;
+}
+.start-left{background:#245edb;color:white;padding:8px;}
+.start-right{background:#e5f0fb;color:black;padding:8px;font-size:0.9rem;}
+.start-item{padding:6px;cursor:pointer;}
+.start-item:hover{background:rgba(255,255,255,0.4);}
+.start-bottom{grid-column:1/span 2;display:flex;justify-content:space-between;
+  padding:8px;background:#ece9d8;}
+.start-bottom button{
+  padding:6px 12px;border:none;cursor:pointer;font-weight:bold;
+  border-radius:3px;
+}
+.logoff-btn{background:orange;}
+.shutdown-btn{background:red;color:white;}
 
+/* Windows */
+.window {
+  position:absolute;top:100px;left:120px;width:400px;height:300px;
+  background:#ece9d8;border:2px solid #00309c;
+  display:flex;flex-direction:column;
+  box-shadow:4px 4px 12px rgba(0,0,0,0.4);
+}
+.title-bar {
+  background:linear-gradient(to bottom,#245edb,#0a246a);
+  color:white;font-family:"Trebuchet MS",sans-serif;
+  padding:4px 8px;display:flex;justify-content:space-between;align-items:center;
+  cursor:move;
+}
+.controls img{width:16px;height:16px;margin-left:6px;cursor:pointer;}
+.controls img:hover{filter:brightness(1.2);}
+.no-max:hover{content:url("No.png");}
+.content{flex:1;padding:8px;overflow:auto;}
+.gif-slot{float:right;width:80px;height:80px;margin:4px;background:#ddd;}
 </style>
 </head>
 <body>
 
 <!-- LOGIN -->
 <div id="login-screen">
+  <img id="login-logo" src="winxp.png" alt="Windows XP Logo">
+  <div>To begin, click your user name</div>
   <div class="user-tile" onclick="showPasswordBox()">
-    <img src="alex.png" alt="User Icon">
-    <div>Alex</div>
+    <img src="alex.png"><span>Alex</span>
   </div>
   <div id="password-box">
     <input type="password" id="password-input" placeholder="Password">
     <button onclick="checkPassword()">→</button>
   </div>
   <div class="sticky-note">Password: boogieboy</div>
-  <div id="shutdown" onclick="window.location.href='index.html'">
-    <img src="shutdown.png" alt="Shutdown"> <span>Turn off computer</span>
+  <div id="shutdown-login" onclick="shutdownSequence()">
+    <img src="shutdown.png"><span>Turn off computer</span>
   </div>
+</div>
+
+<!-- SHUTDOWN -->
+<div id="shutdown-screen">
+  <img src="winxp.png" alt="XP Logo">
+  <div>Shutting down...</div>
 </div>
 
 <!-- DESKTOP -->
 <div id="desktop">
-  <div class="icon" style="position:absolute;top:40px;left:20px;">
-    <img src="1.png"><div>My Computer</div>
+  <div class="icon" style="top:40px;left:40px;" onclick="openWindow('bio-window')">
+    <img src="1.png"><div>Bio</div>
   </div>
-  <div class="icon" style="position:absolute;top:120px;left:20px;">
-    <img src="2.png"><div>Recycle Bin</div>
+  <div class="icon" style="top:140px;left:40px;" onclick="openWindow('interests-window')">
+    <img src="2.png"><div>Interests</div>
+  </div>
+  <div class="icon" style="top:240px;left:40px;" onclick="openWindow('dni-window')">
+    <img src="3.png"><div>DNI</div>
+  </div>
+  <div class="icon" style="top:340px;left:40px;" onclick="openWindow('journal-window')">
+    <img src="4.png"><div>Journal</div>
+  </div>
+  <div class="icon" style="top:440px;left:40px;" onclick="openWindow('drawings-window')">
+    <img src="5.png"><div>Drawings</div>
+  </div>
+  <div class="icon" style="top:540px;left:40px;" onclick="openWindow('games-window')">
+    <img src="6.png"><div>Games</div>
+  </div>
+  <div class="icon" style="bottom:100px;right:40px;" onclick="openWindow('recycle-window')">
+    <img src="7.png"><div>Recycle Bin</div>
+  </div>
+  <div class="icon" style="bottom:200px;right:40px;" onclick="openWindow('computer-window')">
+    <img src="8.png"><div>My Computer</div>
   </div>
 
-  <!-- Example window -->
+  <!-- Example Window -->
   <div class="window" id="bio-window" style="display:none;">
-    <div class="title-bar">
+    <div class="title-bar" onmousedown="dragStart(event,this.parentElement)">
       <span>Bio</span>
       <div class="controls">
         <img src="close.png" onclick="closeWindow('bio-window')">
@@ -192,49 +210,84 @@
       </div>
     </div>
     <div class="content">
-      <div class="gif-slot"><!-- gif/png placeholder --></div>
+      <div class="gif-slot"></div>
       <p>Bio entry 1...</p>
       <p>Bio entry 2...</p>
-      <!-- Add up to 8 entries -->
     </div>
   </div>
 
   <!-- Taskbar -->
   <div id="taskbar">
     <div id="start-btn" onclick="toggleStartMenu()">
-      <img src="winxp.png" alt="XP Logo"> start
+      <img src="winxp.png"> start
     </div>
     <div id="taskbar-time"></div>
+  </div>
+  <div id="start-menu">
+    <div class="start-left">
+      <div class="start-item" onclick="openWindow('bio-window')">Bio</div>
+      <div class="start-item" onclick="openWindow('interests-window')">Interests</div>
+      <div class="start-item" onclick="openWindow('dni-window')">DNI</div>
+      <div class="start-item" onclick="openWindow('journal-window')">Journal</div>
+      <div class="start-item" onclick="openWindow('drawings-window')">Drawings</div>
+      <div class="start-item" onclick="openWindow('games-window')">Games</div>
+    </div>
+    <div class="start-right">
+      <div class="start-item">My Documents</div>
+      <div class="start-item">My Pictures</div>
+      <div class="start-item">My Music</div>
+    </div>
+    <div class="start-bottom">
+      <button class="logoff-btn">Log Off</button>
+      <button class="shutdown-btn" onclick="shutdownSequence()">Turn Off Computer</button>
+    </div>
   </div>
 </div>
 
 <script>
-  function showPasswordBox(){
-    document.getElementById("password-box").style.display="block";
-  }
-  function checkPassword(){
-    const pass=document.getElementById("password-input").value;
-    if(pass==="boogieboy"){
-      document.getElementById("login-screen").style.display="none";
-      document.getElementById("desktop").style.display="block";
-      new Audio("alex/XPstartup.mp3").play();
-    } else {
-      alert("Wrong password!");
-    }
-  }
+function showPasswordBox(){document.getElementById("password-box").style.display="block";}
+function checkPassword(){
+  if(document.getElementById("password-input").value==="boogieboy"){
+    document.getElementById("login-screen").style.display="none";
+    document.getElementById("desktop").style.display="block";
+    new Audio("alex/XPstartup.mp3").play();
+  } else alert("Wrong password!");
+}
+function shutdownSequence(){
+  document.getElementById("login-screen").style.display="none";
+  document.getElementById("desktop").style.display="none";
+  document.getElementById("shutdown-screen").style.display="flex";
+  let audio=new Audio("alex/XPshutdown.mp3"); audio.play();
+  setTimeout(()=>{window.location.href="https://boogerboys.github.io/index.html";},5000);
+}
 
-  // Clock
-  function updateTime(){
-    const now=new Date();
-    document.getElementById("taskbar-time").textContent=
-      now.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
-  }
-  setInterval(updateTime,1000);updateTime();
+// Clock
+function updateTime(){
+  const now=new Date();
+  document.getElementById("taskbar-time").textContent=
+    now.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+}
+setInterval(updateTime,1000);updateTime();
 
-  // Window controls
-  function closeWindow(id){document.getElementById(id).style.display="none";}
-  function minimizeWindow(id){document.getElementById(id).style.display="none";}
+// Start menu toggle
+function toggleStartMenu(){
+  let menu=document.getElementById("start-menu");
+  menu.style.display=(menu.style.display==="grid")?"none":"grid";
+}
 
+// Window controls
+function openWindow(id){document.getElementById(id).style.display="flex";}
+function closeWindow(id){document.getElementById(id).style.display="none";}
+function minimizeWindow(id){document.getElementById(id).style.display="none";}
+
+// Dragging
+let dragTarget=null, offsetX=0, offsetY=0;
+function dragStart(e,win){
+  dragTarget=win;offsetX=e.clientX-win.offsetLeft;offsetY=e.clientY-win.offsetTop;
+  document.onmousemove=dragMove;document.onmouseup=dragEnd;
+}
+function dragMove(e){if(dragTarget){dragTarget.style.left=(e.clientX-offsetX)+"px";dragTarget.style.top=(e.clientY-offsetY)+"px";}}
+function dragEnd(){dragTarget=null;document.onmousemove=null;document.onmouseup=null;}
 </script>
 </body>
 </html>
