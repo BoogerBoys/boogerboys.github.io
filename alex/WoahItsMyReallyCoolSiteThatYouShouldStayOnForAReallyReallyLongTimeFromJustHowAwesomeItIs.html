@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Windows XP Replica</title>
+<title>hey lois im windows xp</title>
 <link href="https://fonts.googleapis.com/css2?family=Tahoma&family=Trebuchet+MS&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -46,7 +46,11 @@ body::before {
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   color:white;font-size:1rem;
 }
-#login-logo {margin-bottom:30px;}
+#login-logo {
+  font-style:italic;
+  font-size:2rem;
+  margin-bottom:30px;
+}
 .user-tile {
   display:flex;align-items:center;gap:12px;
   background:rgba(0,0,0,0.3);
@@ -96,16 +100,24 @@ body::before {
   color:white;font-family:Tahoma;
 }
 #start-btn {
-  background:var(--start-green);
-  border-radius:20px;padding:4px 14px;
-  display:flex;align-items:center;gap:6px;margin-left:6px;
-  cursor:pointer;height:30px;
+  border-radius:20px;margin-left:6px;
+  cursor:pointer;height:30px;width:50px;
 }
-#start-btn img{width:20px;height:20px;}
+#start-btn img{width:100%;height:100%;object-fit:contain;}
 #taskbar-time {
   margin-right:8px;padding:2px 6px;background:#5c9ccc;
   border:1px solid #3973ac;border-radius:3px;font-size:0.85rem;
+  position:relative;
 }
+
+/* Notifications */
+.notification {
+  position:absolute;bottom:42px;right:0;
+  background:#fff;border:1px solid #999;border-radius:4px;
+  padding:8px;font-size:0.85rem;width:200px;
+  animation:fadeIn 0.4s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
 /* Start menu */
 #start-menu {
@@ -116,16 +128,14 @@ body::before {
 }
 .start-left{background:#245edb;color:white;padding:8px;}
 .start-right{background:#e5f0fb;color:black;padding:8px;font-size:0.9rem;}
-.start-item{padding:6px;cursor:pointer;}
+.start-item{padding:6px;border:1px solid rgba(0,0,0,0.2);cursor:pointer;margin-bottom:4px;}
 .start-item:hover{background:rgba(255,255,255,0.4);}
-.start-bottom{grid-column:1/span 2;display:flex;justify-content:space-between;
-  padding:8px;background:#ece9d8;}
-.start-bottom button{
-  padding:6px 12px;border:none;cursor:pointer;font-weight:bold;
-  border-radius:3px;
+.start-bottom{
+  grid-column:1/span 2;display:flex;flex-direction:column;gap:6px;
+  padding:8px;background:#ece9d8;font-size:0.9rem;
 }
-.logoff-btn{background:orange;}
-.shutdown-btn{background:red;color:white;}
+.start-bottom div{display:flex;align-items:center;gap:6px;cursor:pointer;}
+.start-bottom img{width:20px;height:20px;}
 
 /* Windows */
 .window {
@@ -151,7 +161,7 @@ body::before {
 
 <!-- LOGIN -->
 <div id="login-screen">
-  <img id="login-logo" src="winxp.png" alt="Windows XP Logo">
+  <div id="login-logo">Welcome</div>
   <div>To begin, click your user name</div>
   <div class="user-tile" onclick="showPasswordBox()">
     <img src="alex.png"><span>Alex</span>
@@ -168,12 +178,12 @@ body::before {
 
 <!-- SHUTDOWN -->
 <div id="shutdown-screen">
-  <img src="winxp.png" alt="XP Logo">
   <div>Shutting down...</div>
 </div>
 
 <!-- DESKTOP -->
 <div id="desktop">
+  <!-- Icons -->
   <div class="icon" style="top:40px;left:40px;" onclick="openWindow('bio-window')">
     <img src="1.png"><div>Bio</div>
   </div>
@@ -219,7 +229,7 @@ body::before {
   <!-- Taskbar -->
   <div id="taskbar">
     <div id="start-btn" onclick="toggleStartMenu()">
-      <img src="winxp.png"> start
+      <img src="winxp.png">
     </div>
     <div id="taskbar-time"></div>
   </div>
@@ -238,8 +248,8 @@ body::before {
       <div class="start-item">My Music</div>
     </div>
     <div class="start-bottom">
-      <button class="logoff-btn">Log Off</button>
-      <button class="shutdown-btn" onclick="shutdownSequence()">Turn Off Computer</button>
+      <div onclick="logOff()"><img src="logoff.png"><span>Log Off (Alex)</span></div>
+      <div onclick="shutdownSequence()"><img src="shutdown.png"><span>Turn Off Computer</span></div>
     </div>
   </div>
 </div>
@@ -260,14 +270,28 @@ function shutdownSequence(){
   let audio=new Audio("alex/XPshutdown.mp3"); audio.play();
   setTimeout(()=>{window.location.href="https://boogerboys.github.io/index.html";},5000);
 }
+function logOff(){
+  document.getElementById("desktop").style.display="none";
+  document.getElementById("login-screen").style.display="flex";
+}
 
-// Clock
+// Clock + Notifications
 function updateTime(){
   const now=new Date();
   document.getElementById("taskbar-time").textContent=
     now.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
 }
 setInterval(updateTime,1000);updateTime();
+
+// Fake notifications
+const messages=["Antivirus updated successfully","New email received","Windows Update installed","USB device connected"];
+setInterval(()=>{
+  let msg=messages[Math.floor(Math.random()*messages.length)];
+  let note=document.createElement("div");
+  note.className="notification";note.textContent=msg;
+  document.body.appendChild(note);
+  setTimeout(()=>note.remove(),5000);
+},20000);
 
 // Start menu toggle
 function toggleStartMenu(){
