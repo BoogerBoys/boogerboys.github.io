@@ -3,18 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>hey lois im windows xp</title>
+<title>Windows XP Replica</title>
 <link href="https://fonts.googleapis.com/css2?family=Tahoma&family=Trebuchet+MS&display=swap" rel="stylesheet">
 <style>
 :root {
   --taskbar-blue: #0a246a;
   --taskbar-gradient: linear-gradient(to bottom, #245edb, #0a246a);
-  --start-green: #3cb371;
   --highlight-blue: rgba(135,206,250,0.45);
 }
 body, html {
-  margin:0; height:100%;
-  font-family:Tahoma, sans-serif;
+  margin:0;height:100%;
+  font-family:Tahoma,sans-serif;
   overflow:hidden;
   background:url("XP.png") no-repeat center center fixed;
   background-size:cover;
@@ -47,9 +46,7 @@ body::before {
   color:white;font-size:1rem;
 }
 #login-logo {
-  font-style:italic;
-  font-size:2rem;
-  margin-bottom:30px;
+  font-style:italic;font-size:2rem;margin-bottom:30px;
 }
 .user-tile {
   display:flex;align-items:center;gap:12px;
@@ -123,16 +120,23 @@ body::before {
 #start-menu {
   position:absolute;bottom:40px;left:0;width:420px;height:480px;
   display:none;z-index:1000;
-  background:rgba(240,248,255,0.95);border:2px solid #00309c;
+  background:#e5f0fb;border:2px solid #00309c;
   display:grid;grid-template-columns:2fr 1fr;
+  box-shadow:4px 4px 12px rgba(0,0,0,0.4);
 }
 .start-left{background:#245edb;color:white;padding:8px;}
-.start-right{background:#e5f0fb;color:black;padding:8px;font-size:0.9rem;}
-.start-item{padding:6px;border:1px solid rgba(0,0,0,0.2);cursor:pointer;margin-bottom:4px;}
-.start-item:hover{background:rgba(255,255,255,0.4);}
+.start-right{background:#f5f9ff;color:black;padding:8px;font-size:0.9rem;}
+.start-item{
+  padding:6px;border:1px solid rgba(0,0,0,0.4);cursor:pointer;
+  margin-bottom:4px;display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.1);
+}
+.start-item img{width:18px;height:18px;}
+.start-item:hover{background:rgba(255,255,255,0.3);}
 .start-bottom{
   grid-column:1/span 2;display:flex;flex-direction:column;gap:6px;
   padding:8px;background:#ece9d8;font-size:0.9rem;
+  border-top:1px solid #bbb;
 }
 .start-bottom div{display:flex;align-items:center;gap:6px;cursor:pointer;}
 .start-bottom img{width:20px;height:20px;}
@@ -155,6 +159,8 @@ body::before {
 .no-max:hover{content:url("No.png");}
 .content{flex:1;padding:8px;overflow:auto;}
 .gif-slot{float:right;width:80px;height:80px;margin:4px;background:#ddd;}
+.entry{margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.entry img{width:24px;height:24px;}
 </style>
 </head>
 <body>
@@ -209,7 +215,7 @@ body::before {
     <img src="8.png"><div>My Computer</div>
   </div>
 
-  <!-- Example Window -->
+  <!-- Example Windows -->
   <div class="window" id="bio-window" style="display:none;">
     <div class="title-bar" onmousedown="dragStart(event,this.parentElement)">
       <span>Bio</span>
@@ -221,8 +227,33 @@ body::before {
     </div>
     <div class="content">
       <div class="gif-slot"></div>
-      <p>Bio entry 1...</p>
-      <p>Bio entry 2...</p>
+      <div class="entry"><img src="9.png"><span>Entry 1...</span></div>
+      <div class="entry"><img src="10.png"><span>Entry 2...</span></div>
+      <div class="entry"><img src="11.png"><span>Entry 3...</span></div>
+      <div class="entry"><img src="12.png"><span>Entry 4...</span></div>
+      <div class="entry"><img src="13.png"><span>Entry 5...</span></div>
+      <div class="entry"><img src="14.png"><span>Entry 6...</span></div>
+      <div class="entry"><img src="15.png"><span>Entry 7...</span></div>
+      <div class="entry"><img src="16.png"><span>Entry 8...</span></div>
+    </div>
+  </div>
+
+  <!-- Jukebox -->
+  <div class="window" id="jukebox-window" style="top:150px;left:500px;display:none;">
+    <div class="title-bar" onmousedown="dragStart(event,this.parentElement)">
+      <span>Jukebox</span>
+      <div class="controls">
+        <img src="close.png" onclick="closeWindow('jukebox-window')">
+        <img src="maximize.png" class="no-max">
+        <img src="minimize.png" onclick="minimizeWindow('jukebox-window')">
+      </div>
+    </div>
+    <div class="content">
+      <audio id="player" controls loop>
+        <source src="alex/song1.mp3" type="audio/mpeg">
+        <source src="alex/song2.mp3" type="audio/mpeg">
+      </audio>
+      <button onclick="nextSong()">⏭️</button>
     </div>
   </div>
 
@@ -235,12 +266,13 @@ body::before {
   </div>
   <div id="start-menu">
     <div class="start-left">
-      <div class="start-item" onclick="openWindow('bio-window')">Bio</div>
-      <div class="start-item" onclick="openWindow('interests-window')">Interests</div>
-      <div class="start-item" onclick="openWindow('dni-window')">DNI</div>
-      <div class="start-item" onclick="openWindow('journal-window')">Journal</div>
-      <div class="start-item" onclick="openWindow('drawings-window')">Drawings</div>
-      <div class="start-item" onclick="openWindow('games-window')">Games</div>
+      <div class="start-item" onclick="openWindow('bio-window')"><img src="1.png"><span>Bio</span></div>
+      <div class="start-item" onclick="openWindow('interests-window')"><img src="2.png"><span>Interests</span></div>
+      <div class="start-item" onclick="openWindow('dni-window')"><img src="3.png"><span>DNI</span></div>
+      <div class="start-item" onclick="openWindow('journal-window')"><img src="4.png"><span>Journal</span></div>
+      <div class="start-item" onclick="openWindow('drawings-window')"><img src="5.png"><span>Drawings</span></div>
+      <div class="start-item" onclick="openWindow('games-window')"><img src="6.png"><span>Games</span></div>
+      <div class="start-item" onclick="openWindow('jukebox-window')"><img src="17.png"><span>Jukebox</span></div>
     </div>
     <div class="start-right">
       <div class="start-item">My Documents</div>
@@ -283,7 +315,6 @@ function updateTime(){
 }
 setInterval(updateTime,1000);updateTime();
 
-// Fake notifications
 const messages=["Antivirus updated successfully","New email received","Windows Update installed","USB device connected"];
 setInterval(()=>{
   let msg=messages[Math.floor(Math.random()*messages.length)];
@@ -303,6 +334,16 @@ function toggleStartMenu(){
 function openWindow(id){document.getElementById(id).style.display="flex";}
 function closeWindow(id){document.getElementById(id).style.display="none";}
 function minimizeWindow(id){document.getElementById(id).style.display="none";}
+
+// Jukebox
+let songs=["alex/song1.mp3","alex/song2.mp3","alex/song3.mp3"];
+let currentSong=0;
+function nextSong(){
+  currentSong=(currentSong+1)%songs.length;
+  let player=document.getElementById("player");
+  player.src=songs[currentSong];
+  player.play();
+}
 
 // Dragging
 let dragTarget=null, offsetX=0, offsetY=0;
