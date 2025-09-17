@@ -1145,7 +1145,7 @@
     function playSong(index) {
         currentSongIndex = index;
         const song = songs[index];
-        jukeboxAudio.src = 'alex/' + song.file;
+        jukeboxAudio.src = '/alex/' + song.file;
         jukeboxAudio.play().catch(e => console.error("Audio playback failed:", e));
 
         const songInfoEl = document.getElementById("song-info");
