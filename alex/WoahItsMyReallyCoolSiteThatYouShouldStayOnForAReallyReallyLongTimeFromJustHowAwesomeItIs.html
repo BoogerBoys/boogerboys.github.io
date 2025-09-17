@@ -1,358 +1,762 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Windows XP Replica</title>
-<link href="https://fonts.googleapis.com/css2?family=Tahoma&family=Trebuchet+MS&display=swap" rel="stylesheet">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>hey 👅</title>
+
 <style>
-:root {
-  --taskbar-blue: #0a246a;
-  --taskbar-gradient: linear-gradient(to bottom, #245edb, #0a246a);
-  --highlight-blue: rgba(135,206,250,0.45);
-}
-body, html {
-  margin:0;height:100%;
-  font-family:Tahoma,sans-serif;
-  overflow:hidden;
-  background:url("XP.png") no-repeat center center fixed;
-  background-size:cover;
-}
+  /* Fonts: Tahoma as default, Trebuchet MS for title bars */
+  :root{
+    --taskbar-blue: #082554;
+    --taskbar-lip: linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(255,255,255,0));
+    --start-green: #3cb371;
+    --accent: #245edb;
+    --light-blue-fade: rgba(135,206,250,0.45);
+    --crt-opacity-min: 0.16;
+    --crt-opacity-max: 0.32;
+  }
 
-/* CRT effect */
-body::before {
-  content:"";
-  position:fixed;top:0;left:0;width:100%;height:100%;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(0,0,0,0.35) 0px,
-    rgba(0,0,0,0.35) 2px,
-    transparent 3px,
-    transparent 4px
-  );
-  mix-blend-mode:multiply;
-  pointer-events:none;
-  z-index:9999;
-  animation: flicker 0.15s infinite alternate;
-  filter:blur(0.3px) contrast(1.05);
-}
-@keyframes flicker { from{opacity:0.15;} to{opacity:0.3;} }
+  html,body{
+    height:100%;
+    margin:0;
+    font-family: Tahoma, Arial, sans-serif;
+    background: url("XP.png") center/cover no-repeat fixed;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    overflow:hidden;
+  }
 
-/* LOGIN SCREEN */
-#login-screen {
-  position:absolute;top:0;left:0;width:100%;height:100%;
-  background:linear-gradient(to bottom,#245edb,#0a246a);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  color:white;font-size:1rem;
-}
-#login-logo {
-  font-style:italic;font-size:2rem;margin-bottom:30px;
-}
-.user-tile {
-  display:flex;align-items:center;gap:12px;
-  background:rgba(0,0,0,0.3);
-  padding:16px;border-radius:6px;
-  cursor:pointer;
-}
-.user-tile img {width:64px;height:64px;border-radius:8px;}
-#password-box {margin-top:15px;display:none;}
-#password-input {padding:6px;font-size:1rem;}
-.sticky-note {
-  margin-top:20px;background:#fff59d;padding:10px 14px;
-  font-family:"Comic Sans MS",cursive;color:#000;
-  transform:rotate(-3deg);border:1px solid #ccc;
-}
-#shutdown-login {
-  position:absolute;bottom:20px;left:20px;
-  display:flex;align-items:center;gap:8px;cursor:pointer;
-  color:orange;font-weight:bold;
-}
-#shutdown-login img{width:24px;height:24px;}
+  /* CRT overlay (stronger) */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background:
+      radial-gradient(1200px 600px at 50% 25%, rgba(255,255,255,0.02), rgba(0,0,0,0.06)),
+      repeating-linear-gradient(transparent 0 2px, rgba(0,0,0,0.12) 2px 4px);
+    mix-blend-mode:multiply;
+    pointer-events:none;
+    z-index:9999;
+    opacity:var(--crt-opacity-min);
+    filter:contrast(1.06) blur(0.4px);
+    animation:crtFlicker 0.18s ease-in-out infinite alternate;
+  }
+  @keyframes crtFlicker{ from{opacity:var(--crt-opacity-min)} to{opacity:var(--crt-opacity-max)} }
 
-/* SHUTDOWN SCREEN */
-#shutdown-screen {
-  position:absolute;top:0;left:0;width:100%;height:100%;
-  background:linear-gradient(to bottom,#245edb,#0a246a);
-  display:none;align-items:center;justify-content:center;flex-direction:column;
-  color:white;font-size:1.5rem;
-}
+  /* Basic utilities */
+  .hidden { display:none !important; }
+  img{display:block;max-width:100%}
 
-/* DESKTOP */
-#desktop {display:none;width:100%;height:100%;position:relative;}
+  /* --- LOGIN SCREEN (Welcome) --- */
+  #login-screen{
+    position:fixed; inset:0;
+    background: linear-gradient(to bottom,#1e5fc2,#073a7a);
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    color: #fff; z-index:1000;
+  }
+  #login-logo {
+    font-style:italic; font-size:2.2rem; margin-bottom:16px; font-family: Tahoma, sans-serif;
+  }
+  #login-prompt { margin-bottom:10px; opacity:0.95; }
+  .user-tile{
+    display:flex; align-items:center; gap:12px; padding:14px 18px;
+    border-radius:10px; background: rgba(0,0,0,0.16); cursor:pointer;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+  }
+  .user-tile img{ width:84px; height:84px; border-radius:8px; border:2px solid rgba(255,255,255,0.08) }
+  #password-box{ margin-top:12px; display:none; }
+  #password-input{ padding:8px 10px; font-size:1rem; border-radius:6px; border:1px solid rgba(0,0,0,0.2) }
+  #login-sticky{ margin-top:18px; display:block; transform:rotate(-3deg); background:#fff8b0; color:#2d2300; padding:8px 10px; border-radius:6px; font-weight:700}
+  #login-shutdown{
+    position: absolute; left:18px; bottom:18px; display:flex; gap:10px; align-items:center; cursor:pointer;
+    background: rgba(255,255,255,0.06); padding:8px 12px; border-radius:8px;
+  }
+  #login-shutdown img{ width:22px; height:22px; }
 
-/* Desktop icons */
-.icon {
-  width:80px;text-align:center;color:white;
-  font-size:0.85rem;margin:20px;cursor:pointer;
-  position:absolute;
-}
-.icon img {width:48px;height:48px;}
-.icon:hover {background:var(--highlight-blue);border-radius:6px;}
+  /* --- SHUTDOWN SCREEN --- */
+  #shutdown-screen{
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column;
+    background: linear-gradient(to bottom,#1e5fc2,#073a7a); color:white; font-size:1.4rem; z-index:2000; display:none;
+  }
 
-/* Taskbar */
-#taskbar {
-  position:absolute;bottom:0;left:0;width:100%;height:40px;
-  background:var(--taskbar-gradient);
-  display:flex;align-items:center;justify-content:space-between;
-  color:white;font-family:Tahoma;
-}
-#start-btn {
-  border-radius:20px;margin-left:6px;
-  cursor:pointer;height:30px;width:50px;
-}
-#start-btn img{width:100%;height:100%;object-fit:contain;}
-#taskbar-time {
-  margin-right:8px;padding:2px 6px;background:#5c9ccc;
-  border:1px solid #3973ac;border-radius:3px;font-size:0.85rem;
-  position:relative;
-}
+  /* --- DESKTOP (main UI) --- */
+  #desktop{ position:fixed; inset:0; overflow:hidden; display:none; z-index:10; }
 
-/* Notifications */
-.notification {
-  position:absolute;bottom:42px;right:0;
-  background:#fff;border:1px solid #999;border-radius:4px;
-  padding:8px;font-size:0.85rem;width:200px;
-  animation:fadeIn 0.4s ease;
-}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  /* Desktop icons (grid-like and spaced) */
+  .desktop-icon{
+    position:absolute; width:92px; text-align:center; color:#fff; cursor:pointer; user-select:none;
+    transition: background-color 0.12s ease;
+  }
+  .desktop-icon img{ width:56px; height:56px; margin:0 auto; display:block; }
+  .desktop-icon span{ display:block; margin-top:6px; font-size:0.86rem; text-shadow:0 1px 2px rgba(0,0,0,0.6) }
+  .desktop-icon:hover{ background:var(--light-blue-fade); border-radius:8px; padding:6px; }
 
-/* Start menu */
-#start-menu {
-  position:absolute;bottom:40px;left:0;width:420px;height:480px;
-  display:none;z-index:1000;
-  background:#e5f0fb;border:2px solid #00309c;
-  display:grid;grid-template-columns:2fr 1fr;
-  box-shadow:4px 4px 12px rgba(0,0,0,0.4);
-}
-.start-left{background:#245edb;color:white;padding:8px;}
-.start-right{background:#f5f9ff;color:black;padding:8px;font-size:0.9rem;}
-.start-item{
-  padding:6px;border:1px solid rgba(0,0,0,0.4);cursor:pointer;
-  margin-bottom:4px;display:flex;align-items:center;gap:6px;
-  background:rgba(255,255,255,0.1);
-}
-.start-item img{width:18px;height:18px;}
-.start-item:hover{background:rgba(255,255,255,0.3);}
-.start-bottom{
-  grid-column:1/span 2;display:flex;flex-direction:column;gap:6px;
-  padding:8px;background:#ece9d8;font-size:0.9rem;
-  border-top:1px solid #bbb;
-}
-.start-bottom div{display:flex;align-items:center;gap:6px;cursor:pointer;}
-.start-bottom img{width:20px;height:20px;}
+  /* --- TASKBAR --- */
+  #taskbar{
+    position:fixed; left:0; right:0; bottom:0; height:44px; display:flex; align-items:center; gap:8px;
+    padding:6px 10px; z-index:1500;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.08)), var(--taskbar-blue);
+    box-shadow: 0 -6px 14px rgba(0,0,0,0.35);
+  }
+  #taskbar-toplip{ position:absolute; left:0; right:0; top:-6px; height:6px; background:var(--taskbar-lip); opacity:0.95; pointer-events:none }
+  #start-btn{
+    width:46px; height:32px; display:flex; align-items:center; justify-content:center; cursor:pointer;
+    border-radius:8px; overflow:hidden; background:linear-gradient(#3cb371,#2e895a);
+  }
+  #start-btn img{ width:28px; height:28px; display:block; }
 
-/* Windows */
-.window {
-  position:absolute;top:100px;left:120px;width:400px;height:300px;
-  background:#ece9d8;border:2px solid #00309c;
-  display:flex;flex-direction:column;
-  box-shadow:4px 4px 12px rgba(0,0,0,0.4);
-}
-.title-bar {
-  background:linear-gradient(to bottom,#245edb,#0a246a);
-  color:white;font-family:"Trebuchet MS",sans-serif;
-  padding:4px 8px;display:flex;justify-content:space-between;align-items:center;
-  cursor:move;
-}
-.controls img{width:16px;height:16px;margin-left:6px;cursor:pointer;}
-.controls img:hover{filter:brightness(1.2);}
-.no-max:hover{content:url("No.png");}
-.content{flex:1;padding:8px;overflow:auto;}
-.gif-slot{float:right;width:80px;height:80px;margin:4px;background:#ddd;}
-.entry{margin-bottom:8px;display:flex;align-items:center;gap:6px;}
-.entry img{width:24px;height:24px;}
+  /* Taskbar buttons area (minimized windows / running apps) */
+  #taskbar-apps{ display:flex; gap:6px; align-items:center; margin-left:12px; flex:1; overflow:auto; padding-bottom:4px; }
+  .task-app{
+    min-width:84px; padding:6px 8px; background:rgba(255,255,255,0.04); color:#eaf4ff; border-radius:6px; display:flex; gap:8px; align-items:center; cursor:pointer;
+    border:1px solid rgba(255,255,255,0.03); font-weight:700; font-size:0.85rem;
+  }
+  .task-app.active{ outline:2px solid rgba(255,255,255,0.06); box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2) }
+  .task-app img{ width:18px; height:18px; }
+
+  /* Clock/tray */
+  #tray { display:flex; align-items:center; gap:10px; margin-left:auto }
+  #clock-box { background:#5c9ccc; padding:4px 8px; border-radius:4px; font-weight:700; color:#01293b; border:1px solid rgba(0,0,0,0.12) }
+
+  /* Notifications (small fade) */
+  .notification {
+    position:fixed; right:18px; bottom:64px; width:240px; background:linear-gradient(#fff,#f3f9ff); border:1px solid rgba(0,0,0,0.08);
+    padding:10px; border-radius:8px; box-shadow:0 8px 20px rgba(0,0,0,0.2); display:flex; gap:10px; align-items:center; z-index:2200;
+    animation:notifyIn 0.28s ease;
+  }
+  .notification img{ width:36px; height:36px; border-radius:6px; object-fit:cover; }
+  .notification .txt{ font-weight:800; color:#083a6b; font-size:0.95rem; text-shadow: none; }
+  @keyframes notifyIn{ from{ transform:translateY(8px); opacity:0 } to{ transform:translateY(0); opacity:1 } }
+
+  /* Special flair text for notifications */
+  .flair { color:#d47a00; font-weight:900; margin-left:6px; }
+
+  /* --- START MENU (rounded, smooth, entries with icons and borders) --- */
+  #start-menu{
+    position:fixed; left:8px; bottom:54px; width:420px; height:420px; display:none; z-index:2000;
+    background: linear-gradient(#f8fbff,#eaf6ff); border-radius:12px; border:2px solid rgba(0,0,0,0.18);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.45); overflow:hidden; display:grid; grid-template-columns: 1fr 0.9fr;
+  }
+  .start-left{ padding:12px; background:linear-gradient(#1f5cc7,#1b4aa8); color:white; }
+  .start-right{ padding:12px; background:#eef6ff; color:#083a6b; }
+  .start-entry{
+    display:flex; align-items:center; gap:10px; padding:8px; margin-bottom:8px; border-radius:8px;
+    background: linear-gradient( rgba(255,255,255,0.03), rgba(255,255,255,0.01) );
+    border:1px solid rgba(255,255,255,0.06);
+    cursor:pointer;
+  }
+  .start-entry img{ width:22px; height:22px; }
+  .start-entry:hover{ background:rgba(255,255,255,0.12) }
+  .start-bottom{ grid-column:1/-1; padding:10px; display:flex; flex-direction:column; gap:8px; background:#f1efe7; border-top:1px solid rgba(0,0,0,0.06) }
+  .start-action{ display:flex; gap:10px; align-items:center; padding:8px; border-radius:8px; cursor:pointer; background:white; border:1px solid rgba(0,0,0,0.06) }
+
+  /* --- WINDOWS (XP-styled) --- */
+  .window{
+    position:absolute; width:640px; height:420px; background:#fffdf6; border:2px solid #00309c; border-radius:6px;
+    box-shadow: 0 24px 48px rgba(0,0,0,0.35); display:flex; flex-direction:column; z-index:1200; overflow:hidden;
+  }
+  .titlebar{
+    height:40px; padding:6px 10px; display:flex; align-items:center; justify-content:space-between;
+    background: linear-gradient(to bottom,#2f6fd6,#0a3f84); color:white; font-family:"Trebuchet MS",sans-serif; font-weight:800;
+    cursor:move;
+  }
+  .titlebar .controls{ display:flex; gap:8px; align-items:center; }
+  .titlebar .controls img{ width:18px; height:18px; cursor:pointer; }
+  .content{
+    padding:12px; overflow:auto; flex:1; background: linear-gradient(#fff,#f7fbff);
+  }
+  .gif-slot{ position:absolute; top:10px; right:10px; width:120px; height:72px; border-radius:6px; overflow:hidden; border:1px solid rgba(0,0,0,0.06); background:#000; }
+  .entry{
+    display:flex; gap:12px; align-items:flex-start; padding:14px; margin-bottom:18px; border-radius:8px; background: #ffffff;
+    border:1px solid rgba(0,0,0,0.04);
+  }
+  .entry img{ width:84px; height:64px; object-fit:cover; border-radius:6px; }
+  .entry .text{ font-weight:700; color:#083a6b; line-height:1.2 }
+  .entries-wrap{ max-height: calc(100% - 12px); overflow:auto; padding-right:8px; }
+
+  /* responsive tweaks */
+  @media (max-width:900px){
+    .window{ width:92vw; height:70vh; left:4vw !important; top:6vh !important; }
+    #start-menu{ width:88vw; left:6%; height:60vh; }
+  }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="login-screen">
+<!-- LOGIN SCREEN -->
+<div id="login-screen" role="dialog" aria-label="Welcome screen">
   <div id="login-logo">Welcome</div>
-  <div>To begin, click your user name</div>
-  <div class="user-tile" onclick="showPasswordBox()">
-    <img src="alex.png"><span>Alex</span>
+  <div id="login-prompt">To begin, click your user name</div>
+
+  <div class="user-tile" id="user-alex" onclick="revealPassword()">
+    <img src="alex.png" alt="alex">
+    <div style="font-weight:800; font-size:1.15rem">alex</div>
   </div>
-  <div id="password-box">
-    <input type="password" id="password-input" placeholder="Password">
-    <button onclick="checkPassword()">→</button>
+
+  <div id="password-box" style="margin-top:12px;">
+    <input id="password-input" type="password" placeholder="Password" />
+    <button onclick="attemptLogin()">Sign in</button>
   </div>
-  <div class="sticky-note">Password: boogieboy</div>
-  <div id="shutdown-login" onclick="shutdownSequence()">
-    <img src="shutdown.png"><span>Turn off computer</span>
+
+  <div id="login-sticky">Password: boogieboy</div>
+
+  <div id="login-shutdown" onclick="shutdownSequence()">
+    <img src="shutdown.png" alt="shutdown"><div style="font-weight:700;color:#ffcf7a">Turn off computer</div>
   </div>
 </div>
 
-<!-- SHUTDOWN -->
-<div id="shutdown-screen">
-  <div>Shutting down...</div>
+<!-- SHUTDOWN SCREEN -->
+<div id="shutdown-screen" class="hidden" aria-hidden="true">
+  <div style="text-align:center;">
+    <img src="winxp.png" style="width:140px;margin-bottom:12px" alt="XP">
+    <div style="font-size:1.5rem;font-weight:800">Shutting down...</div>
+  </div>
 </div>
 
 <!-- DESKTOP -->
-<div id="desktop">
-  <!-- Icons -->
-  <div class="icon" style="top:40px;left:40px;" onclick="openWindow('bio-window')">
-    <img src="1.png"><div>Bio</div>
+<div id="desktop" class="hidden" aria-hidden="true">
+  <!-- Desktop icons — positioned spaced out -->
+  <div class="desktop-icon" id="icon-bio" style="left:36px; top:36px" onclick="openWindow('win-bio')">
+    <img src="1.png" alt=""><span>Bio</span>
   </div>
-  <div class="icon" style="top:140px;left:40px;" onclick="openWindow('interests-window')">
-    <img src="2.png"><div>Interests</div>
+  <div class="desktop-icon" id="icon-interests" style="left:36px; top:140px" onclick="openWindow('win-interests')">
+    <img src="2.png" alt=""><span>Interests</span>
   </div>
-  <div class="icon" style="top:240px;left:40px;" onclick="openWindow('dni-window')">
-    <img src="3.png"><div>DNI</div>
+  <div class="desktop-icon" id="icon-dni" style="left:36px; top:244px" onclick="openWindow('win-dni')">
+    <img src="3.png" alt=""><span>DNI</span>
   </div>
-  <div class="icon" style="top:340px;left:40px;" onclick="openWindow('journal-window')">
-    <img src="4.png"><div>Journal</div>
+  <div class="desktop-icon" id="icon-journal" style="left:36px; top:348px" onclick="openWindow('win-journal')">
+    <img src="4.png" alt=""><span>Journal</span>
   </div>
-  <div class="icon" style="top:440px;left:40px;" onclick="openWindow('drawings-window')">
-    <img src="5.png"><div>Drawings</div>
+  <div class="desktop-icon" id="icon-drawings" style="left:36px; top:452px" onclick="openWindow('win-drawings')">
+    <img src="5.png" alt=""><span>Drawings</span>
   </div>
-  <div class="icon" style="top:540px;left:40px;" onclick="openWindow('games-window')">
-    <img src="6.png"><div>Games</div>
-  </div>
-  <div class="icon" style="bottom:100px;right:40px;" onclick="openWindow('recycle-window')">
-    <img src="7.png"><div>Recycle Bin</div>
-  </div>
-  <div class="icon" style="bottom:200px;right:40px;" onclick="openWindow('computer-window')">
-    <img src="8.png"><div>My Computer</div>
+  <div class="desktop-icon" id="icon-games" style="left:36px; top:556px" onclick="openWindow('win-games')">
+    <img src="6.png" alt=""><span>Games</span>
   </div>
 
-  <!-- Example Windows -->
-  <div class="window" id="bio-window" style="display:none;">
-    <div class="title-bar" onmousedown="dragStart(event,this.parentElement)">
-      <span>Bio</span>
-      <div class="controls">
-        <img src="close.png" onclick="closeWindow('bio-window')">
-        <img src="maximize.png" class="no-max">
-        <img src="minimize.png" onclick="minimizeWindow('bio-window')">
-      </div>
-    </div>
-    <div class="content">
-      <div class="gif-slot"></div>
-      <div class="entry"><img src="9.png"><span>Entry 1...</span></div>
-      <div class="entry"><img src="10.png"><span>Entry 2...</span></div>
-      <div class="entry"><img src="11.png"><span>Entry 3...</span></div>
-      <div class="entry"><img src="12.png"><span>Entry 4...</span></div>
-      <div class="entry"><img src="13.png"><span>Entry 5...</span></div>
-      <div class="entry"><img src="14.png"><span>Entry 6...</span></div>
-      <div class="entry"><img src="15.png"><span>Entry 7...</span></div>
-      <div class="entry"><img src="16.png"><span>Entry 8...</span></div>
-    </div>
+  <div class="desktop-icon" id="icon-computer" style="right:36px; bottom:220px" onclick="openWindow('win-computer')">
+    <img src="8.png" alt=""><span>My Computer</span>
+  </div>
+  <div class="desktop-icon" id="icon-recycle" style="right:36px; bottom:120px" onclick="openWindow('win-recycle')">
+    <img src="7.png" alt=""><span>Recycle Bin</span>
   </div>
 
-  <!-- Jukebox -->
-  <div class="window" id="jukebox-window" style="top:150px;left:500px;display:none;">
-    <div class="title-bar" onmousedown="dragStart(event,this.parentElement)">
-      <span>Jukebox</span>
-      <div class="controls">
-        <img src="close.png" onclick="closeWindow('jukebox-window')">
-        <img src="maximize.png" class="no-max">
-        <img src="minimize.png" onclick="minimizeWindow('jukebox-window')">
-      </div>
-    </div>
-    <div class="content">
-      <audio id="player" controls loop>
-        <source src="alex/song1.mp3" type="audio/mpeg">
-        <source src="alex/song2.mp3" type="audio/mpeg">
-      </audio>
-      <button onclick="nextSong()">⏭️</button>
-    </div>
-  </div>
-
-  <!-- Taskbar -->
-  <div id="taskbar">
-    <div id="start-btn" onclick="toggleStartMenu()">
-      <img src="winxp.png">
-    </div>
-    <div id="taskbar-time"></div>
-  </div>
-  <div id="start-menu">
+  <!-- --- Start menu (hidden initially) --- -->
+  <div id="start-menu" role="menu" aria-hidden="true">
     <div class="start-left">
-      <div class="start-item" onclick="openWindow('bio-window')"><img src="1.png"><span>Bio</span></div>
-      <div class="start-item" onclick="openWindow('interests-window')"><img src="2.png"><span>Interests</span></div>
-      <div class="start-item" onclick="openWindow('dni-window')"><img src="3.png"><span>DNI</span></div>
-      <div class="start-item" onclick="openWindow('journal-window')"><img src="4.png"><span>Journal</span></div>
-      <div class="start-item" onclick="openWindow('drawings-window')"><img src="5.png"><span>Drawings</span></div>
-      <div class="start-item" onclick="openWindow('games-window')"><img src="6.png"><span>Games</span></div>
-      <div class="start-item" onclick="openWindow('jukebox-window')"><img src="17.png"><span>Jukebox</span></div>
+      <!-- left entries with icons -->
+      <div class="start-entry" onclick="openWindow('win-bio')"><img src="1.png" alt=""> <div>Bio</div></div>
+      <div class="start-entry" onclick="openWindow('win-interests')"><img src="2.png" alt=""> <div>Interests</div></div>
+      <div class="start-entry" onclick="openWindow('win-dni')"><img src="3.png" alt=""> <div>DNI</div></div>
+      <div class="start-entry" onclick="openWindow('win-journal')"><img src="4.png" alt=""> <div>Journal</div></div>
+      <div class="start-entry" onclick="openWindow('win-drawings')"><img src="5.png" alt=""> <div>Drawings</div></div>
+      <div class="start-entry" onclick="openWindow('win-games')"><img src="6.png" alt=""> <div>Games</div></div>
+      <div class="start-entry" onclick="openWindow('win-jukebox')"><img src="17.png" alt=""> <div>Jukebox</div></div>
     </div>
+
     <div class="start-right">
-      <div class="start-item">My Documents</div>
-      <div class="start-item">My Pictures</div>
-      <div class="start-item">My Music</div>
+      <div class="start-entry"><img src="1.png" alt=""> <div>My Documents</div></div>
+      <div class="start-entry"><img src="2.png" alt=""> <div>My Pictures</div></div>
+      <div class="start-entry"><img src="3.png" alt=""> <div>My Music</div></div>
     </div>
+
     <div class="start-bottom">
-      <div onclick="logOff()"><img src="logoff.png"><span>Log Off (Alex)</span></div>
-      <div onclick="shutdownSequence()"><img src="shutdown.png"><span>Turn Off Computer</span></div>
+      <div class="start-action" onclick="logOff()"><img src="logoff.png" alt=""> <div>Log Off (alex)</div></div>
+      <div class="start-action" onclick="shutdownSequence()"><img src="shutdown.png" alt=""> <div>Turn Off Computer</div></div>
     </div>
   </div>
+
+  <!-- --- Taskbar --- -->
+  <div id="taskbar" role="toolbar" aria-hidden="false">
+    <div id="taskbar-toplip"></div>
+    <div id="start-btn" title="Start" onclick="toggleStartMenu()"><img src="winxp.png" alt="start"></div>
+
+    <div id="taskbar-apps" aria-live="polite"></div>
+
+    <div id="tray">
+      <div id="clock-box">--:--</div>
+    </div>
+  </div>
+
+  <!-- --- Notifications container - will be generated by JS --- -->
+
+  <!-- --- WINDOWS: Each is pre-created but hidden until opened. Each window uses *entries* with large spacing and scrollable content --- -->
+  <!-- Template for windows: we create them here so CSS is applied; content filled below. -->
+
+  <!-- Bio -->
+  <div class="window hidden" id="win-bio" data-title="Bio" style="left:140px; top:120px;">
+    <div class="titlebar" onmousedown="dragStart(event,this.parentElement)">
+      <div>Bio</div>
+      <div class="controls">
+        <img src="close.png" title="Close" onclick="closeWindow('win-bio')" alt="x">
+        <img src="maximize.png" class="no-max" title="No">
+        <img src="minimize.png" title="Minimize" onclick="minimizeWindow('win-bio')">
+      </div>
+    </div>
+    <div class="content">
+      <div class="gif-slot"><img src="gif1.gif" alt=""></div>
+      <div class="entries-wrap" id="entries-bio"></div>
+    </div>
+  </div>
+
+  <!-- Interests -->
+  <div class="window hidden" id="win-interests" data-title="Interests" style="left:200px; top:140px;">
+    <div class="titlebar" onmousedown="dragStart(event,this.parentElement)"><div>Interests</div>
+      <div class="controls">
+        <img src="close.png" onclick="closeWindow('win-interests')">
+        <img src="maximize.png" class="no-max">
+        <img src="minimize.png" onclick="minimizeWindow('win-interests')">
+      </div>
+    </div>
+    <div class="content"><div class="gif-slot"><img src="gif2.gif" alt=""></div><div class="entries-wrap" id="entries-interests"></div></div>
+  </div>
+
+  <!-- DNI -->
+  <div class="window hidden" id="win-dni" data-title="DNI" style="left:260px; top:160px;">
+    <div class="titlebar" onmousedown="dragStart(event,this.parentElement)"><div>DNI</div>
+      <div class="controls">
+        <img src="close.png" onclick="closeWindow('win-dni')">
+        <img src="maximize.png" class="no-max">
+        <img src="minimize.png" onclick="minimizeWindow('win-dni')">
+      </div>
+    </div>
+    <div class="content"><div class="gif-slot"><img src="gif3.gif" alt=""></div><div class="entries-wrap" id="entries-dni"></div></div>
+  </div>
+
+  <!-- Journal -->
+  <div class="window hidden" id="win-journal" data-title="Journal" style="left:320px; top:180px;">
+    <div class="titlebar" onmousedown="dragStart(event,this.parentElement)"><div>Journal</div>
+      <div class="controls">
+        <img src="close.png" onclick="closeWindow('win-journal')">
+        <img src="maximize.png" class="no-max">
+        <img src="minimize.png" onclick="minimizeWindow('win-journal')">
+      </div>
+    </div>
+    <div class="content"><div class="gif-slot"><img src="gif4.gif" alt=""></div><div class="entries-wrap" id="entries-journal"></div></div>
+  </div>
+
+  <!-- Drawings -->
+  <div class="window hidden" id="win-drawings" data-title="Drawings" style="left:380px; top:200px;">
+    <div class="titlebar" onmousedown="dragStart(event,this.parentElement)"><div>Drawings</div>
+      <div class="controls">
+        <img src="close.png" onclick="closeWindow('win-drawings')">
+        <img src="maximize.png" class="no-max">
+        <img src="minimize.png" onclick="minimizeWindow('win-drawings')">
+      </div>
+    </div>
+    <div class="content"><div class="gif-slot"><img src="gif5.gif" alt=""></div><div class="entries-wrap" id="entries-drawings"></div></div>
+  </div>
+
+  <!-- Games -->
+  <div class="window hidden" id="win-games" data-title="Games" style="left:440px; top:220px;">
+    <div class="titlebar" onmousedown="dragStart(event,this.parentElement)"><div>Games</div>
+      <div class="controls">
+        <img src="close.png" onclick="closeWindow('win-games')">
+        <img src="maximize.png" class="no-max">
+        <img src="minimize.png" onclick="minimizeWindow('win-games')">
+      </div>
+    </div>
+    <div class="content"><div class="gif-slot"><img src="gif6.gif" alt=""></div><div class="entries-wrap" id="entries-games"></div></div>
+  </div>
+
+  <!-- My Computer & Recycle (simple placeholders) -->
+  <div class="window hidden" id="win-computer" data-title="My Computer" style="left:420px; top:120px;">
+    <div class="titlebar" onmousedown="dragStart(event,this.parentElement)"><div>My Computer</div>
+      <div class="controls"><img src="close.png" onclick="closeWindow('win-computer')"><img src="maximize.png" class="no-max"><img src="minimize.png" onclick="minimizeWindow('win-computer')"></div>
+    </div>
+    <div class="content"><div class="entries-wrap" id="entries-computer"></div></div>
+  </div>
+
+  <div class="window hidden" id="win-recycle" data-title="Recycle Bin" style="left:480px; top:140px;">
+    <div class="titlebar" onmousedown="dragStart(event,this.parentElement)"><div>Recycle Bin</div>
+      <div class="controls"><img src="close.png" onclick="closeWindow('win-recycle')"><img src="maximize.png" class="no-max"><img src="minimize.png" onclick="minimizeWindow('win-recycle')"></div>
+    </div>
+    <div class="content"><div class="entries-wrap" id="entries-recycle"></div></div>
+  </div>
+
+  <!-- Jukebox window (draggable, minimizable; closing & maximize disabled via No.png hover) -->
+  <div class="window hidden" id="win-jukebox" data-title="Jukebox" style="left:520px; top:80px; width:360px; height:180px;">
+    <div class="titlebar" onmousedown="dragStart(event,this.parentElement)"><div>Jukebox</div>
+      <div class="controls">
+        <img src="close.png" onclick="closeWindow('win-jukebox')">
+        <img src="maximize.png" class="no-max">
+        <img src="minimize.png" onclick="minimizeWindow('win-jukebox')">
+      </div>
+    </div>
+    <div class="content" style="display:flex;align-items:center;gap:12px;">
+      <img id="jukebox-disc" src="7.png" alt="disc" style="width:84px;height:84px;border-radius:50%;box-shadow:0 6px 12px rgba(0,0,0,0.2)">
+      <div style="flex:1;">
+        <div id="jukebox-track" style="font-weight:900;color:#083a6b">Loading...</div>
+        <audio id="jukebox-audio" controls style="width:100%;margin-top:8px"></audio>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
-function showPasswordBox(){document.getElementById("password-box").style.display="block";}
-function checkPassword(){
-  if(document.getElementById("password-input").value==="boogieboy"){
-    document.getElementById("login-screen").style.display="none";
-    document.getElementById("desktop").style.display="block";
-    new Audio("alex/XPstartup.mp3").play();
-  } else alert("Wrong password!");
-}
-function shutdownSequence(){
-  document.getElementById("login-screen").style.display="none";
-  document.getElementById("desktop").style.display="none";
-  document.getElementById("shutdown-screen").style.display="flex";
-  let audio=new Audio("alex/XPshutdown.mp3"); audio.play();
-  setTimeout(()=>{window.location.href="https://boogerboys.github.io/index.html";},5000);
-}
-function logOff(){
-  document.getElementById("desktop").style.display="none";
-  document.getElementById("login-screen").style.display="flex";
-}
+/* ===========================
+   Initialization & assets
+   ===========================
+   - All filenames are referenced by their expected names above.
+   - Edit arrays below to change default content.
+*/
+const JUKES = [
+  {file:"alex/song1.mp3", credit:"Donkey Kong Country 2 - Stickerbush Symphony - Nintendo", icon:"1.png"},
+  {file:"alex/song2.mp3", credit:"Lisa: The Pointless OST - Soft Hearts (World's Last Autumn Version)", icon:"2.png"},
+  {file:"alex/song3.mp3", credit:"Deltarune Chapter 3 + 4 - 12 am - Toby Fox", icon:"3.png"}
+];
 
-// Clock + Notifications
-function updateTime(){
-  const now=new Date();
-  document.getElementById("taskbar-time").textContent=
-    now.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
-}
-setInterval(updateTime,1000);updateTime();
+const NOTIFY_MESSAGES = [
+  {msg:"Antivirus updated successfully", icon:"notify1.png", flair:"secure"},
+  {msg:"New message from hoodie", icon:"notify2.png", flair:"chat"},
+  {msg:"USB device connected", icon:"notify3.png", flair:"usb"},
+  {msg:"Easter egg found!", icon:"notify4.png", flair:"surprise"}
+];
 
-const messages=["Antivirus updated successfully","New email received","Windows Update installed","USB device connected"];
-setInterval(()=>{
-  let msg=messages[Math.floor(Math.random()*messages.length)];
-  let note=document.createElement("div");
-  note.className="notification";note.textContent=msg;
-  document.body.appendChild(note);
-  setTimeout(()=>note.remove(),5000);
-},20000);
+/* --------------------
+   Element refs
+   -------------------- */
+const loginScreen = document.getElementById('login-screen');
+const desktop = document.getElementById('desktop');
+const shutdownScreen = document.getElementById('shutdown-screen');
+const loginSticky = document.getElementById('login-sticky');
+const passwordBox = document.getElementById('password-box');
+const passwordInput = document.getElementById('password-input');
+const startMenu = document.getElementById('start-menu');
+const taskbarApps = document.getElementById('taskbar-apps');
+const clockBox = document.getElementById('clock-box');
+const crt = document.querySelector('body::before');
 
-// Start menu toggle
+/* --------------------
+   Helper: show/hide start menu
+   -------------------- */
 function toggleStartMenu(){
-  let menu=document.getElementById("start-menu");
-  menu.style.display=(menu.style.display==="grid")?"none":"grid";
+  startMenu.style.display = (startMenu.style.display === 'block') ? 'none' : 'block';
 }
 
-// Window controls
-function openWindow(id){document.getElementById(id).style.display="flex";}
-function closeWindow(id){document.getElementById(id).style.display="none";}
-function minimizeWindow(id){document.getElementById(id).style.display="none";}
+/* hide start menu on resize or click outside */
+document.addEventListener('click', (e)=>{
+  if(!startMenu.contains(e.target) && !document.getElementById('start-btn').contains(e.target)){
+    startMenu.style.display='none';
+  }
+});
 
-// Jukebox
-let songs=["alex/song1.mp3","alex/song2.mp3","alex/song3.mp3"];
-let currentSong=0;
-function nextSong(){
-  currentSong=(currentSong+1)%songs.length;
-  let player=document.getElementById("player");
-  player.src=songs[currentSong];
-  player.play();
+/* --------------------
+   Login flow
+   -------------------- */
+function revealPassword(){
+  passwordBox.style.display='block';
+  passwordInput.value='';
+  passwordInput.focus();
+}
+function attemptLogin(){
+  const v = passwordInput.value;
+  if(v === 'boogieboy'){
+    // show desktop
+    loginScreen.style.display='none';
+    desktop.classList.remove('hidden');
+    desktop.style.display='block';
+    // show sticky quickly and hide after 20s (sticky only visible immediately after login)
+    loginSticky.style.display='block';
+    setTimeout(()=> loginSticky.style.display='none', 20000);
+    // play startup sound (may be blocked until user gesture)
+    const s = new Audio('alex/XPstartup.mp3'); s.play().catch(()=>{});
+    initJukebox();
+    startNotificationLoop();
+    updateClock(); setInterval(updateClock, 1000);
+  } else {
+    // brief shake
+    const tile = document.querySelector('.user-tile');
+    tile.animate([{transform:'translateX(-8px)'},{transform:'translateX(8px)'},{transform:'translateX(0)'}],{duration:320});
+  }
 }
 
-// Dragging
-let dragTarget=null, offsetX=0, offsetY=0;
-function dragStart(e,win){
-  dragTarget=win;offsetX=e.clientX-win.offsetLeft;offsetY=e.clientY-win.offsetTop;
-  document.onmousemove=dragMove;document.onmouseup=dragEnd;
+/* --------------------
+   Shutdown sequence
+   -------------------- */
+function shutdownSequence(){
+  // hide UI, show shutdown screen, play shutdown sound, redirect after 5s
+  loginScreen.style.display='none';
+  desktop.style.display='none';
+  shutdownScreen.style.display='flex';
+  const s = new Audio('alex/XPshutdown.mp3'); s.play().catch(()=>{});
+  setTimeout(()=> { window.location.href = 'https://boogerboys.github.io/index.html'; }, 5000);
 }
-function dragMove(e){if(dragTarget){dragTarget.style.left=(e.clientX-offsetX)+"px";dragTarget.style.top=(e.clientY-offsetY)+"px";}}
-function dragEnd(){dragTarget=null;document.onmousemove=null;document.onmouseup=null;}
+
+/* --------------------
+   Window manager: show, close, minimize, taskbar entries
+   -------------------- */
+let zIndexCounter = 1200;
+function openWindow(id){
+  const w = document.getElementById(id);
+  if(!w) return;
+  // show
+  w.classList.remove('hidden'); w.style.display='block';
+  w.style.zIndex = ++zIndexCounter;
+  addTaskButtonForWindow(id);
+}
+
+function closeWindow(id){
+  const w = document.getElementById(id); if(!w) return;
+  w.style.display='none';
+  removeTaskButtonForWindow(id);
+}
+
+function minimizeWindow(id){
+  const w = document.getElementById(id); if(!w) return;
+  w.style.display='none';
+  setTaskActive(id,false);
+}
+
+/* Taskbar helpers */
+function addTaskButtonForWindow(id){
+  // if button exists, activate it
+  if(document.getElementById('task-'+id)) { setTaskActive(id,true); return; }
+  const w = document.getElementById(id);
+  const title = w.getAttribute('data-title') || id;
+  const iconImg = w.querySelector('.gif-slot img')?.src || '1.png';
+  const btn = document.createElement('div');
+  btn.className = 'task-app';
+  btn.id = 'task-'+id;
+  btn.innerHTML = `<img src="${iconImg}" alt=""><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${title}</div>`;
+  btn.onclick = ()=> {
+    const win = document.getElementById(id);
+    if(win.style.display === 'none' || getComputedStyle(win).display === 'none'){
+      win.style.display='block'; win.style.zIndex = ++zIndexCounter; setTaskActive(id,true);
+    } else {
+      // minimize on click
+      win.style.display='none'; setTaskActive(id,false);
+    }
+  };
+  taskbarApps.appendChild(btn);
+  setTaskActive(id,true);
+}
+
+function removeTaskButtonForWindow(id){
+  const btn = document.getElementById('task-'+id);
+  if(btn) btn.remove();
+}
+
+function setTaskActive(id, active){
+  const btn = document.getElementById('task-'+id);
+  if(!btn) return;
+  if(active) btn.classList.add('active'); else btn.classList.remove('active');
+}
+
+/* --------------------
+   Dragging windows (mouse + touch) with preview
+   -------------------- */
+let dragTarget = null, dragOffsetX=0, dragOffsetY=0, previewEl = null;
+function dragStart(e, winEl){
+  // e is mouse event
+  dragTarget = winEl;
+  const rect = winEl.getBoundingClientRect();
+  dragOffsetX = e.clientX - rect.left;
+  dragOffsetY = e.clientY - rect.top;
+  // create preview
+  previewEl = document.createElement('div');
+  previewEl.style.position='fixed';
+  previewEl.style.left = rect.left+'px';
+  previewEl.style.top = rect.top+'px';
+  previewEl.style.width = rect.width+'px';
+  previewEl.style.height = rect.height+'px';
+  previewEl.style.border='2px dashed rgba(10,80,200,0.75)';
+  previewEl.style.background='rgba(10,80,200,0.03)';
+  previewEl.style.zIndex = 9998;
+  previewEl.style.pointerEvents='none';
+  document.body.appendChild(previewEl);
+  document.addEventListener('mousemove', dragMove);
+  document.addEventListener('mouseup', dragEnd, {once:true});
+}
+function dragMove(e){
+  if(!previewEl) return;
+  let nx = Math.max(8, e.clientX - dragOffsetX);
+  let ny = Math.max(8, e.clientY - dragOffsetY);
+  previewEl.style.left = nx + 'px';
+  previewEl.style.top = ny + 'px';
+}
+function dragEnd(e){
+  if(previewEl && dragTarget){
+    // snap window to preview pos
+    dragTarget.style.left = previewEl.style.left;
+    dragTarget.style.top = previewEl.style.top;
+    previewEl.remove(); previewEl = null;
+  }
+  document.removeEventListener('mousemove', dragMove);
+  dragTarget = null;
+}
+
+/* touch support for dragging windows (simple) */
+document.addEventListener('touchstart', function(ev){
+  const t = ev.touches[0];
+  // if touch on a titlebar, emulate drag start
+  const el = document.elementFromPoint(t.clientX, t.clientY);
+  const tb = el && el.closest('.titlebar');
+  if(tb){
+    ev.preventDefault();
+    const win = tb.parentElement;
+    dragTarget = win;
+    const rect = win.getBoundingClientRect();
+    dragOffsetX = t.clientX - rect.left;
+    dragOffsetY = t.clientY - rect.top;
+    // create preview
+    previewEl = document.createElement('div');
+    previewEl.style.position='fixed';
+    previewEl.style.left = rect.left+'px';
+    previewEl.style.top = rect.top+'px';
+    previewEl.style.width = rect.width+'px';
+    previewEl.style.height = rect.height+'px';
+    previewEl.style.border='2px dashed rgba(10,80,200,0.75)';
+    previewEl.style.background='rgba(10,80,200,0.03)';
+    previewEl.style.zIndex = 9998;
+    previewEl.style.pointerEvents='none';
+    document.body.appendChild(previewEl);
+
+    function touchMove(ev2){
+      const t2 = ev2.touches[0];
+      let nx = Math.max(8, t2.clientX - dragOffsetX);
+      let ny = Math.max(8, t2.clientY - dragOffsetY);
+      previewEl.style.left = nx + 'px';
+      previewEl.style.top = ny + 'px';
+    }
+    function touchEnd(){
+      if(previewEl && dragTarget){
+        dragTarget.style.left = previewEl.style.left;
+        dragTarget.style.top = previewEl.style.top;
+        previewEl.remove(); previewEl=null;
+      }
+      document.removeEventListener('touchmove', touchMove);
+      document.removeEventListener('touchend', touchEnd);
+    }
+    document.addEventListener('touchmove', touchMove, {passive:false});
+    document.addEventListener('touchend', touchEnd);
+  }
+}, {passive:false});
+
+/* --------------------
+   Clock & notifications
+   -------------------- */
+function updateClock(){
+  const d = new Date();
+  let hh = d.getHours(); let mm = String(d.getMinutes()).padStart(2,'0');
+  let ampm = hh>=12? 'PM':'AM'; hh = hh % 12 || 12;
+  clockBox.textContent = `${hh}:${mm} ${ampm}`;
+}
+updateClock(); setInterval(updateClock,60000);
+
+/* Notification loop (more often) */
+let notifyInterval = null;
+function startNotificationLoop(){
+  if(notifyInterval) clearInterval(notifyInterval);
+  notifyInterval = setInterval(()=> createNotification(), 9000 + Math.random()*7000);
+}
+function createNotification(){
+  const pick = NOTIFY_MESSAGES[Math.floor(Math.random()*NOTIFY_MESSAGES.length)];
+  const el = document.createElement('div');
+  el.className = 'notification';
+  const icon = pick.icon && pick.icon.length? pick.icon : '1.png';
+  el.innerHTML = `<img src="${icon}" alt=""><div><div class="txt">${pick.msg}</div><div class="flair">${pick.flair}</div></div>`;
+  document.body.appendChild(el);
+  // small animation: special icons appear & fade away (we already have animation)
+  setTimeout(()=> el.style.opacity='0', 4200);
+  setTimeout(()=> el.remove(), 5200);
+}
+
+/* --------------------
+   Initialize entries in each window (8 entries each) and make them scrollable with margin
+   -------------------- */
+function buildEntries(prefix){
+  const container = document.getElementById('entries-'+prefix);
+  if(!container) return;
+  container.innerHTML = '';
+  for(let i=1;i<=8;i++){
+    const row = document.createElement('div');
+    row.className = 'entry';
+    const imgNum = ((i+ (prefix==='drawings'?4:0)) % 16) + 1; // slight distribution of images
+    row.innerHTML = `<img src="${imgNum}.png" alt=""><div class="text">Editable ${prefix} entry ${i}. Click to edit.</div>`;
+    container.appendChild(row);
+  }
+}
+
+/* Build entries for all windows */
+['bio','interests','dni','journal','drawings','games','computer','recycle'].forEach(buildEntries);
+
+/* --------------------
+   Jukebox implementation
+   -------------------- */
+let jukeboxIndex = Math.floor(Math.random()*JUKES.length);
+const jukeboxAudio = document.getElementById('jukebox-audio');
+const jukeboxTrack = document.getElementById('jukebox-track');
+const jukeboxDisc = document.getElementById('jukebox-disc');
+
+function initJukebox(){
+  if(!jukeboxAudio) return;
+  setJukeboxTrack(jukeboxIndex);
+  jukeboxAudio.volume = 0.9;
+  jukeboxAudio.addEventListener('ended', ()=> { jukeboxIndex = (jukeboxIndex+1) % JUKES.length; setJukeboxTrack(jukeboxIndex); jukeboxAudio.play(); });
+}
+
+function setJukeboxTrack(i){
+  const s = JUKES[(i+JUKES.length)%JUKES.length];
+  jukeboxAudio.src = s.file;
+  jukeboxTrack.textContent = s.credit;
+  jukeboxDisc.src = s.icon || '7.png';
+}
+
+/* next song (used in jukebox area) */
+function nextJukebox(){
+  jukeboxIndex = (jukeboxIndex+1) % JUKES.length; setJukeboxTrack(jukeboxIndex); jukeboxAudio.play();
+}
+
+/* --------------------
+   Taskbar helpers are above (addTaskButtonForWindow etc)
+   -------------------- */
+
+/* wire up opening windows from desktop icons (initially only hidden) */
+document.querySelectorAll('.desktop-icon').forEach(icon=>{
+  icon.addEventListener('dblclick', ()=> {
+    const id = icon.id.replace('icon-','win-');
+    openWindow(id);
+  });
+});
+
+/* ensure start menu does not appear on startup */
+startMenu.style.display = 'none';
+
+/* Add click handlers for start-left entries already inline via onclick */
+
+/* Expose some functions globally used in HTML */
+window.openWindow = openWindow;
+window.closeWindow = closeWindow;
+window.minimizeWindow = minimizeWindow;
+window.toggleStartMenu = toggleStartMenu;
+window.revealPassword = revealPassword;
+window.attemptLogin = attemptLogin;
+window.shutdownSequence = shutdownSequence;
+window.logOff = function(){
+  // simple log off: show login screen again and hide desktop
+  desktop.style.display='none';
+  loginScreen.style.display='flex';
+};
+window.dragStart = dragStart;
+window.nextSong = nextJukebox;
+
+/* Small accessibility: close start menu by ESC */
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') startMenu.style.display='none'; });
+
+/* small polish: when a window opens, ensure it has a taskbar button */
+document.querySelectorAll('.window').forEach(w=>{
+  // if opened by other means, ensure taskbar button added
+  const id = w.id;
+  // attach dblclick handler to titlebar to bring to front
+  const tb = w.querySelector('.titlebar');
+  if(tb) tb.addEventListener('dblclick', ()=> { w.style.zIndex = ++zIndexCounter; });
+});
+
+/* initial small notification to welcome user once they login (added in attemptLogin flow) */
+
 </script>
 </body>
 </html>
