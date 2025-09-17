@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>so retro</title>
+  <link rel="icon" type="image/png" href="favicon.png">
 
   <link href="https://fonts.googleapis.com/css2?family=Tahoma&family=Trebuchet+MS&display=swap" rel="stylesheet">
 
@@ -34,19 +35,10 @@
       font-family: var(--xp-font-main);
       overflow: hidden;
       background-color: #000;
-    }
-
-/* Update the existing rule for the body */
-    html, body {
-      height: 100%;
-      margin: 0;
-      font-family: var(--xp-font-main);
-      overflow: hidden;
-      background-color: #000;
       cursor: url('cursor.png'), auto;
+      text-shadow: 0 0 1px #fff;
     }
 
-/* New rule for clickable elements (buttons, links, etc.) */
     .desktop-icon:hover,
     #start-btn:hover,
     .taskbar-app-icon,
@@ -56,11 +48,12 @@
     .start-menu-entry,
     .logoff-shutdown-btn,
     .jukebox-controls button,
-    #browser-content img {
+    #browser-content img,
+    #clock,
+    .minesweeper-controls button {
       cursor: url('pointer.png'), pointer;
     }
 
-/* New rule for the journal text area */
     #journal-text-area {
       cursor: url('text.png'), text;
     }
@@ -68,7 +61,6 @@
     /*
       ==========================================================================
       LOGIN & SHUTDOWN SCREENS
-      ^ thanks chat gpt
       ==========================================================================
     */
     #login-screen, #shutdown-screen {
@@ -102,8 +94,16 @@
       background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
       background-size: 100% 2px, 3px 100%;
       pointer-events: none;
-      opacity: 0.75; /* CHANGED: CRT effect made more intense - also thanks for this gemini */
+      opacity: 0.9;
+      animation: flicker 0.1s infinite;
       z-index: 1;
+    }
+
+    @keyframes flicker {
+        0%, 100% { opacity: 0.9; }
+        25% { opacity: 0.8; }
+        50% { opacity: 0.95; }
+        75% { opacity: 0.85; }
     }
 
     /* Windows XP Welcome Screen Specific Styles */
@@ -157,7 +157,7 @@
     .login-body {
         width: 100%;
         padding: 20px;
-        background-color: #ece9d8;
+        background-color: var(--xp-window-bg);
         border-radius: 0 0 8px 8px;
         box-sizing: border-box;
         text-align: center;
@@ -266,7 +266,7 @@
     
     .desktop-icon span {
       color: white;
-      text-shadow: 1px 1px 2px #000;
+      text-shadow: 1px 1px 2px #000, 0 0 5px #fff;
       font-size: 12px;
       pointer-events: none;
     }
@@ -314,6 +314,7 @@
     
     #start-btn:hover {
       background-color: rgba(255,255,255,0.2);
+      box-shadow: 0 0 10px #fff;
     }
 
     #taskbar-apps {
@@ -361,6 +362,49 @@
       background-color: #316ac5;
     }
     
+    #notification-area {
+      position: relative;
+      margin-right: 10px;
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+
+    .notification {
+      position: absolute;
+      bottom: 28px;
+      right: 5px;
+      background-color: #fce899;
+      border: 1px solid black;
+      padding: 10px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+      font-size: 12px;
+      width: 200px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      animation: fade-in-up 0.5s ease-out;
+    }
+    
+    .notification img {
+      width: 24px;
+      height: 24px;
+    }
+    
+    .notification.fade-out {
+      animation: fade-out-down 0.5s ease-in forwards;
+    }
+
+    @keyframes fade-in-up {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes fade-out-down {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(100%); opacity: 0; }
+    }
+    
     #system-tray .tray-icon {
       width: 16px;
       height: 16px;
@@ -374,6 +418,68 @@
       border: 1px solid #316ac5;
       background-color: #5587e6;
       border-radius: 3px;
+      cursor: pointer;
+    }
+
+    /* NEW: Calendar pop-up styles */
+    #calendar-popup {
+      position: absolute;
+      bottom: 28px;
+      right: 0;
+      width: 280px;
+      background-color: var(--xp-window-bg);
+      border: 1px solid var(--xp-window-border-dark);
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+      border-radius: 5px;
+      z-index: 501;
+      display: none;
+      padding: 10px;
+      box-sizing: border-box;
+      animation: fade-in-up 0.2s ease-out;
+    }
+
+    #calendar-popup.visible {
+        display: block;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1em;
+      font-weight: bold;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
+
+    .calendar-header button {
+        background: none;
+        border: 1px solid transparent;
+        font-size: 1.2em;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .calendar-header button:hover {
+        background-color: #d7e0f3;
+    }
+
+    #calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-size: 0.9em;
+      gap: 5px;
+    }
+
+    .calendar-day-header {
+      font-weight: bold;
+    }
+
+    .calendar-day {
+      padding: 5px;
+      border: 1px solid #ccc;
     }
 
     /*
@@ -536,9 +642,115 @@
       animation: window-open 0.3s ease-out;
     }
 
-    /* CHANGED: Added fixed width for Jukebox for reliable positioning */
     #window-Jukebox {
         width: 260px;
+    }
+
+    /* UPDATED: Calculator styles */
+    .calculator-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-gap: 5px;
+      padding: 10px;
+      background-color: #c0c0c0;
+      border: 2px outset #f0f0f0;
+    }
+    
+    #calculator-display {
+      grid-column: 1 / -1;
+      background-color: #a4c5a4;
+      border: 2px inset #5e7e5e;
+      color: #000;
+      font-family: monospace;
+      font-size: 2em;
+      text-align: right;
+      padding: 5px;
+      overflow: hidden;
+    }
+
+    .calc-btn {
+      height: 40px;
+      background-color: #e0e0e0;
+      border: 2px outset #f0f0f0;
+      font-size: 1.2em;
+      cursor: pointer;
+      text-shadow: 1px 1px #fff;
+    }
+
+    .calc-btn:active {
+      border-style: inset;
+    }
+    
+    .calc-btn.operator, .calc-btn.equals {
+      background-color: #d1d1d1;
+    }
+
+    /* Minesweeper styles */
+    .minesweeper-grid {
+        display: grid;
+        grid-template-columns: repeat(10, 25px);
+        grid-template-rows: repeat(10, 25px);
+        background-color: #c0c0c0;
+        border: 2px inset #505050;
+    }
+
+    .minesweeper-cell {
+        width: 25px;
+        height: 25px;
+        background-color: #d0d0d0;
+        border: 2px outset #f0f0f0;
+        font-family: monospace;
+        font-weight: bold;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        user-select: none;
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .minesweeper-cell.revealed {
+        border-style: inset;
+        background-color: #c0c0c0;
+        cursor: default;
+    }
+    
+    .minesweeper-cell.revealed img,
+    .minesweeper-cell img {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .minesweeper-cell[data-mine] {
+      background-color: #f00;
+    }
+
+    .minesweeper-cell.number-1 { color: #0300f8; }
+    .minesweeper-cell.number-2 { color: #027d01; }
+    .minesweeper-cell.number-3 { color: #fe0000; }
+    .minesweeper-cell.number-4 { color: #000083; }
+    .minesweeper-cell.number-5 { color: #830000; }
+    .minesweeper-cell.number-6 { color: #008481; }
+    .minesweeper-cell.number-7 { color: #830083; }
+    .minesweeper-cell.number-8 { color: #000; }
+    
+    .minesweeper-controls {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .minesweeper-controls button {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+    }
+    
+    .minesweeper-controls img {
+        width: 32px;
+        height: 32px;
     }
 
     .xp-window.closed {
@@ -675,7 +887,36 @@
       flex: 1;
     }
 
-    /* Browser styles */
+    /* UPDATED: Browser styles */
+    .browser-toolbar {
+        background-color: #f1f1f1;
+        border-bottom: 2px solid #ccc;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .browser-toolbar button {
+        width: 24px;
+        height: 24px;
+        background-color: #e0e0e0;
+        border: 1px outset #fff;
+        font-size: 14px;
+    }
+
+    .browser-toolbar button:active {
+        border-style: inset;
+    }
+
+    .url-bar {
+        flex-grow: 1;
+        padding: 2px 5px;
+        border: 1px inset #ccc;
+        background-color: #fff;
+        font-size: 12px;
+    }
+    
     #browser-content {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
@@ -701,7 +942,7 @@
       overflow: hidden;
       z-index: 900;
       text-align: center;
-      display: flex; /* CHANGED: Added flex for easy centering */
+      display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
@@ -731,12 +972,12 @@
             </div>
             <div class="login-body">
                 <div class="login-user-list">
-                    <div class="login-user" onclick="attemptLogin()">
+                    <div class="login-user" onclick="attemptLogin(); clickSound.play();">
                         <img src="alex.png" alt="User">
                         <span>alex</span>
                     </div>
                 </div>
-                <button class="turn-off-btn" onclick="shutdownSequence()">
+                <button class="turn-off-btn" onclick="shutdownSequence(); clickSound.play();">
                     <img src="13.png" alt="Turn Off">
                     Turn Off Computer
                 </button>
@@ -784,16 +1025,33 @@
       <img src="7.png" alt="Recycle Bin">
       <span>Recycle Bin</span>
     </div>
+    <div class="desktop-icon" data-title="Calculator" style="top: 20px; left: 220px;">
+        <img src="calculator.png" alt="Calculator">
+        <span>Calculator</span>
+    </div>
+    <div class="desktop-icon" data-title="Minesweeper" style="top: 120px; left: 220px;">
+        <img src="minesweeper.png" alt="Minesweeper">
+        <span>Minesweeper</span>
+    </div>
   </div>
 
   <div id="taskbar">
     <div class="taskbar-top-lip"></div>
-    <button id="start-btn" onclick="toggleStartMenu()"></button>
+    <button id="start-btn" onclick="toggleStartMenu(); clickSound.play();"></button>
     <div id="taskbar-apps"></div>
     <div id="system-tray">
       <div id="notification-area"></div>
       <div id="clock"></div>
     </div>
+  </div>
+
+  <div id="calendar-popup">
+      <div class="calendar-header">
+        <button onclick="changeMonth(-1);">&#9664;</button>
+        <span id="calendar-title"></span>
+        <button onclick="changeMonth(1);">&#9654;</button>
+      </div>
+      <div id="calendar-grid"></div>
   </div>
 
   <div id="start-menu" class="hidden">
@@ -803,27 +1061,27 @@
         <span>alex</span>
       </div>
       <div class="start-menu-entries">
-        <div class="start-menu-entry" onclick="openWindow('Bio', 1); toggleStartMenu();">
+        <div class="start-menu-entry" onclick="openWindow('Bio', 1); toggleStartMenu(); clickSound.play();">
           <img src="1.png" alt="Bio">
           <span>Bio</span>
         </div>
-        <div class="start-menu-entry" onclick="openWindow('Interests', 2); toggleStartMenu();">
+        <div class="start-menu-entry" onclick="openWindow('Interests', 2); toggleStartMenu(); clickSound.play();">
           <img src="2.png" alt="Interests">
           <span>Interests</span>
         </div>
-        <div class="start-menu-entry" onclick="openWindow('DNI', 3); toggleStartMenu();">
+        <div class="start-menu-entry" onclick="openWindow('DNI', 3); toggleStartMenu(); clickSound.play();">
           <img src="3.png" alt="DNI">
           <span>DNI</span>
         </div>
-        <div class="start-menu-entry" onclick="openWindow('Journal', 4); toggleStartMenu();">
+        <div class="start-menu-entry" onclick="openWindow('Journal', 4); toggleStartMenu(); clickSound.play();">
           <img src="4.png" alt="Journal">
           <span>Journal</span>
         </div>
-        <div class="start-menu-entry" onclick="openWindow('Drawings', 5); toggleStartMenu();">
+        <div class="start-menu-entry" onclick="openWindow('Drawings', 5); toggleStartMenu(); clickSound.play();">
           <img src="5.png" alt="Drawings">
           <span>Drawings</span>
         </div>
-        <div class="start-menu-entry" onclick="openWindow('Games', 6); toggleStartMenu();">
+        <div class="start-menu-entry" onclick="openWindow('Games', 6); toggleStartMenu(); clickSound.play();">
           <img src="6.png" alt="Games">
           <span>Games</span>
         </div>
@@ -831,25 +1089,33 @@
     </div>
     <div class="start-menu-right-col">
       <div>
-        <div class="start-menu-entry" onclick="openWindow('My Computer', 8); toggleStartMenu();">
+        <div class="start-menu-entry" onclick="openWindow('My Computer', 8); toggleStartMenu(); clickSound.play();">
           <img src="8.png" alt="My Computer">
           <span>My Computer</span>
         </div>
-        <div class="start-menu-entry" onclick="openWindow('Jukebox', 10); toggleStartMenu();">
+        <div class="start-menu-entry" onclick="openWindow('Jukebox', 10); toggleStartMenu(); clickSound.play();">
           <img src="10.png" alt="Jukebox">
           <span>Jukebox</span>
         </div>
-        <div class="start-menu-entry" onclick="openWindow('Browser', 12); toggleStartMenu();">
+        <div class="start-menu-entry" onclick="openWindow('Browser', 12); toggleStartMenu(); clickSound.play();">
           <img src="12.png" alt="Browser">
           <span>Browser</span>
         </div>
+        <div class="start-menu-entry" onclick="openWindow('Calculator', 'calculator'); toggleStartMenu(); clickSound.play();">
+            <img src="calculator.png" alt="Calculator">
+            <span>Calculator</span>
+        </div>
+        <div class="start-menu-entry" onclick="openWindow('Minesweeper', 'minesweeper'); toggleStartMenu(); clickSound.play();">
+            <img src="minesweeper.png" alt="Minesweeper">
+            <span>Minesweeper</span>
+        </div>
       </div>
       <div class="start-menu-logoff-shutdown">
-        <button id="logoff-btn" class="logoff-shutdown-btn" onclick="logOff()">
+        <button id="logoff-btn" class="logoff-shutdown-btn" onclick="logOff(); clickSound.play();">
           <img src="14.png" alt="Log Off">
           Log Off
         </button>
-        <button id="shutdown-btn" class="logoff-shutdown-btn" onclick="shutdownSequence()">
+        <button id="shutdown-btn" class="logoff-shutdown-btn" onclick="shutdownSequence(); clickSound.play();">
           <img src="13.png" alt="Shutdown">
           Turn Off Computer
         </button>
@@ -862,6 +1128,7 @@
   <audio id="bg-music"></audio>
   <audio id="startup-sound" src="XPstartup.mp3"></audio>
   <audio id="shutdown-sound" src="XPshutdown.mp3"></audio>
+  <audio id="notification-sound" src="notif.mp3"></audio>
 
   <script>
     /*
@@ -880,17 +1147,52 @@
     const clock = document.getElementById('clock');
     const dragPreview = document.getElementById('window-drag-preview');
 
+    // NEW: Calendar elements
+    const calendarPopup = document.getElementById('calendar-popup');
+    const calendarTitle = document.getElementById('calendar-title');
+    const calendarGrid = document.getElementById('calendar-grid');
+
+    // Calendar state
+    let currentCalendarDate = new Date();
+
     // --- Audio Elements ---
     const jukeboxAudio = document.getElementById('bg-music');
-    const startupSound = document.getElementById('startup-sound');
-    const shutdownSound = document.getElementById('shutdown-sound');
+    const startupSound = new Audio('XPstartup.mp3');
+    const shutdownSound = new Audio('XPshutdown.mp3');
+    const clickSound = new Audio('open.mp3');
+    const notificationSound = document.getElementById('notification-sound');
+
+    // --- Easter Egg Messages ---
+    const easterEggs = [
+        "wait, hold on, i can edit these?",
+        "windows xp was a kinda fun operating system.",
+        "did you know a single floppy disk could only hold 1.44 MB?",
+        "time to add the 90th dial up sound to make it 9000 millionths more retro!",
+        "if you're reading this, you just found an easter egg! :egg: :retro_egg: :egg:",
+        "'This whole project was made with the help of a very helpful AI.' - gemini & chatgpt, ty for help!",
+        "ooooooooooooooooouuuuuggggghhhhh",
+        "GITHUB developer CAUGHT using .WEBP files?!",
+        "the computer says NO.",
+        "hi saur :smile:",
+        "LOVE-LETTER-FOR-YOU.TXT.vbs received in email!",
+        "don't worry, the BSOD is just a feature.",
+        "Warning: RETRO SLUDGE AHEAD.",
+        "'wow, its barely buggy!' i say, with my large bug shaped belly.",
+        "dial up reference no. 4",
+        "don't forget to defragment your hard drive for optimal performance!",
+        "you've been using your computer for a while. maybe it's time to take a break?",
+        "you see SPAWN by evan fong? that guy is actually vanossgaming 😭",
+        "im probably not putting THIS much effort into the other sites, i love favouritism!",
+        "dont worry, as long as its in the recycle bin, its trashed, right?",
+        "Kindly check the attached love letter from me! ~ LOVE-LETTER-FOR-YOU.TXT.vbs"
+    ];
 
     // --- State variables ---
     let openWindows = {};
     let zIndexCounter = 100;
 
     // --- Jukebox songs data ---
-    const songs = [ /* CHANGED: Updated placeholder icons */
+    const songs = [
       { file: "Music1.mp3", credit: "SPAWN - Evan Fong", icon: "Music1.jpg" },
       { file: "Music2.mp3", credit: "Vapor Buster - Deltarune Chapter 3 + 4 - Toby Fox", icon: "Music2.jpg" },
       { file: "Music3.mp3", credit: "Fireplace - Deltarune Chapter 3 + 4 - Toby Fox", icon: "Music3.jpg" },
@@ -913,6 +1215,13 @@
       'My Computer': `<p>i forgot to put something here, uh ohhhh.... (what would i put here anyways?)</p>`,
       'Recycle Bin': `<p>guys, awesome bin here, i cant wait to make a rm -rf /* joke on a windows os!</p>`,
       'Browser': `
+        <div class="browser-toolbar">
+            <img src="browser.png" style="width: 16px; height: 16px;">
+            <button>&larr;</button>
+            <button>&rarr;</button>
+            <button>&#8635;</button>
+            <input type="text" class="url-bar" value="https://example.com" readonly>
+        </div>
         <div id="browser-content">
           <img src="skull.gif" alt="skull" onclick="triggerIdiotVirus()">
           <img src="skull.gif" alt="skull" onclick="triggerIdiotVirus()">
@@ -929,14 +1238,44 @@
             <div id="song-info">Loading...</div>
           </div>
           <div class="jukebox-controls">
-            <button onclick="prevSong()">⏮️</button>
-            <button onclick="nextSong()">⏭️</button>
+            <button onclick="prevSong(); clickSound.play();">⏮️</button>
+            <button onclick="nextSong(); clickSound.play();">⏭️</button>
           </div>
           <div class="volume-container">
             <label for="volume">🔊</label>
             <input id="volume" type="range" min="0" max="1" step="0.01" value="1">
           </div>
         </div>
+      `,
+      'Calculator': `
+        <div class="calculator-grid" id="calculator-grid">
+            <div id="calculator-display">0</div>
+            <button class="calc-btn" onclick="handleCalculatorInput('C');">C</button>
+            <button class="calc-btn operator" onclick="handleCalculatorInput('/');">÷</button>
+            <button class="calc-btn operator" onclick="handleCalculatorInput('*');">×</button>
+            <button class="calc-btn operator" onclick="handleCalculatorInput('-');">−</button>
+            <button class="calc-btn" onclick="handleCalculatorInput('7');">7</button>
+            <button class="calc-btn" onclick="handleCalculatorInput('8');">8</button>
+            <button class="calc-btn" onclick="handleCalculatorInput('9');">9</button>
+            <button class="calc-btn operator" onclick="handleCalculatorInput('+');">+</button>
+            <button class="calc-btn" onclick="handleCalculatorInput('4');">4</button>
+            <button class="calc-btn" onclick="handleCalculatorInput('5');">5</button>
+            <button class="calc-btn" onclick="handleCalculatorInput('6');">6</button>
+            <button class="calc-btn equals" onclick="handleCalculatorInput('=');">=</button>
+            <button class="calc-btn" onclick="handleCalculatorInput('1');">1</button>
+            <button class="calc-btn" onclick="handleCalculatorInput('2');">2</button>
+            <button class="calc-btn" onclick="handleCalculatorInput('3');">3</button>
+            <button class="calc-btn" onclick="handleCalculatorInput('0');">0</button>
+            <button class="calc-btn" onclick="handleCalculatorInput('.');">.</button>
+        </div>
+      `,
+      'Minesweeper': `
+        <div class="minesweeper-controls">
+            <button onclick="toggleMinesweeperIcon(); initializeMinesweeper(); clickSound.play();">
+                <img id="minesweeper-reset-icon" src="favicon.png" alt="Reset">
+            </button>
+        </div>
+        <div class="minesweeper-grid" id="minesweeper-grid"></div>
       `
     };
 
@@ -946,6 +1285,10 @@
       setInterval(updateClock, 1000);
       startMenu.classList.add('hidden');
       setupDesktopIcons();
+      document.getElementById('clock').addEventListener('click', toggleCalendar);
+      
+      // Start the random notification loop
+      setTimeout(showRandomEasterEgg, 5000);
     });
 
     // --- Login & Shutdown logic ---
@@ -955,7 +1298,6 @@
       setTimeout(() => {
         loginScreen.classList.add('hidden');
         desktop.classList.add('visible');
-        // CHANGED: Automatically open Jukebox on login, positioned top-right
         openWindow('Jukebox', 10, desktop.offsetWidth - 280, 20); 
       }, 4500);
     }
@@ -965,7 +1307,7 @@
       shutdownScreen.style.display = 'flex';
       shutdownSound.play().catch(e => console.error("Shutdown sound failed:", e));
       setTimeout(() => {
-        window.location.reload();
+        window.location.href = 'https://boogerboys.github.io/index.html';
       }, 5000);
     }
 
@@ -976,13 +1318,87 @@
     // --- Taskbar & Start Menu logic ---
     function updateClock() {
       const now = new Date();
-      const hours = now.getHours().toString().padStart(2, '0');
-      const minutes = now.getMinutes().toString().padStart(2, '0');
-      clock.textContent = `${hours}:${minutes}`;
+      const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      const date = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      clock.textContent = `${time} ${date}`;
+    }
+
+    // UPDATED: Calendar logic
+    function toggleCalendar() {
+        calendarPopup.classList.toggle('visible');
+        if (calendarPopup.classList.contains('visible')) {
+            renderCalendar();
+        }
+    }
+
+    function renderCalendar() {
+        calendarGrid.innerHTML = '';
+        const year = currentCalendarDate.getFullYear();
+        const month = currentCalendarDate.getMonth();
+        const monthName = currentCalendarDate.toLocaleString('en-US', { month: 'long' });
+
+        calendarTitle.textContent = `${monthName} ${year}`;
+        
+        const firstDayOfMonth = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        dayNames.forEach(day => {
+            const dayHeader = document.createElement('div');
+            dayHeader.className = 'calendar-day-header';
+            dayHeader.textContent = day;
+            calendarGrid.appendChild(dayHeader);
+        });
+
+        for (let i = 0; i < firstDayOfMonth; i++) {
+            calendarGrid.appendChild(document.createElement('div'));
+        }
+
+        for (let i = 1; i <= daysInMonth; i++) {
+            const dayEl = document.createElement('div');
+            dayEl.className = 'calendar-day';
+            dayEl.textContent = i;
+            if (i === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) {
+                dayEl.style.fontWeight = 'bold';
+                dayEl.style.backgroundColor = '#d7e0f3';
+            }
+            calendarGrid.appendChild(dayEl);
+        }
+    }
+
+    function changeMonth(delta) {
+        currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
+        renderCalendar();
     }
 
     function toggleStartMenu() {
       startMenu.classList.toggle('hidden');
+    }
+
+    // --- Notification Logic ---
+    function showEasterEgg() {
+      const notificationArea = document.getElementById('notification-area');
+      const randomMessage = easterEggs[Math.floor(Math.random() * easterEggs.length)];
+      const notification = document.createElement('div');
+      notification.className = 'notification';
+      notification.innerHTML = `<img src="11.png" alt="Notification"><p>${randomMessage}</p>`;
+      notificationArea.appendChild(notification);
+      
+      notificationSound.play();
+
+      // Remove after 5 seconds with a fade-out
+      setTimeout(() => {
+        notification.classList.add('fade-out');
+        setTimeout(() => {
+          notification.remove();
+        }, 500);
+      }, 5000);
+    }
+    
+    function showRandomEasterEgg() {
+      showEasterEgg();
+      const randomInterval = Math.random() * (120000 - 30000) + 30000;
+      setTimeout(showRandomEasterEgg, randomInterval);
     }
 
     // --- Window logic ---
@@ -991,7 +1407,7 @@
         bringToFront(openWindows[title]);
         return;
       }
-
+      
       zIndexCounter++;
       const win = document.createElement('div');
       win.className = 'xp-window';
@@ -1021,10 +1437,10 @@
         <div class="window-titlebar">
           <span>${title}</span>
           <div class="window-buttons">
-            <button class="window-button" onclick="minimizeWindow(this.parentNode.parentNode.parentNode)">
+            <button class="window-button" onclick="minimizeWindow(this.parentNode.parentNode.parentNode); clickSound.play();">
               <img src="minimize.png">
             </button>
-            <button class="window-button close" onclick="closeWindow(this.parentNode.parentNode.parentNode)">
+            <button class="window-button close" onclick="closeWindow(this.parentNode.parentNode.parentNode); clickSound.play();">
               <img src="close.png">
             </button>
           </div>
@@ -1037,7 +1453,11 @@
       desktop.appendChild(win);
       openWindows[title] = win;
 
-      win.addEventListener('mousedown', () => bringToFront(win));
+      win.addEventListener('mousedown', (e) => {
+        if (!e.target.closest('.window-content') || e.target.closest('.window-titlebar')) {
+          bringToFront(win);
+        }
+      });
 
       if (title === 'Jukebox') {
         const volumeSlider = win.querySelector('#volume');
@@ -1045,6 +1465,8 @@
           jukeboxAudio.volume = volumeSlider.value;
         });
         playSong(Math.floor(Math.random() * songs.length));
+      } else if (title === 'Minesweeper') {
+        initializeMinesweeper();
       }
     }
 
@@ -1125,7 +1547,7 @@
         document.removeEventListener('mouseup', dragEnd);
       }
     }
-    // --- thank god gemini did this, i had NO fucking clue what any of this meant. - alex
+    
     // --- Desktop Icon Drag Logic ---
     let activeIcon = null;
 
@@ -1142,9 +1564,10 @@
         });
         icon.addEventListener('dblclick', () => {
           const title = icon.dataset.title;
-          const iconImg = icon.querySelector('img');
-          const iconNumber = iconImg.src.split('/').pop().replace('.png', '');
+          let iconSrc = icon.querySelector('img').src;
+          let iconNumber = iconSrc.split('/').pop().replace('.png', '');
           openWindow(title, iconNumber);
+          clickSound.play();
         });
       });
     }
@@ -1198,21 +1621,19 @@
     let idiotWindows = [];
     
     function triggerIdiotVirus() {
-        // CHANGED: Prevent the virus from running if it's already active
         if (idiotWindows.length > 0) return;
 
         for (let i = 0; i < 6; i++) {
             createIdiotWindow();
         }
 
-        // CHANGED: Add a timer to remove the windows after 15 seconds
         setTimeout(() => {
             idiotWindows.forEach(win => {
                 if (win.parentNode) {
                     win.parentNode.removeChild(win);
                 }
             });
-            idiotWindows = []; // Clear the array for the next run
+            idiotWindows = [];
         }, 15000);
     }
 
@@ -1221,7 +1642,6 @@
         const win = document.createElement('div');
         win.className = 'idiot-window';
         win.style.zIndex = zIndexCounter;
-        // CHANGED: Added skull.gif to the window content
         win.innerHTML = `
             <div class="idiot-window-content">You Are An Idiot</div>
             <img src="skull.gif" alt="skull" style="width: 64px; height: 64px; margin-top: 10px;">
@@ -1244,7 +1664,6 @@
         win.style.top = pos.y + 'px';
 
         const move = () => {
-            // Stop moving if the element has been removed
             if (!win.parentNode) return;
 
             pos.x += vel.x;
@@ -1270,6 +1689,261 @@
         dragStart(e, titlebar.parentNode);
       }
     });
+
+    // --- Calculator Logic ---
+    let calcState = {
+        displayValue: '0',
+        firstOperand: null,
+        operator: null,
+        waitingForSecondOperand: false
+    };
+
+    function updateCalculatorDisplay() {
+        document.getElementById('calculator-display').textContent = calcState.displayValue;
+    }
+
+    function handleCalculatorInput(input) {
+        const { displayValue, waitingForSecondOperand } = calcState;
+
+        if (input === 'C') {
+            calcState = { displayValue: '0', firstOperand: null, operator: null, waitingForSecondOperand: false };
+        } else if (input === '=') {
+            if (calcState.operator && calcState.firstOperand !== null) {
+                const result = operate(calcState.firstOperand, calcState.operator, parseFloat(displayValue));
+                calcState.displayValue = `${result}`;
+                calcState.firstOperand = null;
+                calcState.operator = null;
+                calcState.waitingForSecondOperand = true;
+            }
+        } else if (['+', '-', '*', '/'].includes(input)) {
+            const inputValue = parseFloat(displayValue);
+
+            if (calcState.operator && waitingForSecondOperand) {
+                calcState.operator = input;
+                return;
+            }
+
+            if (calcState.firstOperand === null) {
+                calcState.firstOperand = inputValue;
+            } else if (calcState.operator) {
+                const result = operate(calcState.firstOperand, calcState.operator, inputValue);
+                calcState.displayValue = `${result}`;
+                calcState.firstOperand = result;
+            }
+            calcState.waitingForSecondOperand = true;
+            calcState.operator = input;
+        } else if (input === '.') {
+            if (waitingForSecondOperand) {
+                calcState.displayValue = '0.';
+                calcState.waitingForSecondOperand = false;
+            } else if (!displayValue.includes('.')) {
+                calcState.displayValue += '.';
+            }
+        } else {
+            if (waitingForSecondOperand) {
+                calcState.displayValue = input;
+                calcState.waitingForSecondOperand = false;
+            } else {
+                calcState.displayValue = displayValue === '0' ? input : displayValue + input;
+            }
+        }
+        updateCalculatorDisplay();
+    }
+
+    function operate(a, op, b) {
+        if (op === '+') return a + b;
+        if (op === '-') return a - b;
+        if (op === '*') return a * b;
+        if (op === '/') return a / b;
+    }
+    
+    // --- Minesweeper Logic ---
+    const MINESWEEPER_BOARD_SIZE = 10;
+    const MINESWEEPER_MINE_COUNT = 15;
+    let minesweeperBoard = [];
+    let minesweeperGameover = false;
+
+    function initializeMinesweeper() {
+        const grid = document.getElementById('minesweeper-grid');
+        if (!grid) return;
+        
+        grid.innerHTML = '';
+        minesweeperBoard = [];
+        minesweeperGameover = false;
+
+        for (let i = 0; i < MINESWEEPER_BOARD_SIZE * MINESWEEPER_BOARD_SIZE; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'minesweeper-cell';
+            cell.dataset.index = i;
+            grid.appendChild(cell);
+            minesweeperBoard.push({
+                isMine: false,
+                isRevealed: false,
+                isFlagged: false,
+                neighborMines: 0
+            });
+        }
+        
+        let minesPlaced = 0;
+        while (minesPlaced < MINESWEEPER_MINE_COUNT) {
+            const randomIndex = Math.floor(Math.random() * minesweeperBoard.length);
+            if (!minesweeperBoard[randomIndex].isMine) {
+                minesweeperBoard[randomIndex].isMine = true;
+                minesPlaced++;
+            }
+        }
+        
+        for (let i = 0; i < minesweeperBoard.length; i++) {
+            if (!minesweeperBoard[i].isMine) {
+                minesweeperBoard[i].neighborMines = countNeighborMines(i);
+            }
+        }
+        
+        grid.addEventListener('click', handleMinesweeperClick);
+        grid.addEventListener('contextmenu', handleMinesweeperRightClick);
+    }
+    
+    function handleMinesweeperClick(e) {
+        if (minesweeperGameover) return;
+        const cellEl = e.target.closest('.minesweeper-cell');
+        if (!cellEl) return;
+        
+        const index = parseInt(cellEl.dataset.index);
+        const cellData = minesweeperBoard[index];
+
+        if (cellData.isFlagged || cellData.isRevealed) {
+            return;
+        }
+
+        if (cellData.isMine) {
+            cellEl.classList.add('revealed');
+            cellEl.innerHTML = `<img src="mine.png">`;
+            minesweeperGameover = true;
+            revealAllMines();
+            alert('Game Over! You hit a mine!');
+        } else {
+            revealCell(index);
+            checkWinCondition();
+        }
+    }
+    
+    function handleMinesweeperRightClick(e) {
+        e.preventDefault();
+        if (minesweeperGameover) return;
+        const cellEl = e.target.closest('.minesweeper-cell');
+        if (!cellEl) return;
+        
+        const index = parseInt(cellEl.dataset.index);
+        const cellData = minesweeperBoard[index];
+        
+        if (cellData.isRevealed) return;
+        
+        cellData.isFlagged = !cellData.isFlagged;
+        if (cellData.isFlagged) {
+            cellEl.innerHTML = `<img src="flag.png">`;
+        } else {
+            cellEl.innerHTML = '';
+        }
+        checkWinCondition();
+    }
+    
+    function getNeighbors(index) {
+        const neighbors = [];
+        const row = Math.floor(index / MINESWEEPER_BOARD_SIZE);
+        const col = index % MINESWEEPER_BOARD_SIZE;
+        
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                if (i === 0 && j === 0) continue;
+                const newRow = row + i;
+                const newCol = col + j;
+                
+                if (newRow >= 0 && newRow < MINESWEEPER_BOARD_SIZE && newCol >= 0 && newCol < MINESWEEPER_BOARD_SIZE) {
+                    const newIndex = newRow * MINESWEEPER_BOARD_SIZE + newCol;
+                    neighbors.push(newIndex);
+                }
+            }
+        }
+        return neighbors;
+    }
+    
+    function countNeighborMines(index) {
+        let count = 0;
+        const neighbors = getNeighbors(index);
+        neighbors.forEach(neighborIndex => {
+            if (minesweeperBoard[neighborIndex].isMine) {
+                count++;
+            }
+        });
+        return count;
+    }
+    
+    function revealCell(index) {
+        const cellData = minesweeperBoard[index];
+        const cellEl = document.querySelector(`.minesweeper-cell[data-index="${index}"]`);
+        
+        if (cellData.isRevealed || cellData.isFlagged) return;
+        
+        cellData.isRevealed = true;
+        cellEl.classList.add('revealed');
+        
+        if (cellData.neighborMines > 0) {
+            cellEl.textContent = cellData.neighborMines;
+            cellEl.classList.add(`number-${cellData.neighborMines}`);
+        } else {
+            const neighbors = getNeighbors(index);
+            neighbors.forEach(neighborIndex => {
+                revealCell(neighborIndex);
+            });
+        }
+    }
+    
+    function revealAllMines() {
+        minesweeperBoard.forEach((cell, index) => {
+            if (cell.isMine) {
+                const cellEl = document.querySelector(`.minesweeper-cell[data-index="${index}"]`);
+                cellEl.innerHTML = `<img src="mine.png">`;
+            }
+        });
+    }
+
+    function checkWinCondition() {
+        let revealedCount = 0;
+        let flaggedCount = 0;
+        minesweeperBoard.forEach(cell => {
+            if (cell.isRevealed) {
+                revealedCount++;
+            }
+            if (cell.isFlagged && cell.isMine) {
+                flaggedCount++;
+            }
+        });
+        
+        if (revealedCount === (MINESWEEPER_BOARD_SIZE * MINESWEEPER_BOARD_SIZE) - MINESWEEPER_MINE_COUNT) {
+            minesweeperGameover = true;
+            alert('Congratulations! You won!');
+        } else if (flaggedCount === MINESWEEPER_MINE_COUNT) {
+            let allMinesFlagged = true;
+            minesweeperBoard.forEach(cell => {
+                if (cell.isMine && !cell.isFlagged) {
+                    allMinesFlagged = false;
+                }
+            });
+            if (allMinesFlagged) {
+                minesweeperGameover = true;
+                alert('Congratulations! You won!');
+            }
+        }
+    }
+
+    function toggleMinesweeperIcon() {
+        const icon = document.getElementById('minesweeper-reset-icon');
+        if (icon.src.endsWith('favicon.png')) {
+            icon.src = 'favicon2.png';
+        } else {
+            icon.src = 'favicon.png';
+        }
+    }
 
   </script>
 </body>
