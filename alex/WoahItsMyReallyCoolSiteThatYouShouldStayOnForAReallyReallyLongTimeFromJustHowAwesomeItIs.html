@@ -1,762 +1,947 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>hey 👅</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Windows XP - Retro Replica</title>
 
-<style>
-  /* Fonts: Tahoma as default, Trebuchet MS for title bars */
-  :root{
-    --taskbar-blue: #082554;
-    --taskbar-lip: linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(255,255,255,0));
-    --start-green: #3cb371;
-    --accent: #245edb;
-    --light-blue-fade: rgba(135,206,250,0.45);
-    --crt-opacity-min: 0.16;
-    --crt-opacity-max: 0.32;
-  }
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Tahoma&family=Trebuchet+MS&display=swap" rel="stylesheet">
 
-  html,body{
-    height:100%;
-    margin:0;
-    font-family: Tahoma, Arial, sans-serif;
-    background: url("XP.png") center/cover no-repeat fixed;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    overflow:hidden;
-  }
+  <!--
+    ASSETS NEEDED (place in the same repo / correct paths):
+      - XP.png                     (wallpaper)
+      - winxp.png                  (start button image)
+      - alex.png                   (user tile)
+      - shutdown.png, logoff.png   (icons)
+      - close.png, minimize.png, maximize.png, No.png
+      - numeric icons: 1.png .. 20.png (icons used for entries)
+      - notification icons: notify1.png, notify2.png, ...
+      - jukebox disc (any numeric png used as icon)
+      - audio files inside /alex/:
+          alex/Music1.mp3
+          alex/Music2.mp3
+          alex/Music3.mp3
+          alex/Music4.mp3
+          alex/XPstartup.mp3
+          alex/XPshutdown.mp3
+  -->
 
-  /* CRT overlay (stronger) */
-  body::before{
-    content:"";
-    position:fixed; inset:0;
-    background:
-      radial-gradient(1200px 600px at 50% 25%, rgba(255,255,255,0.02), rgba(0,0,0,0.06)),
-      repeating-linear-gradient(transparent 0 2px, rgba(0,0,0,0.12) 2px 4px);
-    mix-blend-mode:multiply;
-    pointer-events:none;
-    z-index:9999;
-    opacity:var(--crt-opacity-min);
-    filter:contrast(1.06) blur(0.4px);
-    animation:crtFlicker 0.18s ease-in-out infinite alternate;
-  }
-  @keyframes crtFlicker{ from{opacity:var(--crt-opacity-min)} to{opacity:var(--crt-opacity-max)} }
+  <style>
+    :root{
+      --accent:#245edb;
+      --dark-accent:#0a246a;
+      --taskbar:#0a246a;
+      --light-blue-fade: rgba(135,206,250,0.45);
+      --crt-min: 0.16;
+      --crt-max: 0.32;
+      --jukebox-scale: 1;
+    }
 
-  /* Basic utilities */
-  .hidden { display:none !important; }
-  img{display:block;max-width:100%}
+    /* Base */
+    html,body{ height:100%; margin:0; font-family: Tahoma, Arial, sans-serif; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+    body { background:#000; overflow:hidden; }
 
-  /* --- LOGIN SCREEN (Welcome) --- */
-  #login-screen{
-    position:fixed; inset:0;
-    background: linear-gradient(to bottom,#1e5fc2,#073a7a);
-    display:flex; align-items:center; justify-content:center; flex-direction:column;
-    color: #fff; z-index:1000;
-  }
-  #login-logo {
-    font-style:italic; font-size:2.2rem; margin-bottom:16px; font-family: Tahoma, sans-serif;
-  }
-  #login-prompt { margin-bottom:10px; opacity:0.95; }
-  .user-tile{
-    display:flex; align-items:center; gap:12px; padding:14px 18px;
-    border-radius:10px; background: rgba(0,0,0,0.16); cursor:pointer;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.45);
-  }
-  .user-tile img{ width:84px; height:84px; border-radius:8px; border:2px solid rgba(255,255,255,0.08) }
-  #password-box{ margin-top:12px; display:none; }
-  #password-input{ padding:8px 10px; font-size:1rem; border-radius:6px; border:1px solid rgba(0,0,0,0.2) }
-  #login-sticky{ margin-top:18px; display:block; transform:rotate(-3deg); background:#fff8b0; color:#2d2300; padding:8px 10px; border-radius:6px; font-weight:700}
-  #login-shutdown{
-    position: absolute; left:18px; bottom:18px; display:flex; gap:10px; align-items:center; cursor:pointer;
-    background: rgba(255,255,255,0.06); padding:8px 12px; border-radius:8px;
-  }
-  #login-shutdown img{ width:22px; height:22px; }
+    /*************************
+      LOGIN / FLASH / CRT
+    *************************/
+    #login-screen{
+      position:fixed; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column;
+      background: linear-gradient(to bottom, #1e5fc2, #073a7a);
+      z-index:12000; color:white;
+    }
+    #login-title{ font-style:italic; font-size:2.2rem; margin-bottom:10px; font-family:Tahoma; }
+    #login-sub{ margin-bottom:18px; opacity:0.95; }
+    .user-tile{ display:flex; align-items:center; gap:14px; background:rgba(255,255,255,0.08); padding:12px 18px; border-radius:10px; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,0.5); }
+    .user-tile img{ width:84px; height:84px; border-radius:10px; object-fit:cover; border:2px solid rgba(255,255,255,0.06); }
 
-  /* --- SHUTDOWN SCREEN --- */
-  #shutdown-screen{
-    position:fixed; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column;
-    background: linear-gradient(to bottom,#1e5fc2,#073a7a); color:white; font-size:1.4rem; z-index:2000; display:none;
-  }
+    #login-sticky{ margin-top:18px; background:#fff8b0; color:#2d2300; padding:8px 10px; border-radius:6px; transform:rotate(-3deg); font-weight:700; display:block; }
+    #login-shutdown{ position:fixed; left:18px; bottom:18px; display:flex; align-items:center; gap:10px; cursor:pointer; color:#ffb84d; font-weight:800; }
+    #login-shutdown img{ width:22px;height:22px; }
 
-  /* --- DESKTOP (main UI) --- */
-  #desktop{ position:fixed; inset:0; overflow:hidden; display:none; z-index:10; }
+    /* white flash reveal (CRT-power-on) */
+    #white-flash{
+      position:fixed; inset:0; background:white; z-index:11900; pointer-events:none; opacity:0; transition: opacity 1.1s cubic-bezier(.2,.9,.2,1);
+    }
 
-  /* Desktop icons (grid-like and spaced) */
-  .desktop-icon{
-    position:absolute; width:92px; text-align:center; color:#fff; cursor:pointer; user-select:none;
-    transition: background-color 0.12s ease;
-  }
-  .desktop-icon img{ width:56px; height:56px; margin:0 auto; display:block; }
-  .desktop-icon span{ display:block; margin-top:6px; font-size:0.86rem; text-shadow:0 1px 2px rgba(0,0,0,0.6) }
-  .desktop-icon:hover{ background:var(--light-blue-fade); border-radius:8px; padding:6px; }
+    /* CRT scanline overlay (stronger) */
+    #crt-overlay{
+      content:""; position:fixed; inset:0; z-index:13000; pointer-events:none;
+      background:
+         radial-gradient(1200px 600px at 50% 25%, rgba(255,255,255,0.02), rgba(0,0,0,0.06)),
+         repeating-linear-gradient(transparent 0 2px, rgba(0,0,0,0.12) 2px 4px);
+      mix-blend-mode:multiply; opacity:var(--crt-min); filter:contrast(1.06) blur(0.4px);
+      animation: crtFlicker 0.18s ease-in-out infinite alternate;
+    }
+    @keyframes crtFlicker{ from { opacity: var(--crt-min); } to { opacity: var(--crt-max); } }
 
-  /* --- TASKBAR --- */
-  #taskbar{
-    position:fixed; left:0; right:0; bottom:0; height:44px; display:flex; align-items:center; gap:8px;
-    padding:6px 10px; z-index:1500;
-    background: linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.08)), var(--taskbar-blue);
-    box-shadow: 0 -6px 14px rgba(0,0,0,0.35);
-  }
-  #taskbar-toplip{ position:absolute; left:0; right:0; top:-6px; height:6px; background:var(--taskbar-lip); opacity:0.95; pointer-events:none }
-  #start-btn{
-    width:46px; height:32px; display:flex; align-items:center; justify-content:center; cursor:pointer;
-    border-radius:8px; overflow:hidden; background:linear-gradient(#3cb371,#2e895a);
-  }
-  #start-btn img{ width:28px; height:28px; display:block; }
+    /*************************
+      DESKTOP (hidden until login)
+    *************************/
+    #desktop{
+      display:none; position:fixed; inset:0; overflow:hidden; z-index:100; background: url('XP.png') center/cover no-repeat;
+    }
 
-  /* Taskbar buttons area (minimized windows / running apps) */
-  #taskbar-apps{ display:flex; gap:6px; align-items:center; margin-left:12px; flex:1; overflow:auto; padding-bottom:4px; }
-  .task-app{
-    min-width:84px; padding:6px 8px; background:rgba(255,255,255,0.04); color:#eaf4ff; border-radius:6px; display:flex; gap:8px; align-items:center; cursor:pointer;
-    border:1px solid rgba(255,255,255,0.03); font-weight:700; font-size:0.85rem;
-  }
-  .task-app.active{ outline:2px solid rgba(255,255,255,0.06); box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2) }
-  .task-app img{ width:18px; height:18px; }
+    /* Desktop icons (spaced, responsive-ish) */
+    .desktop-icon{
+      position:absolute; width:96px; text-align:center; color:#fff; cursor:pointer; user-select:none;
+      transition: background 0.12s ease, transform 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .desktop-icon img{ width:56px; height:56px; display:block; margin:0 auto 6px; object-fit:cover; }
+    .desktop-icon span{ display:block; font-size:0.9rem; text-shadow:0 2px 6px rgba(0,0,0,0.6); }
+    .desktop-icon:hover{ background:var(--light-blue-fade); border-radius:8px; padding:6px; transform:translateY(-2px); }
 
-  /* Clock/tray */
-  #tray { display:flex; align-items:center; gap:10px; margin-left:auto }
-  #clock-box { background:#5c9ccc; padding:4px 8px; border-radius:4px; font-weight:700; color:#01293b; border:1px solid rgba(0,0,0,0.12) }
+    /*************************
+      TASKBAR + START MENU
+    *************************/
+    #taskbar{
+      position:fixed; left:0; right:0; bottom:0; height:48px; z-index:11000;
+      background: linear-gradient(to top, var(--taskbar), #2b5598);
+      display:flex; align-items:center; padding:6px 12px; gap:8px;
+      box-shadow: 0 -8px 30px rgba(0,0,0,0.5);
+    }
+    #taskbar-toplip{ position:absolute; left:0; right:0; top:-6px; height:6px; background:linear-gradient(rgba(255,255,255,0.04), transparent); pointer-events:none; border-top-left-radius:8px; border-top-right-radius:8px; }
 
-  /* Notifications (small fade) */
-  .notification {
-    position:fixed; right:18px; bottom:64px; width:240px; background:linear-gradient(#fff,#f3f9ff); border:1px solid rgba(0,0,0,0.08);
-    padding:10px; border-radius:8px; box-shadow:0 8px 20px rgba(0,0,0,0.2); display:flex; gap:10px; align-items:center; z-index:2200;
-    animation:notifyIn 0.28s ease;
-  }
-  .notification img{ width:36px; height:36px; border-radius:6px; object-fit:cover; }
-  .notification .txt{ font-weight:800; color:#083a6b; font-size:0.95rem; text-shadow: none; }
-  @keyframes notifyIn{ from{ transform:translateY(8px); opacity:0 } to{ transform:translateY(0); opacity:1 } }
+    /* Start button (image bubble only) */
+    #start-btn{
+      width:52px; height:34px; display:flex; align-items:center; justify-content:center; cursor:pointer;
+      background:transparent; border-radius:8px; border:none; padding:4px; flex-shrink:0;
+    }
+    #start-btn img{ width:36px; height:36px; display:block; }
 
-  /* Special flair text for notifications */
-  .flair { color:#d47a00; font-weight:900; margin-left:6px; }
+    /* Task apps area (minimized/running apps) */
+    #task-apps{ display:flex; gap:8px; align-items:center; margin-left:8px; max-width:60%; overflow:auto; padding-bottom:2px; }
+    .task-app{
+      display:flex; align-items:center; gap:8px; padding:6px 10px; min-width:92px; border-radius:6px; cursor:pointer; color:#eaf4ff;
+      background: rgba(255,255,255,0.03); font-weight:700; font-size:0.88rem; border:1px solid rgba(255,255,255,0.03);
+    }
+    .task-app img{ width:18px; height:18px; }
 
-  /* --- START MENU (rounded, smooth, entries with icons and borders) --- */
-  #start-menu{
-    position:fixed; left:8px; bottom:54px; width:420px; height:420px; display:none; z-index:2000;
-    background: linear-gradient(#f8fbff,#eaf6ff); border-radius:12px; border:2px solid rgba(0,0,0,0.18);
-    box-shadow: 0 18px 40px rgba(0,0,0,0.45); overflow:hidden; display:grid; grid-template-columns: 1fr 0.9fr;
-  }
-  .start-left{ padding:12px; background:linear-gradient(#1f5cc7,#1b4aa8); color:white; }
-  .start-right{ padding:12px; background:#eef6ff; color:#083a6b; }
-  .start-entry{
-    display:flex; align-items:center; gap:10px; padding:8px; margin-bottom:8px; border-radius:8px;
-    background: linear-gradient( rgba(255,255,255,0.03), rgba(255,255,255,0.01) );
-    border:1px solid rgba(255,255,255,0.06);
-    cursor:pointer;
-  }
-  .start-entry img{ width:22px; height:22px; }
-  .start-entry:hover{ background:rgba(255,255,255,0.12) }
-  .start-bottom{ grid-column:1/-1; padding:10px; display:flex; flex-direction:column; gap:8px; background:#f1efe7; border-top:1px solid rgba(0,0,0,0.06) }
-  .start-action{ display:flex; gap:10px; align-items:center; padding:8px; border-radius:8px; cursor:pointer; background:white; border:1px solid rgba(0,0,0,0.06) }
+    /* Tray / clock */
+    #tray{ display:flex; gap:8px; align-items:center; margin-left:auto; }
+    #clock{ font-weight:800; background:#cfe8ff; color:#01304a; padding:4px 8px; border-radius:4px; border:1px solid rgba(0,0,0,0.08); }
 
-  /* --- WINDOWS (XP-styled) --- */
-  .window{
-    position:absolute; width:640px; height:420px; background:#fffdf6; border:2px solid #00309c; border-radius:6px;
-    box-shadow: 0 24px 48px rgba(0,0,0,0.35); display:flex; flex-direction:column; z-index:1200; overflow:hidden;
-  }
-  .titlebar{
-    height:40px; padding:6px 10px; display:flex; align-items:center; justify-content:space-between;
-    background: linear-gradient(to bottom,#2f6fd6,#0a3f84); color:white; font-family:"Trebuchet MS",sans-serif; font-weight:800;
-    cursor:move;
-  }
-  .titlebar .controls{ display:flex; gap:8px; align-items:center; }
-  .titlebar .controls img{ width:18px; height:18px; cursor:pointer; }
-  .content{
-    padding:12px; overflow:auto; flex:1; background: linear-gradient(#fff,#f7fbff);
-  }
-  .gif-slot{ position:absolute; top:10px; right:10px; width:120px; height:72px; border-radius:6px; overflow:hidden; border:1px solid rgba(0,0,0,0.06); background:#000; }
-  .entry{
-    display:flex; gap:12px; align-items:flex-start; padding:14px; margin-bottom:18px; border-radius:8px; background: #ffffff;
-    border:1px solid rgba(0,0,0,0.04);
-  }
-  .entry img{ width:84px; height:64px; object-fit:cover; border-radius:6px; }
-  .entry .text{ font-weight:700; color:#083a6b; line-height:1.2 }
-  .entries-wrap{ max-height: calc(100% - 12px); overflow:auto; padding-right:8px; }
+    /* Notifications container (stacked) */
+    #notifications{ position:fixed; right:12px; bottom:68px; display:flex; flex-direction:column; gap:8px; z-index:11500; pointer-events:none; }
 
-  /* responsive tweaks */
-  @media (max-width:900px){
-    .window{ width:92vw; height:70vh; left:4vw !important; top:6vh !important; }
-    #start-menu{ width:88vw; left:6%; height:60vh; }
-  }
-</style>
+    .notification{
+      pointer-events:auto;
+      display:flex; gap:10px; align-items:center; background:linear-gradient(#fff,#f3fbff); border:1px solid rgba(0,0,0,0.08);
+      padding:8px 10px; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.18); min-width:220px;
+      font-weight:800; color:#063b6a; animation: noteIn .28s ease;
+    }
+    .notification img{ width:36px; height:36px; border-radius:6px; object-fit:cover; }
+    .notification .body { display:flex; flex-direction:column; }
+    .notification .body .msg { font-weight:900; color:#083a6b; }
+    .notification .body .flair { color:#d47a00; font-weight:900; margin-top:4px; font-size:0.8rem; }
+
+    @keyframes noteIn { from { opacity:0; transform:translateY(8px);} to { opacity:1; transform:translateY(0);} }
+
+    /*************************
+      START MENU
+    *************************/
+    #start-menu{
+      position:fixed; left:8px; bottom:56px; width:420px; height:420px; z-index:11400; display:none;
+      border-radius:12px; overflow:hidden; box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+      background: linear-gradient(#eaf6ff,#d7ecff);
+      border:1px solid rgba(0,0,0,0.12);
+      display:grid; grid-template-columns: 1fr 0.9fr;
+    }
+    .start-left{ padding:12px; background:linear-gradient(#2e63ba,#1b46a2); color:white; overflow:auto; }
+    .start-right{ padding:12px; background:#f6fbff; color:#02304c; overflow:auto; }
+    .start-entry{
+      display:flex; align-items:center; gap:10px; padding:8px; margin-bottom:8px;
+      border-radius:8px; cursor:pointer; border:1px solid rgba(255,255,255,0.06);
+      background: linear-gradient(rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    }
+    .start-entry img{ width:20px; height:20px; }
+    .start-entry:hover{ background: rgba(255,255,255,0.12); transform:translateX(2px); }
+
+    .start-bottom{ grid-column:1/-1; padding:12px; display:flex; flex-direction:column; gap:8px; background:#f1efe7; border-top:1px solid rgba(0,0,0,0.06); }
+    .start-action{ display:flex; align-items:center; gap:10px; padding:8px; border-radius:8px; cursor:pointer; background:#fff; border:1px solid rgba(0,0,0,0.06); font-weight:800; }
+
+    /*************************
+      WINDOWS
+    *************************/
+    .window{
+      position:absolute; width:720px; height:420px; background:#fffdfa; border:2px solid #00309c;
+      border-radius:6px; box-shadow: 0 30px 60px rgba(0,0,0,0.35); display:flex; flex-direction:column; overflow:hidden;
+      z-index:1000;
+    }
+    .titlebar{
+      height:44px; display:flex; align-items:center; justify-content:space-between; padding:6px 12px;
+      background: linear-gradient(#2f6fd6,#0a3f84); color:white; font-family: "Trebuchet MS", Arial, sans-serif; font-weight:800; cursor:grab;
+    }
+    .titlebar .controls{ display:flex; gap:8px; align-items:center; }
+    .titlebar .controls img{ width:18px; height:18px; cursor:pointer; border-radius:3px; }
+    .titlebar .controls img:hover{ filter:brightness(1.2); transform:translateY(-1px); }
+
+    .content{ padding:14px; overflow:auto; position:relative; flex:1; background: linear-gradient(#fff,#f7fbff); }
+
+    /* gif slot in top-right of window */
+    .gif-slot{ position:absolute; top:12px; right:12px; width:120px; height:72px; background:#111; border-radius:6px; border:1px solid rgba(0,0,0,0.06); overflow:hidden; }
+
+    /* entries (spaced, scrollable) */
+    .entries-wrap{ display:flex; flex-direction:column; gap:20px; padding-right:6px; }
+    .entry{ display:flex; gap:14px; align-items:flex-start; padding:14px; border-radius:8px; background:#ffffff; border:1px solid rgba(0,0,0,0.04); }
+    .entry img{ width:120px; height:78px; object-fit:cover; border-radius:6px; }
+    .entry .entry-text{ font-weight:800; color:#063b6a; line-height:1.25; font-size:1rem; }
+
+    /* responsive windows smaller screens */
+    @media (max-width:1000px){
+      .window{ width:92vw; height:70vh; left:4vw !important; top:6vh !important; }
+      #start-menu{ width:90vw; left:5%; height:60vh; }
+    }
+
+    /* small helper */
+    .hidden{ display:none !important; }
+  </style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
-<div id="login-screen" role="dialog" aria-label="Welcome screen">
-  <div id="login-logo">Welcome</div>
-  <div id="login-prompt">To begin, click your user name</div>
+  <!-- LOGIN / WELCOME -->
+  <div id="login-screen" aria-label="Welcome login screen">
+    <div id="login-title">Welcome</div>
+    <div id="login-sub">To begin, click your user name</div>
 
-  <div class="user-tile" id="user-alex" onclick="revealPassword()">
-    <img src="alex.png" alt="alex">
-    <div style="font-weight:800; font-size:1.15rem">alex</div>
-  </div>
-
-  <div id="password-box" style="margin-top:12px;">
-    <input id="password-input" type="password" placeholder="Password" />
-    <button onclick="attemptLogin()">Sign in</button>
-  </div>
-
-  <div id="login-sticky">Password: boogieboy</div>
-
-  <div id="login-shutdown" onclick="shutdownSequence()">
-    <img src="shutdown.png" alt="shutdown"><div style="font-weight:700;color:#ffcf7a">Turn off computer</div>
-  </div>
-</div>
-
-<!-- SHUTDOWN SCREEN -->
-<div id="shutdown-screen" class="hidden" aria-hidden="true">
-  <div style="text-align:center;">
-    <img src="winxp.png" style="width:140px;margin-bottom:12px" alt="XP">
-    <div style="font-size:1.5rem;font-weight:800">Shutting down...</div>
-  </div>
-</div>
-
-<!-- DESKTOP -->
-<div id="desktop" class="hidden" aria-hidden="true">
-  <!-- Desktop icons — positioned spaced out -->
-  <div class="desktop-icon" id="icon-bio" style="left:36px; top:36px" onclick="openWindow('win-bio')">
-    <img src="1.png" alt=""><span>Bio</span>
-  </div>
-  <div class="desktop-icon" id="icon-interests" style="left:36px; top:140px" onclick="openWindow('win-interests')">
-    <img src="2.png" alt=""><span>Interests</span>
-  </div>
-  <div class="desktop-icon" id="icon-dni" style="left:36px; top:244px" onclick="openWindow('win-dni')">
-    <img src="3.png" alt=""><span>DNI</span>
-  </div>
-  <div class="desktop-icon" id="icon-journal" style="left:36px; top:348px" onclick="openWindow('win-journal')">
-    <img src="4.png" alt=""><span>Journal</span>
-  </div>
-  <div class="desktop-icon" id="icon-drawings" style="left:36px; top:452px" onclick="openWindow('win-drawings')">
-    <img src="5.png" alt=""><span>Drawings</span>
-  </div>
-  <div class="desktop-icon" id="icon-games" style="left:36px; top:556px" onclick="openWindow('win-games')">
-    <img src="6.png" alt=""><span>Games</span>
-  </div>
-
-  <div class="desktop-icon" id="icon-computer" style="right:36px; bottom:220px" onclick="openWindow('win-computer')">
-    <img src="8.png" alt=""><span>My Computer</span>
-  </div>
-  <div class="desktop-icon" id="icon-recycle" style="right:36px; bottom:120px" onclick="openWindow('win-recycle')">
-    <img src="7.png" alt=""><span>Recycle Bin</span>
-  </div>
-
-  <!-- --- Start menu (hidden initially) --- -->
-  <div id="start-menu" role="menu" aria-hidden="true">
-    <div class="start-left">
-      <!-- left entries with icons -->
-      <div class="start-entry" onclick="openWindow('win-bio')"><img src="1.png" alt=""> <div>Bio</div></div>
-      <div class="start-entry" onclick="openWindow('win-interests')"><img src="2.png" alt=""> <div>Interests</div></div>
-      <div class="start-entry" onclick="openWindow('win-dni')"><img src="3.png" alt=""> <div>DNI</div></div>
-      <div class="start-entry" onclick="openWindow('win-journal')"><img src="4.png" alt=""> <div>Journal</div></div>
-      <div class="start-entry" onclick="openWindow('win-drawings')"><img src="5.png" alt=""> <div>Drawings</div></div>
-      <div class="start-entry" onclick="openWindow('win-games')"><img src="6.png" alt=""> <div>Games</div></div>
-      <div class="start-entry" onclick="openWindow('win-jukebox')"><img src="17.png" alt=""> <div>Jukebox</div></div>
+    <div class="user-tile" id="user-alex" onclick="showPassword()">
+      <img src="alex.png" alt="alex">
+      <div style="font-weight:900; font-size:1.1rem;">alex</div>
     </div>
 
-    <div class="start-right">
-      <div class="start-entry"><img src="1.png" alt=""> <div>My Documents</div></div>
-      <div class="start-entry"><img src="2.png" alt=""> <div>My Pictures</div></div>
-      <div class="start-entry"><img src="3.png" alt=""> <div>My Music</div></div>
+    <div id="password-container" style="margin-top:12px; display:none;">
+      <input id="password-input" type="password" placeholder="Password" style="padding:8px 10px; border-radius:6px; border:1px solid rgba(0,0,0,0.12); font-size:1rem;">
+      <button onclick="attemptLogin()" style="padding:8px 10px; margin-left:8px; font-weight:800;">Sign in</button>
     </div>
 
-    <div class="start-bottom">
-      <div class="start-action" onclick="logOff()"><img src="logoff.png" alt=""> <div>Log Off (alex)</div></div>
-      <div class="start-action" onclick="shutdownSequence()"><img src="shutdown.png" alt=""> <div>Turn Off Computer</div></div>
+    <div id="login-sticky" style="margin-top:18px;">Password: boogieboy</div>
+
+    <div id="login-shutdown" onclick="shutdownSequence()">
+      <img src="shutdown.png" alt="shutdown" width="22" height="22">
+      <div style="font-weight:900; color:#ffd080;">Turn off computer</div>
     </div>
   </div>
 
-  <!-- --- Taskbar --- -->
-  <div id="taskbar" role="toolbar" aria-hidden="false">
-    <div id="taskbar-toplip"></div>
-    <div id="start-btn" title="Start" onclick="toggleStartMenu()"><img src="winxp.png" alt="start"></div>
+  <!-- White flash for retro reveal -->
+  <div id="white-flash" style="opacity:0;"></div>
 
-    <div id="taskbar-apps" aria-live="polite"></div>
+  <!-- Desktop area (hidden until login) -->
+  <div id="desktop" class="hidden" aria-hidden="true">
 
-    <div id="tray">
-      <div id="clock-box">--:--</div>
+    <!-- Notifications stack -->
+    <div id="notifications"></div>
+
+    <!-- Desktop icons (arranged and spaced) -->
+    <div class="desktop-icon" id="icon-bio" style="left:36px; top:36px;" onclick="openWindow('win-bio')">
+      <img src="1.png" alt="bio"><span>Bio</span>
     </div>
-  </div>
 
-  <!-- --- Notifications container - will be generated by JS --- -->
+    <div class="desktop-icon" id="icon-hoodie" style="left:36px; top:140px;" onclick="openWindow('win-interests')">
+      <img src="2.png" alt="hoodie"><span>Interests</span>
+    </div>
 
-  <!-- --- WINDOWS: Each is pre-created but hidden until opened. Each window uses *entries* with large spacing and scrollable content --- -->
-  <!-- Template for windows: we create them here so CSS is applied; content filled below. -->
+    <div class="desktop-icon" id="icon-dni" style="left:36px; top:244px;" onclick="openWindow('win-dni')">
+      <img src="3.png" alt="dni"><span>DNI</span>
+    </div>
 
-  <!-- Bio -->
-  <div class="window hidden" id="win-bio" data-title="Bio" style="left:140px; top:120px;">
-    <div class="titlebar" onmousedown="dragStart(event,this.parentElement)">
-      <div>Bio</div>
-      <div class="controls">
-        <img src="close.png" title="Close" onclick="closeWindow('win-bio')" alt="x">
-        <img src="maximize.png" class="no-max" title="No">
-        <img src="minimize.png" title="Minimize" onclick="minimizeWindow('win-bio')">
+    <div class="desktop-icon" id="icon-journal" style="left:36px; top:348px;" onclick="openWindow('win-journal')">
+      <img src="4.png" alt="journal"><span>Journal</span>
+    </div>
+
+    <div class="desktop-icon" id="icon-drawings" style="left:36px; top:452px;" onclick="openWindow('win-drawings')">
+      <img src="5.png" alt="drawings"><span>Drawings</span>
+    </div>
+
+    <div class="desktop-icon" id="icon-games" style="left:36px; top:556px;" onclick="openWindow('win-games')">
+      <img src="6.png" alt="games"><span>Games</span>
+    </div>
+
+    <div class="desktop-icon" id="icon-computer" style="right:36px; bottom:220px;" onclick="openWindow('win-computer')">
+      <img src="8.png" alt="computer"><span>My Computer</span>
+    </div>
+
+    <div class="desktop-icon" id="icon-recycle" style="right:36px; bottom:120px;" onclick="openWindow('win-recycle')">
+      <img src="7.png" alt="recycle"><span>Recycle Bin</span>
+    </div>
+
+    <!-- Start menu (hidden) -->
+    <div id="start-menu" class="hidden" role="menu" aria-hidden="true">
+      <div class="start-left" id="start-left">
+        <!-- left entries (icons + text) -->
+        <!-- Added by JS template below to keep code tidy -->
+      </div>
+      <div class="start-right" id="start-right">
+        <div class="start-entry"><img src="9.png" alt=""><div>My Documents</div></div>
+        <div class="start-entry"><img src="10.png" alt=""><div>My Pictures</div></div>
+        <div class="start-entry"><img src="11.png" alt=""><div>My Music</div></div>
+      </div>
+      <div class="start-bottom">
+        <div class="start-action" id="start-logoff" onclick="logOff()"><img src="logoff.png" alt=""><div>Log Off (alex)</div></div>
+        <div class="start-action" id="start-shutdown" onclick="shutdownSequence()"><img src="shutdown.png" alt=""><div>Turn Off Computer</div></div>
       </div>
     </div>
-    <div class="content">
-      <div class="gif-slot"><img src="gif1.gif" alt=""></div>
-      <div class="entries-wrap" id="entries-bio"></div>
-    </div>
-  </div>
 
-  <!-- Interests -->
-  <div class="window hidden" id="win-interests" data-title="Interests" style="left:200px; top:140px;">
-    <div class="titlebar" onmousedown="dragStart(event,this.parentElement)"><div>Interests</div>
-      <div class="controls">
-        <img src="close.png" onclick="closeWindow('win-interests')">
-        <img src="maximize.png" class="no-max">
-        <img src="minimize.png" onclick="minimizeWindow('win-interests')">
+    <!-- Taskbar -->
+    <div id="taskbar" role="presentation">
+      <div id="taskbar-toplip"></div>
+      <button id="start-btn" title="Start" aria-haspopup="true" aria-expanded="false" onclick="toggleStartMenu()">
+        <img src="winxp.png" alt="Start">
+      </button>
+
+      <div id="task-apps" aria-live="polite" role="list"></div>
+
+      <div id="tray">
+        <div id="clock" aria-live="polite">--:--</div>
       </div>
     </div>
-    <div class="content"><div class="gif-slot"><img src="gif2.gif" alt=""></div><div class="entries-wrap" id="entries-interests"></div></div>
-  </div>
 
-  <!-- DNI -->
-  <div class="window hidden" id="win-dni" data-title="DNI" style="left:260px; top:160px;">
-    <div class="titlebar" onmousedown="dragStart(event,this.parentElement)"><div>DNI</div>
-      <div class="controls">
-        <img src="close.png" onclick="closeWindow('win-dni')">
-        <img src="maximize.png" class="no-max">
-        <img src="minimize.png" onclick="minimizeWindow('win-dni')">
+    <!-- Windows: prebuilt, hidden until opened. Each window includes gif slot, entries (8) -->
+    <!-- BIO -->
+    <div class="window hidden" id="win-bio" data-title="Bio" style="left:120px; top:100px;">
+      <div class="titlebar" onmousedown="dragStart(event,this.parentElement)">
+        <div>Bio</div>
+        <div class="controls">
+          <img src="close.png" title="Close" alt="close" onclick="closeWindow('win-bio')">
+          <img src="maximize.png" class="no-max" title="No" alt="no">
+          <img src="minimize.png" title="Minimize" alt="minimize" onclick="minimizeWindow('win-bio')">
+        </div>
+      </div>
+      <div class="content">
+        <div class="gif-slot"><img src="17.png" alt="" style="width:100%;height:100%;object-fit:cover"></div>
+        <div class="entries-wrap" id="entries-bio"></div>
       </div>
     </div>
-    <div class="content"><div class="gif-slot"><img src="gif3.gif" alt=""></div><div class="entries-wrap" id="entries-dni"></div></div>
-  </div>
 
-  <!-- Journal -->
-  <div class="window hidden" id="win-journal" data-title="Journal" style="left:320px; top:180px;">
-    <div class="titlebar" onmousedown="dragStart(event,this.parentElement)"><div>Journal</div>
-      <div class="controls">
-        <img src="close.png" onclick="closeWindow('win-journal')">
-        <img src="maximize.png" class="no-max">
-        <img src="minimize.png" onclick="minimizeWindow('win-journal')">
+    <!-- INTERESTS -->
+    <div class="window hidden" id="win-interests" data-title="Interests" style="left:200px; top:120px;">
+      <div class="titlebar" onmousedown="dragStart(event,this.parentElement)">
+        <div>Interests</div>
+        <div class="controls">
+          <img src="close.png" onclick="closeWindow('win-interests')">
+          <img src="maximize.png" class="no-max">
+          <img src="minimize.png" onclick="minimizeWindow('win-interests')">
+        </div>
+      </div>
+      <div class="content">
+        <div class="gif-slot"><img src="18.png" alt="" style="width:100%;height:100%;object-fit:cover"></div>
+        <div class="entries-wrap" id="entries-interests"></div>
       </div>
     </div>
-    <div class="content"><div class="gif-slot"><img src="gif4.gif" alt=""></div><div class="entries-wrap" id="entries-journal"></div></div>
-  </div>
 
-  <!-- Drawings -->
-  <div class="window hidden" id="win-drawings" data-title="Drawings" style="left:380px; top:200px;">
-    <div class="titlebar" onmousedown="dragStart(event,this.parentElement)"><div>Drawings</div>
-      <div class="controls">
-        <img src="close.png" onclick="closeWindow('win-drawings')">
-        <img src="maximize.png" class="no-max">
-        <img src="minimize.png" onclick="minimizeWindow('win-drawings')">
+    <!-- DNI -->
+    <div class="window hidden" id="win-dni" data-title="DNI" style="left:280px; top:140px;">
+      <div class="titlebar" onmousedown="dragStart(event,this.parentElement)">
+        <div>DNI</div>
+        <div class="controls">
+          <img src="close.png" onclick="closeWindow('win-dni')">
+          <img src="maximize.png" class="no-max">
+          <img src="minimize.png" onclick="minimizeWindow('win-dni')">
+        </div>
+      </div>
+      <div class="content">
+        <div class="gif-slot"><img src="19.png" alt="" style="width:100%;height:100%;object-fit:cover"></div>
+        <div class="entries-wrap" id="entries-dni"></div>
       </div>
     </div>
-    <div class="content"><div class="gif-slot"><img src="gif5.gif" alt=""></div><div class="entries-wrap" id="entries-drawings"></div></div>
-  </div>
 
-  <!-- Games -->
-  <div class="window hidden" id="win-games" data-title="Games" style="left:440px; top:220px;">
-    <div class="titlebar" onmousedown="dragStart(event,this.parentElement)"><div>Games</div>
-      <div class="controls">
-        <img src="close.png" onclick="closeWindow('win-games')">
-        <img src="maximize.png" class="no-max">
-        <img src="minimize.png" onclick="minimizeWindow('win-games')">
+    <!-- JOURNAL -->
+    <div class="window hidden" id="win-journal" data-title="Journal" style="left:360px; top:160px;">
+      <div class="titlebar" onmousedown="dragStart(event,this.parentElement)">
+        <div>Journal</div>
+        <div class="controls">
+          <img src="close.png" onclick="closeWindow('win-journal')">
+          <img src="maximize.png" class="no-max">
+          <img src="minimize.png" onclick="minimizeWindow('win-journal')">
+        </div>
+      </div>
+      <div class="content">
+        <div class="gif-slot"><img src="20.png" alt="" style="width:100%;height:100%;object-fit:cover"></div>
+        <div class="entries-wrap" id="entries-journal"></div>
       </div>
     </div>
-    <div class="content"><div class="gif-slot"><img src="gif6.gif" alt=""></div><div class="entries-wrap" id="entries-games"></div></div>
-  </div>
 
-  <!-- My Computer & Recycle (simple placeholders) -->
-  <div class="window hidden" id="win-computer" data-title="My Computer" style="left:420px; top:120px;">
-    <div class="titlebar" onmousedown="dragStart(event,this.parentElement)"><div>My Computer</div>
-      <div class="controls"><img src="close.png" onclick="closeWindow('win-computer')"><img src="maximize.png" class="no-max"><img src="minimize.png" onclick="minimizeWindow('win-computer')"></div>
-    </div>
-    <div class="content"><div class="entries-wrap" id="entries-computer"></div></div>
-  </div>
+    <!-- oh yea also,  ts so gurty! just putting this here incase anyone digs thinking this was ALL ai, :) -->
+    <!-- only partially was helped by chatgpt, ty openai 😊😊 -->
+    <!-- - alex -->
 
-  <div class="window hidden" id="win-recycle" data-title="Recycle Bin" style="left:480px; top:140px;">
-    <div class="titlebar" onmousedown="dragStart(event,this.parentElement)"><div>Recycle Bin</div>
-      <div class="controls"><img src="close.png" onclick="closeWindow('win-recycle')"><img src="maximize.png" class="no-max"><img src="minimize.png" onclick="minimizeWindow('win-recycle')"></div>
-    </div>
-    <div class="content"><div class="entries-wrap" id="entries-recycle"></div></div>
-  </div>
-
-  <!-- Jukebox window (draggable, minimizable; closing & maximize disabled via No.png hover) -->
-  <div class="window hidden" id="win-jukebox" data-title="Jukebox" style="left:520px; top:80px; width:360px; height:180px;">
-    <div class="titlebar" onmousedown="dragStart(event,this.parentElement)"><div>Jukebox</div>
-      <div class="controls">
-        <img src="close.png" onclick="closeWindow('win-jukebox')">
-        <img src="maximize.png" class="no-max">
-        <img src="minimize.png" onclick="minimizeWindow('win-jukebox')">
+    <!-- DRAWINGS -->
+    <div class="window hidden" id="win-drawings" data-title="Drawings" style="left:440px; top:180px;">
+      <div class="titlebar" onmousedown="dragStart(event,this.parentElement)">
+        <div>Drawings</div>
+        <div class="controls">
+          <img src="close.png" onclick="closeWindow('win-drawings')">
+          <img src="maximize.png" class="no-max">
+          <img src="minimize.png" onclick="minimizeWindow('win-drawings')">
+        </div>
+      </div>
+      <div class="content">
+        <div class="gif-slot"><img src="16.png" alt="" style="width:100%;height:100%;object-fit:cover"></div>
+        <div class="entries-wrap" id="entries-drawings"></div>
       </div>
     </div>
-    <div class="content" style="display:flex;align-items:center;gap:12px;">
-      <img id="jukebox-disc" src="7.png" alt="disc" style="width:84px;height:84px;border-radius:50%;box-shadow:0 6px 12px rgba(0,0,0,0.2)">
-      <div style="flex:1;">
-        <div id="jukebox-track" style="font-weight:900;color:#083a6b">Loading...</div>
-        <audio id="jukebox-audio" controls style="width:100%;margin-top:8px"></audio>
+
+    <!-- GAMES -->
+    <div class="window hidden" id="win-games" data-title="Games" style="left:520px; top:200px;">
+      <div class="titlebar" onmousedown="dragStart(event,this.parentElement)">
+        <div>Games</div>
+        <div class="controls">
+          <img src="close.png" onclick="closeWindow('win-games')">
+          <img src="maximize.png" class="no-max">
+          <img src="minimize.png" onclick="minimizeWindow('win-games')">
+        </div>
+      </div>
+      <div class="content">
+        <div class="gif-slot"><img src="15.png" alt="" style="width:100%;height:100%;object-fit:cover"></div>
+        <div class="entries-wrap" id="entries-games"></div>
       </div>
     </div>
-  </div>
 
-</div>
+    <!-- MY COMPUTER -->
+    <div class="window hidden" id="win-computer" data-title="My Computer" style="left:600px; top:120px;">
+      <div class="titlebar" onmousedown="dragStart(event,this.parentElement)">
+        <div>My Computer</div>
+        <div class="controls">
+          <img src="close.png" onclick="closeWindow('win-computer')">
+          <img src="maximize.png" class="no-max">
+          <img src="minimize.png" onclick="minimizeWindow('win-computer')">
+        </div>
+      </div>
+      <div class="content">
+        <div class="entries-wrap" id="entries-computer"></div>
+      </div>
+    </div>
 
-<script>
-/* ===========================
-   Initialization & assets
-   ===========================
-   - All filenames are referenced by their expected names above.
-   - Edit arrays below to change default content.
-*/
-const JUKES = [
-  {file:"alex/song1.mp3", credit:"Donkey Kong Country 2 - Stickerbush Symphony - Nintendo", icon:"1.png"},
-  {file:"alex/song2.mp3", credit:"Lisa: The Pointless OST - Soft Hearts (World's Last Autumn Version)", icon:"2.png"},
-  {file:"alex/song3.mp3", credit:"Deltarune Chapter 3 + 4 - 12 am - Toby Fox", icon:"3.png"}
-];
+    <!-- RECYCLE BIN -->
+    <div class="window hidden" id="win-recycle" data-title="Recycle Bin" style="left:680px; top:140px;">
+      <div class="titlebar" onmousedown="dragStart(event,this.parentElement)">
+        <div>Recycle Bin</div>
+        <div class="controls">
+          <img src="close.png" onclick="closeWindow('win-recycle')">
+          <img src="maximize.png" class="no-max">
+          <img src="minimize.png" onclick="minimizeWindow('win-recycle')">
+        </div>
+      </div>
+      <div class="content">
+        <div class="entries-wrap" id="entries-recycle"></div>
+      </div>
+    </div>
 
-const NOTIFY_MESSAGES = [
-  {msg:"Antivirus updated successfully", icon:"notify1.png", flair:"secure"},
-  {msg:"New message from hoodie", icon:"notify2.png", flair:"chat"},
-  {msg:"USB device connected", icon:"notify3.png", flair:"usb"},
-  {msg:"Easter egg found!", icon:"notify4.png", flair:"surprise"}
-];
+    <!-- JUKEBOX (draggable, minimizable; close/max disabled by No.png on hover can be used to prevent removal) -->
+    <div class="window hidden" id="win-jukebox" data-title="Jukebox" style="left:320px; top:60px; width:420px; height:180px;">
+      <div class="titlebar" onmousedown="dragStart(event,this.parentElement)">
+        <div>Jukebox</div>
+        <div class="controls">
+          <img src="close.png" onclick="closeWindow('win-jukebox')">
+          <img src="maximize.png" class="no-max">
+          <img src="minimize.png" onclick="minimizeWindow('win-jukebox')">
+        </div>
+      </div>
+      <div class="content" style="display:flex; gap:12px; align-items:center;">
+        <img id="jukebox-disc" src="14.png" alt="disc" style="width:96px; height:96px; border-radius:50%; box-shadow:0 8px 20px rgba(0,0,0,0.2);">
+        <div style="flex:1;">
+          <div id="jukebox-track" style="font-weight:900;color:#083a6b; font-size:1rem;">Loading...</div>
+          <audio id="jukebox-audio" controls style="width:100%; margin-top:8px;"></audio>
+          <div style="margin-top:8px; display:flex; gap:8px;">
+            <button onclick="prevJuke()">⏮️</button>
+            <button onclick="nextJuke()">⏭️</button>
+            <button id="jukebox-rotate" onclick="randomStart()" title="Random start">🔀</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-/* --------------------
-   Element refs
-   -------------------- */
-const loginScreen = document.getElementById('login-screen');
-const desktop = document.getElementById('desktop');
-const shutdownScreen = document.getElementById('shutdown-screen');
-const loginSticky = document.getElementById('login-sticky');
-const passwordBox = document.getElementById('password-box');
-const passwordInput = document.getElementById('password-input');
-const startMenu = document.getElementById('start-menu');
-const taskbarApps = document.getElementById('taskbar-apps');
-const clockBox = document.getElementById('clock-box');
-const crt = document.querySelector('body::before');
+  </div><!-- /desktop -->
 
-/* --------------------
-   Helper: show/hide start menu
-   -------------------- */
-function toggleStartMenu(){
-  startMenu.style.display = (startMenu.style.display === 'block') ? 'none' : 'block';
-}
+  <!-- CRT overlay sits above desktop (but below UI login flash) -->
+  <div id="crt-overlay" aria-hidden="true"></div>
 
-/* hide start menu on resize or click outside */
-document.addEventListener('click', (e)=>{
-  if(!startMenu.contains(e.target) && !document.getElementById('start-btn').contains(e.target)){
-    startMenu.style.display='none';
-  }
-});
+  <script>
+    /* ------------------------
+       Constants / playlists
+       ------------------------ */
+    const JUKES = [
+      { file: "alex/Music1.mp3", credit: "Donkey Kong Country 2 - Stickerbush Symphony - Nintendo", icon: "1.png" },
+      { file: "alex/Music2.mp3", credit: "Lisa: The Pointless OST - Soft Hearts (World's Last Autumn Version)", icon: "2.png" },
+      { file: "alex/Music3.mp3", credit: "Deltarune Chapter 3 + 4 - 12 am - Toby Fox", icon: "3.png" },
+      { file: "alex/Music4.mp3", credit: "Extra Track - Placeholder", icon: "4.png" }
+    ];
 
-/* --------------------
-   Login flow
-   -------------------- */
-function revealPassword(){
-  passwordBox.style.display='block';
-  passwordInput.value='';
-  passwordInput.focus();
-}
-function attemptLogin(){
-  const v = passwordInput.value;
-  if(v === 'boogieboy'){
-    // show desktop
-    loginScreen.style.display='none';
-    desktop.classList.remove('hidden');
-    desktop.style.display='block';
-    // show sticky quickly and hide after 20s (sticky only visible immediately after login)
-    loginSticky.style.display='block';
-    setTimeout(()=> loginSticky.style.display='none', 20000);
-    // play startup sound (may be blocked until user gesture)
-    const s = new Audio('alex/XPstartup.mp3'); s.play().catch(()=>{});
-    initJukebox();
-    startNotificationLoop();
-    updateClock(); setInterval(updateClock, 1000);
-  } else {
-    // brief shake
-    const tile = document.querySelector('.user-tile');
-    tile.animate([{transform:'translateX(-8px)'},{transform:'translateX(8px)'},{transform:'translateX(0)'}],{duration:320});
-  }
-}
+    const NOTIFY_MESSAGES = [
+      { msg: "Antivirus updated successfully", icon: "notify1.png", flair: "secure" },
+      { msg: "New message from hoodie", icon: "notify2.png", flair: "chat" },
+      { msg: "USB device connected", icon: "notify3.png", flair: "usb" },
+      { msg: "Easter egg found!", icon: "notify4.png", flair: "surprise" },
+      { msg: "Retro mode enabled", icon: "notify5.png", flair: "retro" },
+      { msg: "Wallpaper: Bliss loaded", icon: "notify6.png", flair: "wallpaper" }
+    ];
 
-/* --------------------
-   Shutdown sequence
-   -------------------- */
-function shutdownSequence(){
-  // hide UI, show shutdown screen, play shutdown sound, redirect after 5s
-  loginScreen.style.display='none';
-  desktop.style.display='none';
-  shutdownScreen.style.display='flex';
-  const s = new Audio('alex/XPshutdown.mp3'); s.play().catch(()=>{});
-  setTimeout(()=> { window.location.href = 'https://boogerboys.github.io/index.html'; }, 5000);
-}
+    /* ------------------------
+       Element refs
+       ------------------------ */
+    const loginScreen = document.getElementById('login-screen');
+    const desktop = document.getElementById('desktop');
+    const whiteFlash = document.getElementById('white-flash');
+    const crtOverlay = document.getElementById('crt-overlay');
+    const startMenu = document.getElementById('start-menu');
+    const startLeft = document.getElementById('start-left');
+    const notifications = document.getElementById('notifications');
+    const taskApps = document.getElementById('task-apps');
+    const clockEl = document.getElementById('clock');
 
-/* --------------------
-   Window manager: show, close, minimize, taskbar entries
-   -------------------- */
-let zIndexCounter = 1200;
-function openWindow(id){
-  const w = document.getElementById(id);
-  if(!w) return;
-  // show
-  w.classList.remove('hidden'); w.style.display='block';
-  w.style.zIndex = ++zIndexCounter;
-  addTaskButtonForWindow(id);
-}
-
-function closeWindow(id){
-  const w = document.getElementById(id); if(!w) return;
-  w.style.display='none';
-  removeTaskButtonForWindow(id);
-}
-
-function minimizeWindow(id){
-  const w = document.getElementById(id); if(!w) return;
-  w.style.display='none';
-  setTaskActive(id,false);
-}
-
-/* Taskbar helpers */
-function addTaskButtonForWindow(id){
-  // if button exists, activate it
-  if(document.getElementById('task-'+id)) { setTaskActive(id,true); return; }
-  const w = document.getElementById(id);
-  const title = w.getAttribute('data-title') || id;
-  const iconImg = w.querySelector('.gif-slot img')?.src || '1.png';
-  const btn = document.createElement('div');
-  btn.className = 'task-app';
-  btn.id = 'task-'+id;
-  btn.innerHTML = `<img src="${iconImg}" alt=""><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${title}</div>`;
-  btn.onclick = ()=> {
-    const win = document.getElementById(id);
-    if(win.style.display === 'none' || getComputedStyle(win).display === 'none'){
-      win.style.display='block'; win.style.zIndex = ++zIndexCounter; setTaskActive(id,true);
-    } else {
-      // minimize on click
-      win.style.display='none'; setTaskActive(id,false);
+    /* ------------------------
+       Helpers: Clock & notifications
+       ------------------------ */
+    function updateClock(){
+      const d = new Date();
+      let hh = d.getHours();
+      let mm = String(d.getMinutes()).padStart(2,'0');
+      const ampm = hh >= 12 ? 'PM' : 'AM';
+      hh = hh % 12 || 12;
+      clockEl.textContent = `${hh}:${mm} ${ampm}`;
     }
-  };
-  taskbarApps.appendChild(btn);
-  setTaskActive(id,true);
-}
+    updateClock();
+    setInterval(updateClock, 1000);
 
-function removeTaskButtonForWindow(id){
-  const btn = document.getElementById('task-'+id);
-  if(btn) btn.remove();
-}
-
-function setTaskActive(id, active){
-  const btn = document.getElementById('task-'+id);
-  if(!btn) return;
-  if(active) btn.classList.add('active'); else btn.classList.remove('active');
-}
-
-/* --------------------
-   Dragging windows (mouse + touch) with preview
-   -------------------- */
-let dragTarget = null, dragOffsetX=0, dragOffsetY=0, previewEl = null;
-function dragStart(e, winEl){
-  // e is mouse event
-  dragTarget = winEl;
-  const rect = winEl.getBoundingClientRect();
-  dragOffsetX = e.clientX - rect.left;
-  dragOffsetY = e.clientY - rect.top;
-  // create preview
-  previewEl = document.createElement('div');
-  previewEl.style.position='fixed';
-  previewEl.style.left = rect.left+'px';
-  previewEl.style.top = rect.top+'px';
-  previewEl.style.width = rect.width+'px';
-  previewEl.style.height = rect.height+'px';
-  previewEl.style.border='2px dashed rgba(10,80,200,0.75)';
-  previewEl.style.background='rgba(10,80,200,0.03)';
-  previewEl.style.zIndex = 9998;
-  previewEl.style.pointerEvents='none';
-  document.body.appendChild(previewEl);
-  document.addEventListener('mousemove', dragMove);
-  document.addEventListener('mouseup', dragEnd, {once:true});
-}
-function dragMove(e){
-  if(!previewEl) return;
-  let nx = Math.max(8, e.clientX - dragOffsetX);
-  let ny = Math.max(8, e.clientY - dragOffsetY);
-  previewEl.style.left = nx + 'px';
-  previewEl.style.top = ny + 'px';
-}
-function dragEnd(e){
-  if(previewEl && dragTarget){
-    // snap window to preview pos
-    dragTarget.style.left = previewEl.style.left;
-    dragTarget.style.top = previewEl.style.top;
-    previewEl.remove(); previewEl = null;
-  }
-  document.removeEventListener('mousemove', dragMove);
-  dragTarget = null;
-}
-
-/* touch support for dragging windows (simple) */
-document.addEventListener('touchstart', function(ev){
-  const t = ev.touches[0];
-  // if touch on a titlebar, emulate drag start
-  const el = document.elementFromPoint(t.clientX, t.clientY);
-  const tb = el && el.closest('.titlebar');
-  if(tb){
-    ev.preventDefault();
-    const win = tb.parentElement;
-    dragTarget = win;
-    const rect = win.getBoundingClientRect();
-    dragOffsetX = t.clientX - rect.left;
-    dragOffsetY = t.clientY - rect.top;
-    // create preview
-    previewEl = document.createElement('div');
-    previewEl.style.position='fixed';
-    previewEl.style.left = rect.left+'px';
-    previewEl.style.top = rect.top+'px';
-    previewEl.style.width = rect.width+'px';
-    previewEl.style.height = rect.height+'px';
-    previewEl.style.border='2px dashed rgba(10,80,200,0.75)';
-    previewEl.style.background='rgba(10,80,200,0.03)';
-    previewEl.style.zIndex = 9998;
-    previewEl.style.pointerEvents='none';
-    document.body.appendChild(previewEl);
-
-    function touchMove(ev2){
-      const t2 = ev2.touches[0];
-      let nx = Math.max(8, t2.clientX - dragOffsetX);
-      let ny = Math.max(8, t2.clientY - dragOffsetY);
-      previewEl.style.left = nx + 'px';
-      previewEl.style.top = ny + 'px';
+    function spawnNotification(obj){
+      const n = document.createElement('div');
+      n.className = 'notification';
+      n.innerHTML = `<img src="${obj.icon}" alt=""><div class="body"><div class="msg">${obj.msg}</div><div class="flair">${obj.flair}</div></div>`;
+      notifications.appendChild(n);
+      setTimeout(()=> { n.style.opacity = '0'; n.style.transform = 'translateY(-10px)'; }, 4200);
+      setTimeout(()=> { n.remove(); }, 5200);
     }
-    function touchEnd(){
-      if(previewEl && dragTarget){
-        dragTarget.style.left = previewEl.style.left;
-        dragTarget.style.top = previewEl.style.top;
-        previewEl.remove(); previewEl=null;
+
+    let notifyInterval = null;
+    function startNotificationLoop(){
+      if(notifyInterval) clearInterval(notifyInterval);
+      notifyInterval = setInterval(()=>{
+        const pick = NOTIFY_MESSAGES[Math.floor(Math.random()*NOTIFY_MESSAGES.length)];
+        spawnNotification(pick);
+      }, 9000 + Math.random()*6000);
+    }
+
+    /* ------------------------
+       Start Menu: entries (left) — icons + labels
+       ------------------------ */
+    const startEntries = [
+      { id: 'win-bio', icon: '1.png', label: 'Bio' },
+      { id: 'win-interests', icon: '2.png', label: 'Interests' },
+      { id: 'win-dni', icon: '3.png', label: 'DNI' },
+      { id: 'win-journal', icon: '4.png', label: 'Journal' },
+      { id: 'win-drawings', icon: '5.png', label: 'Drawings' },
+      { id: 'win-games', icon: '6.png', label: 'Games' },
+      { id: 'win-jukebox', icon: '14.png', label: 'Jukebox' }
+    ];
+    startEntries.forEach(e=>{
+      const div = document.createElement('div');
+      div.className = 'start-entry';
+      div.innerHTML = `<img src="${e.icon}" alt=""><div>${e.label}</div>`;
+      div.onclick = ()=>{
+        toggleStartMenu(false);
+        if(e.id === 'win-jukebox') openWindow(e.id);
+        else openWindow(e.id);
+      };
+      startLeft.appendChild(div);
+    });
+
+    /* ------------------------
+       Window: open/close/minimize and taskbar entries
+       ------------------------ */
+    let zCounter = 2000;
+    function openWindow(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.style.display = 'flex';
+      el.style.zIndex = ++zCounter;
+      addTaskButton(id);
+    }
+    function closeWindow(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.style.display = 'none';
+      removeTaskButton(id);
+    }
+    function minimizeWindow(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.style.display = 'none';
+      setTaskActive(id, false);
+    }
+
+    function addTaskButton(id){
+      if(document.getElementById('task-'+id)) { setTaskActive(id, true); return; }
+      const el = document.getElementById(id);
+      const title = el.getAttribute('data-title') || id;
+      const btn = document.createElement('div');
+      btn.className = 'task-app';
+      btn.id = 'task-'+id;
+      const iconSrc = el.querySelector('.gif-slot img')?.src || '1.png';
+      btn.innerHTML = `<img src="${iconSrc}" alt=""><div style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis">${title}</div>`;
+      btn.onclick = ()=>{
+        const win = document.getElementById(id);
+        if(!win) return;
+        if(getComputedStyle(win).display === 'none'){
+          win.style.display = 'flex';
+          win.style.zIndex = ++zCounter;
+          setTaskActive(id, true);
+        } else {
+          win.style.display = 'none';
+          setTaskActive(id, false);
+        }
+      };
+      taskApps.appendChild(btn);
+      setTaskActive(id,true);
+    }
+    function removeTaskButton(id){
+      const btn = document.getElementById('task-'+id);
+      if(btn) btn.remove();
+    }
+    function setTaskActive(id, active){
+      const btn = document.getElementById('task-'+id);
+      if(!btn) return;
+      if(active) btn.classList.add('active'); else btn.classList.remove('active');
+    }
+
+    /* ------------------------
+       Dragging windows w/ preview (mouse & touch)
+       ------------------------ */
+    let dragTarget = null, dragOffsetX = 0, dragOffsetY = 0, preview = null;
+    function dragStart(e, win){
+      // mouse event on titlebar
+      dragTarget = win;
+      const rect = win.getBoundingClientRect();
+      dragOffsetX = e.clientX - rect.left;
+      dragOffsetY = e.clientY - rect.top;
+      // create preview
+      preview = document.createElement('div');
+      preview.style.position = 'fixed';
+      preview.style.left = rect.left + 'px';
+      preview.style.top = rect.top + 'px';
+      preview.style.width = rect.width + 'px';
+      preview.style.height = rect.height + 'px';
+      preview.style.border = '2px dashed rgba(10,80,200,0.75)';
+      preview.style.background = 'rgba(10,80,200,0.03)';
+      preview.style.zIndex = 999999;
+      preview.style.pointerEvents = 'none';
+      document.body.appendChild(preview);
+      document.addEventListener('mousemove', dragMove);
+      document.addEventListener('mouseup', dragEnd, { once:true });
+    }
+    function dragMove(e){
+      if(!preview) return;
+      let nx = Math.max(8, e.clientX - dragOffsetX);
+      let ny = Math.max(8, e.clientY - dragOffsetY);
+      preview.style.left = nx + 'px';
+      preview.style.top = ny + 'px';
+    }
+    function dragEnd(e){
+      if(preview && dragTarget){
+        // apply preview to actual window
+        dragTarget.style.left = preview.style.left;
+        dragTarget.style.top = preview.style.top;
+        preview.remove(); preview = null;
       }
-      document.removeEventListener('touchmove', touchMove);
-      document.removeEventListener('touchend', touchEnd);
+      document.removeEventListener('mousemove', dragMove);
+      dragTarget = null;
     }
-    document.addEventListener('touchmove', touchMove, {passive:false});
-    document.addEventListener('touchend', touchEnd);
-  }
-}, {passive:false});
+    // touch support (basic)
+    document.addEventListener('touchstart', function(ev){
+      const t = ev.touches[0];
+      const el = document.elementFromPoint(t.clientX, t.clientY);
+      const tb = el && el.closest('.titlebar');
+      if(tb){
+        ev.preventDefault();
+        const win = tb.parentElement;
+        dragTarget = win;
+        const rect = win.getBoundingClientRect();
+        dragOffsetX = t.clientX - rect.left;
+        dragOffsetY = t.clientY - rect.top;
+        preview = document.createElement('div');
+        preview.style.position = 'fixed';
+        preview.style.left = rect.left + 'px';
+        preview.style.top = rect.top + 'px';
+        preview.style.width = rect.width + 'px';
+        preview.style.height = rect.height + 'px';
+        preview.style.border = '2px dashed rgba(10,80,200,0.75)';
+        preview.style.background = 'rgba(10,80,200,0.03)';
+        preview.style.zIndex = 999999;
+        document.body.appendChild(preview);
 
-/* --------------------
-   Clock & notifications
-   -------------------- */
-function updateClock(){
-  const d = new Date();
-  let hh = d.getHours(); let mm = String(d.getMinutes()).padStart(2,'0');
-  let ampm = hh>=12? 'PM':'AM'; hh = hh % 12 || 12;
-  clockBox.textContent = `${hh}:${mm} ${ampm}`;
-}
-updateClock(); setInterval(updateClock,60000);
+        function touchMove(ev2){
+          const t2 = ev2.touches[0];
+          let nx = Math.max(8, t2.clientX - dragOffsetX);
+          let ny = Math.max(8, t2.clientY - dragOffsetY);
+          preview.style.left = nx + 'px';
+          preview.style.top = ny + 'px';
+        }
+        function touchEnd(){
+          if(preview && dragTarget){
+            dragTarget.style.left = preview.style.left;
+            dragTarget.style.top = preview.style.top;
+            preview.remove(); preview = null;
+          }
+          document.removeEventListener('touchmove', touchMove);
+          document.removeEventListener('touchend', touchEnd);
+        }
+        document.addEventListener('touchmove', touchMove, { passive:false });
+        document.addEventListener('touchend', touchEnd);
+      }
+    }, { passive:false });
 
-/* Notification loop (more often) */
-let notifyInterval = null;
-function startNotificationLoop(){
-  if(notifyInterval) clearInterval(notifyInterval);
-  notifyInterval = setInterval(()=> createNotification(), 9000 + Math.random()*7000);
-}
-function createNotification(){
-  const pick = NOTIFY_MESSAGES[Math.floor(Math.random()*NOTIFY_MESSAGES.length)];
-  const el = document.createElement('div');
-  el.className = 'notification';
-  const icon = pick.icon && pick.icon.length? pick.icon : '1.png';
-  el.innerHTML = `<img src="${icon}" alt=""><div><div class="txt">${pick.msg}</div><div class="flair">${pick.flair}</div></div>`;
-  document.body.appendChild(el);
-  // small animation: special icons appear & fade away (we already have animation)
-  setTimeout(()=> el.style.opacity='0', 4200);
-  setTimeout(()=> el.remove(), 5200);
-}
+    /* Make titlebar draggable with dragStart binding for all windows */
+    document.querySelectorAll('.titlebar').forEach(tb=>{
+      tb.addEventListener('mousedown', function(e){
+        dragStart(e, this.parentElement);
+      });
+    });
 
-/* --------------------
-   Initialize entries in each window (8 entries each) and make them scrollable with margin
-   -------------------- */
-function buildEntries(prefix){
-  const container = document.getElementById('entries-'+prefix);
-  if(!container) return;
-  container.innerHTML = '';
-  for(let i=1;i<=8;i++){
-    const row = document.createElement('div');
-    row.className = 'entry';
-    const imgNum = ((i+ (prefix==='drawings'?4:0)) % 16) + 1; // slight distribution of images
-    row.innerHTML = `<img src="${imgNum}.png" alt=""><div class="text">Editable ${prefix} entry ${i}. Click to edit.</div>`;
-    container.appendChild(row);
-  }
-}
+    /* ------------------------
+       Entries builder (8 entries each)
+       ------------------------ */
+    function buildEntries(namespace){
+      const container = document.getElementById('entries-'+namespace);
+      if(!container) return;
+      container.innerHTML = '';
+      for(let i=1;i<=8;i++){
+        const idx = ((i + (namespace.length)) % 16) + 1;
+        const div = document.createElement('div');
+        div.className = 'entry';
+        div.innerHTML = `<img src="${idx}.png" alt=""><div class="entry-text">Editable ${namespace} entry ${i}. Click to edit.</div>`;
+        // optional: click to edit
+        div.addEventListener('click', ()=> {
+          const newText = prompt('Edit entry text:', div.querySelector('.entry-text').textContent);
+          if(newText !== null) div.querySelector('.entry-text').textContent = newText;
+        });
+        container.appendChild(div);
+      }
+    }
+    ['bio','interests','dni','journal','drawings','games','computer','recycle'].forEach(buildEntries);
 
-/* Build entries for all windows */
-['bio','interests','dni','journal','drawings','games','computer','recycle'].forEach(buildEntries);
+    /* ------------------------
+       Jukebox logic (use /alex/ files)
+       ------------------------ */
+    let jukeIndex = Math.floor(Math.random() * JUKES.length);
+    const jukeAudio = document.getElementById('jukebox-audio');
+    const jukeTrack = document.getElementById('jukebox-track');
+    const jukeDisc = document.getElementById('jukebox-disc');
 
-/* --------------------
-   Jukebox implementation
-   -------------------- */
-let jukeboxIndex = Math.floor(Math.random()*JUKES.length);
-const jukeboxAudio = document.getElementById('jukebox-audio');
-const jukeboxTrack = document.getElementById('jukebox-track');
-const jukeboxDisc = document.getElementById('jukebox-disc');
+    function setJuke(i){
+      jukeIndex = (i + JUKES.length) % JUKES.length;
+      const s = JUKES[jukeIndex];
+      jukeAudio.src = s.file;
+      jukeTrack.textContent = s.credit;
+      jukeDisc.src = s.icon || '14.png';
+      // attempt to play (user interaction required, but login click counts)
+      jukeAudio.play().catch(()=>{});
+    }
+    function nextJuke(){ setJuke(jukeIndex+1); jukeAudio.play().catch(()=>{}); }
+    function prevJuke(){ setJuke(jukeIndex-1); jukeAudio.play().catch(()=>{}); }
+    function randomStart(){ setJuke(Math.floor(Math.random()*JUKES.length)); jukeAudio.play().catch(()=>{}); }
 
-function initJukebox(){
-  if(!jukeboxAudio) return;
-  setJukeboxTrack(jukeboxIndex);
-  jukeboxAudio.volume = 0.9;
-  jukeboxAudio.addEventListener('ended', ()=> { jukeboxIndex = (jukeboxIndex+1) % JUKES.length; setJukeboxTrack(jukeboxIndex); jukeboxAudio.play(); });
-}
+    /* initialize jukebox after login */
+    function initJukebox(){
+      setJuke(jukeIndex);
+      jukeAudio.volume = 0.95;
+      jukeAudio.addEventListener('ended', ()=> { setJuke(jukeIndex+1); jukeAudio.play().catch(()=>{}); });
+    }
 
-function setJukeboxTrack(i){
-  const s = JUKES[(i+JUKES.length)%JUKES.length];
-  jukeboxAudio.src = s.file;
-  jukeboxTrack.textContent = s.credit;
-  jukeboxDisc.src = s.icon || '7.png';
-}
+    /* ------------------------
+       Start menu toggle & behavior
+       ------------------------ */
+    function toggleStartMenu(force){
+      const currently = startMenu.style.display === 'block';
+      if(typeof force === 'boolean'){
+        startMenu.style.display = force ? 'block' : 'none';
+        document.getElementById('start-btn').setAttribute('aria-expanded', String(force));
+      } else {
+        startMenu.style.display = currently ? 'none' : 'block';
+        document.getElementById('start-btn').setAttribute('aria-expanded', String(!currently));
+      }
+    }
+    // auto hide start menu on clicking outside
+    document.addEventListener('click', (e)=>{
+      if(!startMenu.contains(e.target) && !document.getElementById('start-btn').contains(e.target)){
+        startMenu.style.display = 'none';
+      }
+    });
 
-/* next song (used in jukebox area) */
-function nextJukebox(){
-  jukeboxIndex = (jukeboxIndex+1) % JUKES.length; setJukeboxTrack(jukeboxIndex); jukeboxAudio.play();
-}
+    /* ------------------------
+       Login / flash / shutdown behavior
+       ------------------------ */
+    function showPassword(){
+      document.getElementById('password-container').style.display = 'block';
+      document.getElementById('password-input').focus();
+    }
 
-/* --------------------
-   Taskbar helpers are above (addTaskButtonForWindow etc)
-   -------------------- */
+    function attemptLogin(){
+      const v = document.getElementById('password-input').value;
+      if(v === 'boogieboy'){
+        // white flash, then reveal desktop; the click is a user gesture to allow audio
+        whiteFlash.style.opacity = 1;
+        setTimeout(()=> {
+          document.getElementById('login-screen').style.display = 'none';
+          desktop.style.display = 'block';
+          // ease out flash
+          whiteFlash.style.opacity = 0;
+          // play startup audio from /alex/
+          const s = new Audio('alex/XPstartup.mp3');
+          s.play().catch(()=>{});
+          // initialize jukebox and other loops
+          initJukebox();
+          startNotificationLoop();
+          // show sticky briefly then hide automatically after 18s
+          setTimeout(()=> { document.getElementById('login-sticky').style.display = 'none'; }, 18000);
+        }, 220);
+      } else {
+        // small shake
+        const tile = document.querySelector('.user-tile');
+        tile.animate([
+          { transform: 'translateX(-6px)' },
+          { transform: 'translateX(6px)' },
+          { transform: 'translateX(0)' }
+        ], { duration: 360 });
+      }
+    }
 
-/* wire up opening windows from desktop icons (initially only hidden) */
-document.querySelectorAll('.desktop-icon').forEach(icon=>{
-  icon.addEventListener('dblclick', ()=> {
-    const id = icon.id.replace('icon-','win-');
-    openWindow(id);
-  });
-});
+    function shutdownSequence(){
+      // hide everything and play shutdown, then redirect after 5s
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('desktop').style.display = 'none';
+      // show a simple shutting down full-screen overlay
+      const overlay = document.createElement('div');
+      overlay.style.position = 'fixed';
+      overlay.style.inset = '0';
+      overlay.style.background = 'linear-gradient(#1e5fc2,#073a7a)';
+      overlay.style.display = 'flex';
+      overlay.style.alignItems = 'center';
+      overlay.style.justifyContent = 'center';
+      overlay.style.color = 'white';
+      overlay.style.fontFamily = 'Tahoma, Arial';
+      overlay.style.fontSize = '1.8rem';
+      overlay.innerHTML = `<div style="text-align:center"><img src="winxp.png" style="width:140px;margin-bottom:12px"><div style="font-weight:900">Shutting down...</div></div>`;
+      document.body.appendChild(overlay);
+      // play shutdown sound (from /alex/)
+      const s = new Audio('alex/XPshutdown.mp3');
+      s.play().catch(()=>{});
+      setTimeout(()=> { location.href = 'https://boogerboys.github.io/index.html'; }, 5000);
+    }
 
-/* ensure start menu does not appear on startup */
-startMenu.style.display = 'none';
+    function logOff(){
+      // show login screen again
+      desktop.style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+      // reset start menu
+      startMenu.style.display = 'none';
+    }
 
-/* Add click handlers for start-left entries already inline via onclick */
+    /* ------------------------
+       Notifications loop start (more frequent)
+       ------------------------ */
+    function startNotificationLoop(){
+      // initial immediate welcome note
+      spawnWelcomeNotification();
+      // frequent notifications
+      setInterval(()=>{
+        const pick = NOTIFY_MESSAGES[Math.floor(Math.random()*NOTIFY_MESSAGES.length)];
+        spawnNotification(pick);
+      }, 9000 + Math.random()*7000);
+    }
 
-/* Expose some functions globally used in HTML */
-window.openWindow = openWindow;
-window.closeWindow = closeWindow;
-window.minimizeWindow = minimizeWindow;
-window.toggleStartMenu = toggleStartMenu;
-window.revealPassword = revealPassword;
-window.attemptLogin = attemptLogin;
-window.shutdownSequence = shutdownSequence;
-window.logOff = function(){
-  // simple log off: show login screen again and hide desktop
-  desktop.style.display='none';
-  loginScreen.style.display='flex';
-};
-window.dragStart = dragStart;
-window.nextSong = nextJukebox;
+    function spawnWelcomeNotification(){
+      spawnNotification({ msg: 'Welcome, alex! Retro mode engaged.', icon: 'notify1.png', flair:'retro' });
+    }
 
-/* Small accessibility: close start menu by ESC */
-document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') startMenu.style.display='none'; });
+    /* ------------------------
+       Utility: Make entries & bind double-click open
+       ------------------------ */
+    function initDesktopIconBehavior(){
+      // double-click vs single click handling simplified: single click opens.
+      document.querySelectorAll('.desktop-icon').forEach(icon=>{
+        icon.addEventListener('click', ()=> {
+          const idmap = {
+            'icon-bio': 'win-bio',
+            'icon-hoodie': 'win-interests',
+            'icon-dni': 'win-dni',
+            'icon-journal': 'win-journal',
+            'icon-drawings': 'win-drawings',
+            'icon-games': 'win-games',
+            'icon-computer': 'win-computer',
+            'icon-recycle': 'win-recycle'
+          };
+          const id = idmap[icon.id];
+          if(id) openWindow(id);
+        });
+      });
+    }
+    initDesktopIconBehavior();
 
-/* small polish: when a window opens, ensure it has a taskbar button */
-document.querySelectorAll('.window').forEach(w=>{
-  // if opened by other means, ensure taskbar button added
-  const id = w.id;
-  // attach dblclick handler to titlebar to bring to front
-  const tb = w.querySelector('.titlebar');
-  if(tb) tb.addEventListener('dblclick', ()=> { w.style.zIndex = ++zIndexCounter; });
-});
+    /* ------------------------
+       Make titlebar double-click bring to front
+       ------------------------ */
+    document.querySelectorAll('.titlebar').forEach(tb=>{
+      tb.addEventListener('dblclick', ()=>{
+        const win = tb.parentElement;
+        win.style.zIndex = ++zCounter;
+      });
+    });
 
-/* initial small notification to welcome user once they login (added in attemptLogin flow) */
+    /* ------------------------
+       Other helpers & start-up behavior
+       ------------------------ */
+    // Ensure start menu hidden on load and not visible at login
+    startMenu.style.display = 'none';
 
-</script>
+    // Pre-fill entries (already built by buildEntries)
+    // Build entries now for each namespace
+    ['bio','interests','dni','journal','drawings','games','computer','recycle'].forEach(ns => {
+      // call existing buildEntries implementation above or recreate here
+      const container = document.getElementById('entries-'+ns);
+      if(!container) return;
+      container.innerHTML = '';
+      for(let i=1;i<=8;i++){
+        const idx = ((i + (ns.length)) % 16) + 1;
+        const row = document.createElement('div');
+        row.className = 'entry';
+        row.innerHTML = `<img src="${idx}.png" alt=""><div class="entry-text">Editable ${ns} entry ${i}. Click to edit.</div>`;
+        row.addEventListener('click', ()=> {
+          const current = row.querySelector('.entry-text').textContent;
+          const updated = prompt('Edit entry:', current);
+          if(updated !== null) row.querySelector('.entry-text').textContent = updated;
+        });
+        container.appendChild(row);
+      }
+    });
+
+    // Setup initial jukebox but don't play until user gesture
+    // setJuke called on login via initJukebox()
+
+    // Expose some functions globally for inline onclick handlers
+    window.showPassword = function(){ document.getElementById('password-container').style.display = 'block'; document.getElementById('password-input').focus(); };
+    window.attemptLogin = attemptLogin;
+    window.shutdownSequence = shutdownSequence;
+    window.logOff = logOff;
+    window.toggleStartMenu = function(){ toggleStartMenu(); };
+    window.openWindow = openWindow;
+    window.closeWindow = closeWindow;
+    window.minimizeWindow = minimizeWindow;
+    window.dragStart = function(e, win){ dragStart(e, win); };
+    window.nextJuke = nextJuke;
+    window.prevJuke = prevJuke;
+    window.randomStart = randomStart;
+
+    // small enhancement: ensure start menu will be hidden on start and fonts applied
+    document.getElementById('start-menu').style.display = 'none';
+
+    // Attempt to warm audio by creating audio elements (some browsers require user gesture)
+    const warmS = new Audio(); warmS.src = 'alex/Music1.mp3';
+
+    // small retro touch: animate the start button slightly on load (subtle)
+    const startBtn = document.getElementById('start-btn');
+    startBtn.animate([{ transform:'translateY(0)' }, { transform:'translateY(-2px)' }, { transform:'translateY(0)'}], { duration: 1400, iterations: Infinity });
+
+    // Done - the user will click to log in and everything will initialize on that gesture
+  </script>
+
 </body>
 </html>
