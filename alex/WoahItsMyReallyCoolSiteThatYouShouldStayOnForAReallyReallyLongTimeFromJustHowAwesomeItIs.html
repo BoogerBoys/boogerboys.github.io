@@ -36,6 +36,7 @@
       background-color: #000;
     }
 
+/* Update the existing rule for the body */
     html, body {
       height: 100%;
       margin: 0;
@@ -43,6 +44,25 @@
       overflow: hidden;
       background-color: #000;
       cursor: url('cursor.png'), auto;
+    }
+
+/* New rule for clickable elements (buttons, links, etc.) */
+    .desktop-icon:hover,
+    #start-btn:hover,
+    .taskbar-app-icon,
+    .login-user,
+    .turn-off-btn,
+    .window-button,
+    .start-menu-entry,
+    .logoff-shutdown-btn,
+    .jukebox-controls button,
+    #browser-content img {
+      cursor: url('pointer.png'), pointer;
+    }
+
+/* New rule for the journal text area */
+    #journal-text-area {
+      cursor: url('text.png'), text;
     }
 
     /*
@@ -884,7 +904,7 @@
 
     // --- App content data ---
     const windowContent = {
-      'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>my names alex, im 16 (feb 21, 2009) uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid,</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p>`,
+      'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>my names alex, im 16 (feb 21, 2009) uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid,</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs`,
       'Interests': `<div class="window-entry"><p>i like playing games, especially sandbox and pvp games. i also enjoy drawing and programming. i listen to music and stuff, or call my girlfriend cause shes sweet</p></div>`,
       'DNI': `<p>if you are older than me by about ~3 ish years dont expect me to be super comfortable around you unless i know you</p><p>but i also dont like heavy racist stuff (stupid instagram reels are ok.)</p><p>also grown people in general make me uncomfortable if i dont know them</p><p>and im a huge g(j)ermaphobe and i hate anything like blood, mucus, etc. it just makes me a little uneasy but i wont scream from it.`,
       'Journal': `<textarea id="journal-text-area" placeholder="haha u thought this was MY journal, NONONO, this is YOURS"></textarea>`,
@@ -937,7 +957,7 @@
         desktop.classList.add('visible');
         // CHANGED: Automatically open Jukebox on login, positioned top-right
         openWindow('Jukebox', 10, desktop.offsetWidth - 280, 20); 
-      }, 1000);
+      }, 4500);
     }
 
     function shutdownSequence() {
