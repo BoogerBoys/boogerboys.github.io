@@ -1,30 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Riley's Page</title>
-  <style>
-    body {
-      background: #222;
-      color: white;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      text-align: center;
-    }
-    a {
-      color: #00f;
-      text-decoration: underline;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Music</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background: #111;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+
+  #clicker {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .bounce {
+    animation: bounce 0.3s ease;
+  }
+
+  @keyframes bounce {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.4); }
+    100% { transform: scale(1); }
+  }
+</style>
 </head>
 <body>
-  <div>
-    <h1>Welcome to Riley's Cool Page!</h1>
-    <p>Click <a href="../index.html">here</a> to go back to the main page.</p>
-  </div>
+
+<audio id="music" autoplay loop>
+  <source src="Die of Death Untitled Orchestraful Theme (Artful Orchestraful Chase Theme).mp3" type="audio/mpeg">
+</audio>
+
+<img id="clicker" src="noob.png" alt="Click me!">
+
+<script>
+  const music = document.getElementById('music');
+  const clicker = document.getElementById('clicker');
+
+  // Songs array to cycle
+  const songs = [
+    "Die of Death Untitled Orchestraful Theme (Artful Orchestraful Chase Theme).mp3",
+    "compass.mp3"
+  ];
+  let currentIndex = 0;
+
+  clicker.addEventListener('click', () => {
+    // Bounce animation
+    clicker.classList.add('bounce');
+    setTimeout(() => clicker.classList.remove('bounce'), 300);
+
+    // Cycle to next song
+    currentIndex = (currentIndex + 1) % songs.length;
+    music.src = songs[currentIndex];
+    music.play();
+  });
+</script>
+
 </body>
 </html>
