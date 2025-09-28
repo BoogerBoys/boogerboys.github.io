@@ -57,11 +57,12 @@
   const clicker = document.getElementById('clicker');
   const songLabel = document.getElementById('songLabel');
 
-  // Encode filenames to handle spaces and parentheses
+  // List your songs here (make sure files are in the same folder as this HTML)
   const songs = [
-    encodeURI("Die of Death Untitled Orchestraful Theme (Artful Orchestraful Chase Theme).mp3"),
-    encodeURI("compass.mp3")
+    "die_of_death.mp3",
+    "compass.mp3"
   ];
+
   let currentIndex = 0;
 
   clicker.addEventListener('click', () => {
@@ -72,8 +73,8 @@
     // Set current song
     music.src = songs[currentIndex];
     
-    // Update label (decode for display)
-    songLabel.textContent = "Playing: " + decodeURI(songs[currentIndex]);
+    // Update label
+    songLabel.textContent = "Playing: " + songs[currentIndex];
 
     // Play music
     music.play().catch(err => console.log("Play failed:", err));
