@@ -3,27 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interactive Music Clicker with GIFs</title>
+<title>Interactive Music Clicker with Cursor GIF</title>
 <style>
   body {
     margin: 0;
     height: 100vh;
     background: #111;
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-end;
     overflow: hidden;
     font-family: sans-serif;
     color: white;
-    position: relative;
+    cursor: none; /* optional: hide default cursor */
   }
 
   #clicker {
     width: 80px;
     height: 80px;
     cursor: pointer;
-    transition: transform 0.2s;
-    margin: 20px;
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
     z-index: 2;
   }
 
@@ -50,11 +48,9 @@
 
   #songGif {
     position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 300px;
+    width: 100px; /* GIF size */
     height: auto;
+    pointer-events: none; /* so it doesn't block clicks */
     opacity: 0;
     transition: opacity 0.5s ease;
     z-index: 1;
@@ -74,7 +70,7 @@
   const songLabel = document.getElementById('songLabel');
   const songGif = document.getElementById('songGif');
 
-  // Music and corresponding GIF
+  // Songs and corresponding GIFs
   const songs = [
     {
       file: "die_of_death.mp3", 
@@ -84,11 +80,17 @@
     {
       file: "compass.mp3",
       display: "Compass",
-      gif: "compass.gif" // optional, use a GIF for compass
+      gif: "compass.gif"
     }
   ];
 
   let currentIndex = 0;
+
+  // Update GIF position on mouse move
+  document.addEventListener('mousemove', (e) => {
+    songGif.style.left = (e.pageX - songGif.width / 2) + "px";
+    songGif.style.top = (e.pageY - songGif.height / 2) + "px";
+  });
 
   clicker.addEventListener('click', () => {
     // Bounce animation
@@ -98,14 +100,14 @@
     // Set music
     music.src = songs[currentIndex].file;
 
-    // Set song label
+    // Update label
     songLabel.textContent = "Playing: " + songs[currentIndex].display;
 
-    // Set GIF and fade in
-    songGif.style.opacity = 0; // fade out current GIF
+    // Fade out current GIF, then set new GIF and fade in
+    songGif.style.opacity = 0;
     setTimeout(() => {
       songGif.src = songs[currentIndex].gif;
-      songGif.style.opacity = 1; // fade in new GIF
+      songGif.style.opacity = 1;
     }, 200);
 
     // Play music
