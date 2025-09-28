@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interactive Music Clicker</title>
+<title>Interactive Music Clicker with GIFs</title>
 <style>
   body {
     margin: 0;
@@ -15,6 +15,7 @@
     overflow: hidden;
     font-family: sans-serif;
     color: white;
+    position: relative;
   }
 
   #clicker {
@@ -23,6 +24,7 @@
     cursor: pointer;
     transition: transform 0.2s;
     margin: 20px;
+    z-index: 2;
   }
 
   .bounce {
@@ -43,6 +45,19 @@
     padding: 6px 12px;
     border-radius: 8px;
     font-size: 14px;
+    z-index: 2;
+  }
+
+  #songGif {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: auto;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 1;
   }
 </style>
 </head>
@@ -51,21 +66,25 @@
 <img id="clicker" src="noob.png" alt="Click me!">
 <div id="songLabel">Click to play music</div>
 <audio id="music" preload="auto"></audio>
+<img id="songGif" src="" alt="Song GIF">
 
 <script>
   const music = document.getElementById('music');
   const clicker = document.getElementById('clicker');
   const songLabel = document.getElementById('songLabel');
+  const songGif = document.getElementById('songGif');
 
-  // Use safe filenames for GitHub Pages, but display full original names
+  // Music and corresponding GIF
   const songs = [
     {
-      file: "die_of_death.mp3", // safe filename on server
-      display: "Die of Death Untitled Orchestraful Theme (Artful Orchestraful Chase Theme)"
+      file: "die_of_death.mp3", 
+      display: "Die of Death Untitled Orchestraful Theme (Artful Orchestraful Chase Theme)",
+      gif: "die-of-death-artful.gif"
     },
     {
       file: "compass.mp3",
-      display: "Compass"
+      display: "Compass",
+      gif: "compass.gif" // optional, use a GIF for compass
     }
   ];
 
@@ -76,16 +95,23 @@
     clicker.classList.add('bounce');
     setTimeout(() => clicker.classList.remove('bounce'), 300);
 
-    // Set current song
+    // Set music
     music.src = songs[currentIndex].file;
 
-    // Update label with full display name
+    // Set song label
     songLabel.textContent = "Playing: " + songs[currentIndex].display;
+
+    // Set GIF and fade in
+    songGif.style.opacity = 0; // fade out current GIF
+    setTimeout(() => {
+      songGif.src = songs[currentIndex].gif;
+      songGif.style.opacity = 1; // fade in new GIF
+    }, 200);
 
     // Play music
     music.play().catch(err => console.log("Play failed:", err));
 
-    // Prepare next song
+    // Next song
     currentIndex = (currentIndex + 1) % songs.length;
   });
 </script>
