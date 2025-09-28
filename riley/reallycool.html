@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interactive Music</title>
+<title>Interactive Music Clicker</title>
 <style>
   body {
     margin: 0;
@@ -38,11 +38,11 @@
 </head>
 <body>
 
-<audio id="music" autoplay loop>
-  <source src="Die of Death Untitled Orchestraful Theme (Artful Orchestraful Chase Theme).mp3" type="audio/mpeg">
+<audio id="music" loop>
+  <source src="audio/Die_of_Death_Untitled_Orchestraful_Theme.mp3" type="audio/mpeg">
 </audio>
 
-<img id="clicker" src="noob.png" alt="Click me!">
+<img id="clicker" src="images/noob.png" alt="Click me!">
 
 <script>
   const music = document.getElementById('music');
@@ -50,15 +50,19 @@
 
   // Songs array to cycle
   const songs = [
-    "Die of Death Untitled Orchestraful Theme (Artful Orchestraful Chase Theme).mp3",
-    "compass.mp3"
+    "audio/Die_of_Death_Untitled_Orchestraful_Theme.mp3",
+    "audio/compass.mp3"
   ];
   let currentIndex = 0;
 
+  // Click listener
   clicker.addEventListener('click', () => {
     // Bounce animation
     clicker.classList.add('bounce');
     setTimeout(() => clicker.classList.remove('bounce'), 300);
+
+    // If audio not playing yet (due to autoplay restrictions), start it
+    if (music.paused) music.play();
 
     // Cycle to next song
     currentIndex = (currentIndex + 1) % songs.length;
