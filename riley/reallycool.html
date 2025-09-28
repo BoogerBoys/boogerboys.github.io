@@ -57,10 +57,16 @@
   const clicker = document.getElementById('clicker');
   const songLabel = document.getElementById('songLabel');
 
-  // List your songs here (make sure files are in the same folder as this HTML)
+  // Use safe filenames for GitHub Pages, but display original names
   const songs = [
-    "die_of_death.mp3",
-    "compass.mp3"
+    {
+      file: "die_of_death.mp3", // safe filename
+      display: "Die of Death Untitled Orchestraful Theme (Artful Orchestraful Chase Theme)"
+    },
+    {
+      file: "compass.mp3",
+      display: "Compass"
+    }
   ];
 
   let currentIndex = 0;
@@ -71,15 +77,15 @@
     setTimeout(() => clicker.classList.remove('bounce'), 300);
 
     // Set current song
-    music.src = songs[currentIndex];
-    
-    // Update label
-    songLabel.textContent = "Playing: " + songs[currentIndex];
+    music.src = songs[currentIndex].file;
+
+    // Update label with full display name
+    songLabel.textContent = "Playing: " + songs[currentIndex].display;
 
     // Play music
     music.play().catch(err => console.log("Play failed:", err));
 
-    // Prepare next song for next click
+    // Prepare next song
     currentIndex = (currentIndex + 1) % songs.length;
   });
 </script>
