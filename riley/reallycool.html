@@ -39,19 +39,19 @@
 <body>
 
 <audio id="music" loop>
-  <source src="audio/Die_of_Death_Untitled_Orchestraful_Theme.mp3" type="audio/mpeg">
+  <source src="Die_of_Death_Untitled_Orchestraful_Theme.mp3" type="audio/mpeg">
 </audio>
 
-<img id="clicker" src="images/noob.png" alt="Click me!">
+<img id="clicker" src="noob.png" alt="Click me!">
 
 <script>
   const music = document.getElementById('music');
   const clicker = document.getElementById('clicker');
 
-  // Songs array to cycle
+  // Songs array to cycle (root folder)
   const songs = [
-    "audio/Die_of_Death_Untitled_Orchestraful_Theme.mp3",
-    "audio/compass.mp3"
+    "Die_of_Death_Untitled_Orchestraful_Theme.mp3",
+    "compass.mp3"
   ];
   let currentIndex = 0;
 
@@ -61,7 +61,7 @@
     clicker.classList.add('bounce');
     setTimeout(() => clicker.classList.remove('bounce'), 300);
 
-    // If audio not playing yet (due to autoplay restrictions), start it
+    // Start music if paused
     if (music.paused) music.play();
 
     // Cycle to next song
