@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interactive Music Clicker with Cursor GIF</title>
+<title>riley i love you oh my godddddd</title>
 <style>
   body {
     margin: 0;
@@ -48,7 +48,9 @@
 
   #songGif {
     position: fixed;
-    width: 100px; /* GIF size */
+    bottom: 20px;
+    left: 20px;
+    width: 120px; /* adjust size */
     height: auto;
     pointer-events: none; /* so it doesn't block clicks */
     opacity: 0;
@@ -85,12 +87,6 @@
   ];
 
   let currentIndex = 0;
-
-  // Update GIF position on mouse move
-  document.addEventListener('mousemove', (e) => {
-    songGif.style.left = (e.pageX - songGif.width / 2) + "px";
-    songGif.style.top = (e.pageY - songGif.height / 2) + "px";
-  });
 
   clicker.addEventListener('click', () => {
     // Bounce animation
