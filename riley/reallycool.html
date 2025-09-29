@@ -63,19 +63,20 @@
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    width: 40px; /* small like Omori bulb */
+    width: 40px; /* really small, like Omori bulb */
     height: auto;
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.5s ease;
     z-index: 1;
-    background: transparent; /* ensure no background box */
+    background: transparent;
   }
 </style>
 </head>
 <body>
 
-<img id="clicker" src="noob.png" alt="Click me!">
+<!-- Changed from noob.png to pc.gif -->
+<img id="clicker" src="pc.gif" alt="Click me!">
 <div id="songLabel">Click to play music</div>
 <audio id="music" preload="auto"></audio>
 <img id="songGif" src="" alt="Song GIF">
