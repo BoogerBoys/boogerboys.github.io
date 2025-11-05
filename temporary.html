@@ -252,8 +252,8 @@
     });
 
     // Adjust STAR_COUNT or MAX_SIZE below to customize the starry background quickly.
-    const STAR_COUNT = 600000;
-    const MAX_SIZE = 6;
+    const STAR_COUNT = 500;
+    const MAX_SIZE = 10;
     const sky = document.getElementById("sky");
 
     function makeStar() {
@@ -262,8 +262,8 @@
       const size = (Math.random() * (MAX_SIZE - 1)) + 1;
       star.style.setProperty("--x", Math.random() * 100 + "%");
       star.style.setProperty("--y", Math.random() * 100 + "%");
-      star.style.setProperty("--delay", (Math.random() * 3).toFixed(2) + "s");
-      star.style.setProperty("--speed", (Math.random() * 2).toFixed(2) + "s");
+      star.style.setProperty("--delay", (Math.random() * 4).toFixed(2) + "s");
+      star.style.setProperty("--speed", (Math.random() * 3).toFixed(2) + "s");
       star.style.setProperty("--size", size + "px");
       star.style.top = Math.random() * 100 + "%";
       star.style.left = Math.random() * 100 + "%";
