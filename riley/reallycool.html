@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>riley i love you oh my godddddd</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background: #ffffff; /* pure white background */
+    overflow: hidden;
+    font-family: sans-serif;
+    color: black; /* text color adjusted for white background */
+    cursor: none; /* optional: hide default cursor */
+  }
+
+  #clicker {
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 2;
+  }
+
+  .bounce {
+    animation: bounce 0.3s ease;
+  }
+
+  @keyframes bounce {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.4); }
+    100% { transform: scale(1); }
+  }
+
+  #songLabel {
+    position: fixed;
+    bottom: 120px;
+    right: 20px;
+    background: rgba(0,0,0,0.1); /* subtle for white background */
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 2;
+  }
+
+  #songGif {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 120px;
+    height: auto;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 1;
+  }
+
+  #topGif {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px; /* really small, like Omori bulb */
+    height: auto;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 1;
+    background: transparent;
+  }
+</style>
+</head>
+<body>
+
+<!-- Changed from noob.png to pc.gif -->
+<img id="clicker" src="pc.gif" alt="Click me!">
+<div id="songLabel">Click to play music</div>
+<audio id="music" preload="auto"></audio>
+<img id="songGif" src="" alt="Song GIF">
+<img id="topGif" src="white.gif" alt="Top GIF">
+
+<script>
+  const music = document.getElementById('music');
+  const clicker = document.getElementById('clicker');
+  const songLabel = document.getElementById('songLabel');
+  const songGif = document.getElementById('songGif');
+  const topGif = document.getElementById('topGif');
+
+  // Songs and corresponding GIFs
+  const songs = [
+    {
+      file: "die_of_death.mp3", 
+      display: "Die of Death Untitled Orchestraful Theme (Artful Orchestraful Chase Theme)",
+      gif: "limbus-company-ahab.gif"
+    },
+    {
+      file: "compass.mp3",
+      display: "Compass",
+      gif: "die-of-death-artful.gif"
+    }
+  ];
+
+  let currentIndex = 0;
+
+  clicker.addEventListener('click', () => {
+    // Bounce animation
+    clicker.classList.add('bounce');
+    setTimeout(() => clicker.classList.remove('bounce'), 300);
+
+    // Set music
+    music.src = songs[currentIndex].file;
+
+    // Update label
+    songLabel.textContent = "Playing: " + songs[currentIndex].display;
+
+    // Fade out current bottom GIF, then set new one and fade in
+    songGif.style.opacity = 0;
+    setTimeout(() => {
+      songGif.src = songs[currentIndex].gif;
+      songGif.style.opacity = 1;
+    }, 200);
+
+    // Fade in top white.gif bulb
+    topGif.style.opacity = 1;
+
+    // Play music
+    music.play().catch(err => console.log("Play failed:", err));
+
+    // Next song
+    currentIndex = (currentIndex + 1) % songs.length;
+  });
+</script>
+
+</body>
+</html>
