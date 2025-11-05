@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>work in progress</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-top: #1b1c2c;
+      --bg-middle: #0b0b18;
+      --bg-bottom: #03030a;
+      --surface: rgba(10, 10, 22, 0.65);
+      --surface-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f0f2ff;
+      --text-soft: #c8ccf5;
+      --text-note: #9aa0d8;
+      --accent: rgba(126, 138, 255, 0.22);
+      --accent-border: rgba(130, 142, 255, 0.42);
+      --glow: rgba(1, 2, 8, 0.7);
+      --jukebox-border: rgba(255, 255, 255, 0.08);
+      --jukebox-sheen: rgba(12, 12, 26, 0.7);
+      --star-color: rgba(255, 255, 255, 0.88);
+      --star-shadow: rgba(255, 255, 255, 0.55);
+      --pulse-color: #74ffb4;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at top, var(--bg-top) 0%, var(--bg-middle) 55%, var(--bg-bottom) 100%);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+      line-height: 1.6;
+      padding: 80px 20px;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 50% 12%, rgba(122, 132, 255, 0.18), transparent 55%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 24px;
+      padding: 48px 36px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 18px 24px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      letter-spacing: 0.04em;
+    }
+
+    p {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.98rem;
+    }
+
+    .soft-note {
+      font-size: 0.9rem;
+      color: var(--text-note);
+    }
+
+    .home-link {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 10px 26px;
+      border-radius: 999px;
+      border: 1px solid var(--surface-border);
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .home-link:hover {
+      background: var(--accent);
+      border-color: var(--accent-border);
+      transform: translateY(-2px);
+    }
+
+    #jukebox {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      background: var(--jukebox-sheen);
+      border: 1px solid var(--jukebox-border);
+      border-radius: 16px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.85rem;
+      color: var(--text-soft);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 18px 40px var(--glow);
+      z-index: 1;
+    }
+
+    #jukebox .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--pulse-color);
+      box-shadow: 0 0 10px rgba(116, 255, 180, 0.6);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+
+    #jukebox .label {
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #8a90c6;
+    }
+
+    #jukebox .track {
+      display: block;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .sky {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .star {
+      position: absolute;
+      width: var(--size, 3px);
+      height: var(--size, 3px);
+      border-radius: 50%;
+      background: var(--star-color);
+      box-shadow: 0 0 calc(var(--size, 3px) * 3) var(--star-shadow);
+      opacity: 0.75;
+      animation: twinkle calc(3s + var(--speed, 0s)) ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+    }
+
+    audio {
+      display: none;
+    }
+
+    @keyframes twinkle {
+      0%, 100% {
+        opacity: 0.4;
+        transform: scale(0.8);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    @media (max-width: 680px) {
+      html, body {
+        padding: 60px 16px;
+      }
+
+      #jukebox {
+        left: 50%;
+        right: auto;
+        bottom: 24px;
+        transform: translateX(-50%);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <audio id="bg-music" autoplay loop>
+    <source src="Temporary.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="sky" id="sky"></div>
+
+  <main>
+    <h1>i broke something.</h1>
+    <p>or maybe this page isn't done yet.</p>
+    <p class="soft-note">come back later yo</p>
+    <a class="home-link" href="index.html">go back</a>
+  </main>
+
+  <div id="jukebox">
+    <span class="status-dot"></span>
+    <div>
+      <span class="label">now looping</span>
+      <span class="track">dialtone - toby fox</span>
+    </div>
+  </div>
+
+  <script>
+    const audio = document.getElementById("bg-music");
+    audio.volume = 0.3;
+
+    function attemptPlay() {
+      audio.play().catch(() => {
+        // If autoplay is blocked, wait for a user interaction.
+      });
+    }
+
+    attemptPlay();
+    ["pointerdown", "keydown"].forEach(evt => {
+      document.addEventListener(evt, function handler() {
+        attemptPlay();
+        document.removeEventListener(evt, handler);
+      });
+    });
+
+    // Adjust STAR_COUNT or MAX_SIZE below to customize the starry background quickly.
+    const STAR_COUNT = 400;
+    const MAX_SIZE = 6;
+    const sky = document.getElementById("sky");
+
+    function makeStar() {
+      const star = document.createElement("span");
+      star.className = "star";
+      const size = (Math.random() * (MAX_SIZE - 1)) + 1;
+      star.style.setProperty("--x", Math.random() * 100 + "%");
+      star.style.setProperty("--y", Math.random() * 100 + "%");
+      star.style.setProperty("--delay", (Math.random() * 3).toFixed(2) + "s");
+      star.style.setProperty("--speed", (Math.random() * 2).toFixed(2) + "s");
+      star.style.setProperty("--size", size + "px");
+      star.style.top = Math.random() * 100 + "%";
+      star.style.left = Math.random() * 100 + "%";
+      return star;
+    }
+
+    for (let i = 0; i < STAR_COUNT; i++) {
+      sky.appendChild(makeStar());
+    }
+  </script>
+</body>
+</html>

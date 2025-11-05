@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>boogerboys</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg-gradient: linear-gradient(180deg, #f8f9ff 0%, #eef2ff 52%, #fafaff 100%);
+      --bg-overlay: radial-gradient(circle at 25% -8%, rgba(79, 109, 255, 0.18), transparent 55%), radial-gradient(circle at 80% 0%, rgba(71, 196, 255, 0.16), transparent 45%);
+      --surface: rgba(255, 255, 255, 0.82);
+      --surface-strong: rgba(255, 255, 255, 0.92);
+      --card-border: rgba(36, 45, 88, 0.12);
+      --text-primary: #1f2336;
+      --text-secondary: #5b618f;
+      --muted: #6b74a1;
+      --accent: #4f6dff;
+      --accent-soft: rgba(79, 109, 255, 0.18);
+      --shadow: 0 25px 50px rgba(31, 35, 54, 0.16);
+      --friend-bg: rgba(255, 255, 255, 0.85);
+      --friend-hover-bg: rgba(255, 255, 255, 0.96);
+      --friend-shadow: 0 18px 30px rgba(42, 51, 88, 0.12);
+      --border-strong: rgba(31, 35, 54, 0.15);
+      --glow-accent: rgba(79, 109, 255, 0.35);
+      --nav-shadow: 0 20px 40px rgba(42, 51, 88, 0.18);
+      --theme-button-bg: rgba(255, 255, 255, 0.7);
+      --theme-button-border: rgba(42, 51, 88, 0.12);
+      --theme-button-text: #30365a;
+      --theme-button-active: rgba(79, 109, 255, 0.2);
+      --jukebox-bg: rgba(255, 255, 255, 0.86);
+      --jukebox-border: rgba(42, 51, 88, 0.14);
+      --jukebox-shadow: 0 18px 36px rgba(31, 35, 54, 0.18);
+      --icon-filter: none;
+    }
+
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg-gradient: linear-gradient(180deg, #0d0b17 0%, #11162a 55%, #0c101d 100%);
+      --bg-overlay: radial-gradient(circle at 30% -10%, rgba(95, 78, 255, 0.22), transparent 60%), radial-gradient(circle at 85% 10%, rgba(71, 196, 255, 0.18), transparent 60%);
+      --surface: rgba(20, 23, 36, 0.78);
+      --surface-strong: rgba(19, 22, 34, 0.9);
+      --card-border: rgba(143, 162, 255, 0.16);
+      --text-primary: #e7e9ff;
+      --text-secondary: #b3b8e5;
+      --muted: #8a90c6;
+      --accent: #8fa2ff;
+      --accent-soft: rgba(143, 162, 255, 0.22);
+      --shadow: 0 25px 50px rgba(0, 0, 0, 0.45);
+      --friend-bg: rgba(24, 27, 40, 0.82);
+      --friend-hover-bg: rgba(30, 33, 48, 0.95);
+      --friend-shadow: 0 22px 36px rgba(0, 0, 0, 0.45);
+      --border-strong: rgba(143, 162, 255, 0.24);
+      --glow-accent: rgba(143, 162, 255, 0.35);
+      --nav-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+      --theme-button-bg: rgba(25, 27, 40, 0.78);
+      --theme-button-border: rgba(143, 162, 255, 0.3);
+      --theme-button-text: #dcdfff;
+      --theme-button-active: rgba(143, 162, 255, 0.28);
+      --jukebox-bg: rgba(23, 24, 37, 0.82);
+      --jukebox-border: rgba(143, 162, 255, 0.18);
+      --jukebox-shadow: 0 24px 52px rgba(0, 0, 0, 0.55);
+      --icon-filter: brightness(1.1);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme]) {
+        color-scheme: dark;
+        --bg-gradient: linear-gradient(180deg, #0d0b17 0%, #11162a 55%, #0c101d 100%);
+        --bg-overlay: radial-gradient(circle at 30% -10%, rgba(95, 78, 255, 0.22), transparent 60%), radial-gradient(circle at 85% 10%, rgba(71, 196, 255, 0.18), transparent 60%);
+        --surface: rgba(20, 23, 36, 0.78);
+        --surface-strong: rgba(19, 22, 34, 0.9);
+        --card-border: rgba(143, 162, 255, 0.16);
+        --text-primary: #e7e9ff;
+        --text-secondary: #b3b8e5;
+        --muted: #8a90c6;
+        --accent: #8fa2ff;
+        --accent-soft: rgba(143, 162, 255, 0.22);
+        --shadow: 0 25px 50px rgba(0, 0, 0, 0.45);
+        --friend-bg: rgba(24, 27, 40, 0.82);
+        --friend-hover-bg: rgba(30, 33, 48, 0.95);
+        --friend-shadow: 0 22px 36px rgba(0, 0, 0, 0.45);
+        --border-strong: rgba(143, 162, 255, 0.24);
+        --glow-accent: rgba(143, 162, 255, 0.35);
+        --nav-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+        --theme-button-bg: rgba(25, 27, 40, 0.78);
+        --theme-button-border: rgba(143, 162, 255, 0.3);
+        --theme-button-text: #dcdfff;
+        --theme-button-active: rgba(143, 162, 255, 0.28);
+        --jukebox-bg: rgba(23, 24, 37, 0.82);
+        --jukebox-border: rgba(143, 162, 255, 0.18);
+        --jukebox-shadow: 0 24px 52px rgba(0, 0, 0, 0.55);
+        --icon-filter: brightness(1.1);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(rgba(82, 98, 175, 0.12) 1.4px, transparent 1.4px);
+      background-size: 28px 28px;
+      opacity: 0.6;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .backdrop::before,
+    .backdrop::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(0);
+      opacity: 0.55;
+      animation: drift 16s ease-in-out infinite;
+    }
+
+    .backdrop::before {
+      width: 480px;
+      height: 480px;
+      top: -160px;
+      left: -140px;
+      background: radial-gradient(circle, rgba(79, 109, 255, 0.32), transparent 70%);
+    }
+
+    .backdrop::after {
+      width: 400px;
+      height: 400px;
+      bottom: -140px;
+      right: -120px;
+      background: radial-gradient(circle, rgba(71, 196, 255, 0.28), transparent 70%);
+      animation-delay: 4s;
+    }
+
+    .spark {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      box-shadow: 0 0 22px var(--accent);
+      opacity: 0.5;
+      animation: sparkle 8s ease-in-out infinite;
+    }
+
+    .spark.one { top: 22%; left: 18%; animation-delay: 0s; }
+    .spark.two { top: 12%; right: 14%; animation-delay: 2s; }
+    .spark.three { bottom: 18%; left: 26%; animation-delay: 4s; }
+    .spark.four { bottom: 12%; right: 20%; animation-delay: 1s; }
+
+    #theme-switcher {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--card-border);
+      border-radius: 999px;
+      padding: 10px 14px;
+      box-shadow: var(--nav-shadow);
+      z-index: 5;
+      backdrop-filter: blur(8px);
+    }
+
+    .switcher-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+    }
+
+    .theme-button {
+      border: 1px solid var(--theme-button-border);
+      background: var(--theme-button-bg);
+      color: var(--theme-button-text);
+      font-weight: 600;
+      font-size: 0.8rem;
+      padding: 6px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .theme-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .theme-button[aria-pressed="true"] {
+      background: var(--theme-button-active);
+      border-color: var(--accent);
+      color: var(--text-primary);
+    }
+
+    #enter {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+    }
+
+    .enter-card {
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+      border-radius: 26px;
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow);
+      padding: 52px 44px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      animation: fadeIn 1s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .enter-card::before {
+      content: "";
+      position: absolute;
+      width: 120%;
+      height: 120%;
+      top: -10%;
+      left: -10%;
+      background: conic-gradient(from 180deg, transparent, rgba(79, 109, 255, 0.12), transparent 70%);
+      animation: sweep 8s linear infinite;
+      pointer-events: none;
+    }
+
+    .enter-card h1 {
+      margin: 0;
+      font-size: 2.6rem;
+      letter-spacing: -0.8px;
+      color: var(--text-primary);
+    }
+
+    .enter-card p {
+      margin: 0;
+      line-height: 1.65;
+      color: var(--text-secondary);
+      font-size: 1.02rem;
+    }
+
+    .enter-card button {
+      align-self: center;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 999px;
+      padding: 13px 36px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 12px 30px var(--glow-accent);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .enter-card button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 36px var(--glow-accent);
+    }
+
+    #main {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 64px;
+      text-align: center;
+      padding: 140px 20px 120px;
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+    }
+
+    #main.revealed {
+      animation: fadeIn 0.85s ease forwards;
+    }
+
+    .hero {
+      max-width: 620px;
+      background: var(--surface-strong);
+      border-radius: 28px;
+      padding: 56px 48px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 160px;
+      height: 160px;
+      bottom: -60px;
+      right: -40px;
+      background: radial-gradient(circle, var(--accent-soft), transparent 65%);
+      animation: pulseOrb 12s ease-in-out infinite;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      color: var(--text-primary);
+      letter-spacing: -0.6px;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .tagline {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+    }
+
+    .helper-text {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .friends {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      max-width: 860px;
+      width: 100%;
+    }
+
+    .friend-card {
+      text-decoration: none;
+      background: var(--friend-bg);
+      border-radius: 22px;
+      box-shadow: var(--friend-shadow);
+      padding: 18px 24px;
+      min-width: 220px;
+      max-width: 280px;
+      flex: 1 1 220px;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border: 1px solid var(--card-border);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .friend-card:hover {
+      transform: translateY(-5px);
+      background: var(--friend-hover-bg);
+      border-color: var(--border-strong);
+      box-shadow: 0 26px 40px rgba(0, 0, 0, 0.14);
+    }
+
+    .friend-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+      letter-spacing: -0.3px;
+    }
+
+    .friend-note {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .status-strip {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      max-width: 660px;
+      width: 100%;
+    }
+
+    .status-chip {
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--card-border);
+      color: var(--muted);
+      font-size: 0.88rem;
+      box-shadow: 0 16px 24px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(6px);
+    }
+
+    #jukebox {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      background: var(--jukebox-bg);
+      border: 1px solid var(--jukebox-border);
+      border-radius: 22px;
+      padding: 22px 22px 20px;
+      width: 280px;
+      display: none;
+      flex-direction: column;
+      gap: 18px;
+      color: var(--text-primary);
+      z-index: 5;
+      box-shadow: var(--jukebox-shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    #jukebox .song {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    #jukebox .song img {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      object-fit: cover;
+      box-shadow: 0 14px 22px rgba(0, 0, 0, 0.16);
+      filter: var(--icon-filter);
+    }
+
+    .song-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: flex-start;
+    }
+
+    .song-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    #song-info {
+      font-size: 0.94rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.35;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+    }
+
+    .controls button {
+      flex: 1;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 0;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--accent);
+      color: white;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .controls button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px var(--glow-accent);
+    }
+
+    .volume-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .volume-container input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes sweep {
+      from { transform: rotate(0deg); opacity: 0.45; }
+      50% { opacity: 0.7; }
+      to { transform: rotate(360deg); opacity: 0.45; }
+    }
+
+    @keyframes drift {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(24px) scale(1.05); }
+    }
+
+    @keyframes sparkle {
+      0%, 100% { opacity: 0.35; transform: scale(0.7); }
+      50% { opacity: 0.9; transform: scale(1.1); }
+    }
+
+    @keyframes pulseOrb {
+      0%, 100% { opacity: 0.35; transform: scale(1); }
+      50% { opacity: 0.75; transform: scale(1.1); }
+    }
+
+    @media (max-width: 960px) {
+      #theme-switcher {
+        right: 20px;
+        left: 20px;
+        width: calc(100% - 40px);
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      #jukebox {
+        left: 50%;
+        top: auto;
+        bottom: 24px;
+        transform: translateX(-50%);
+        width: min(320px, calc(100% - 40px));
+      }
+
+      #main {
+        padding-bottom: 200px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .enter-card {
+        padding: 40px 28px;
+      }
+
+      .enter-card h1 {
+        font-size: 2.3rem;
+      }
+
+      .hero {
+        padding: 46px 28px;
+      }
+
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+
+      .friends {
+        gap: 16px;
+      }
+
+      .friend-card {
+        min-width: 190px;
+        padding: 16px 20px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true">
+    <span class="spark one"></span>
+    <span class="spark two"></span>
+    <span class="spark three"></span>
+    <span class="spark four"></span>
+  </div>
+
+  <audio id="bg-music"></audio>
+
+  <div id="theme-switcher" role="group" aria-label="Color theme">
+    <span class="switcher-label">theme</span>
+    <button type="button" class="theme-button" data-theme-choice="light" aria-pressed="false">light</button>
+    <button type="button" class="theme-button" data-theme-choice="dark" aria-pressed="false">dark</button>
+    <button type="button" class="theme-button" data-theme-choice="system" aria-pressed="true">system</button>
+  </div>
+
+  <div id="enter">
+    <div class="enter-card">
+      <h1>hi there.</h1>
+      <p>this is our page 👅👅</p>
+      <button type="button" onclick="startSite()">go</button>
+    </div>
+  </div>
+
+  <div id="jukebox">
+    <div class="song">
+      <img id="song-icon" src="Music1.png" alt="Song art">
+      <div class="song-meta">
+        <span class="song-label">now playing</span>
+        <span id="song-info">Loading...</span>
+      </div>
+    </div>
+    <div class="controls">
+      <button type="button" onclick="prevSong()">Prev</button>
+      <button type="button" onclick="nextSong()">Next</button>
+    </div>
+    <div class="volume-container">
+      <label for="volume">Volume</label>
+      <input id="volume" type="range" min="0" max="1" step="0.01" value="0.85">
+    </div>
+  </div>
+
+  <div id="main">
+    <section class="hero">
+      <h1>welcome to boogerboys</h1>
+      <p class="tagline">click any of the names below to go to their pages, some may not be done (cause im lazy asf)</p>
+    </section>
+
+    <div class="friends">
+      <a class="friend-card" href="alex/WoahItsMyReallyCoolSiteThatYouShouldStayOnForAReallyReallyLongTimeFromJustHowAwesomeItIs.html">
+        <span class="friend-name">alex</span>
+        <span class="friend-note">midnight, any alias i do not care.</span>
+      </a>
+      <a class="friend-card" href="temporary.html">
+        <span class="friend-name">hoodie</span>
+        <span class="friend-note">hoobean, hoodieisadumbname, etc.</span>
+      </a>
+      <a class="friend-card" href="riley/reallycool.html">
+        <span class="friend-name">riley</span>
+        <span class="friend-note">rileywilston will, etc.</span>
+      </a>
+      <a class="friend-card" href="saur/saur.html">
+        <span class="friend-name">saur</span>
+        <span class="friend-note">fishy, etc.</span>
+      </a>
+      <a class="friend-card" href="temporary.html">
+        <span class="friend-name">val</span>
+        <span class="friend-note">valk.</span>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const docRoot = document.documentElement;
+    const themeButtons = document.querySelectorAll(".theme-button");
+    let activeTheme = localStorage.getItem("bb-theme") || "system";
+    const systemDarkMatch = window.matchMedia("(prefers-color-scheme: dark)");
+
+    function applyTheme(choice, store = false) {
+      activeTheme = choice;
+      if (store) {
+        localStorage.setItem("bb-theme", choice);
+      }
+
+      if (choice === "light" || choice === "dark") {
+        docRoot.setAttribute("data-theme", choice);
+      } else {
+        docRoot.removeAttribute("data-theme");
+      }
+
+      themeButtons.forEach(button => {
+        const isActive = button.dataset.themeChoice === choice;
+        button.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+    }
+
+    themeButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        const choice = button.dataset.themeChoice;
+        applyTheme(choice, true);
+      });
+    });
+
+    systemDarkMatch.addEventListener("change", () => {
+      if (activeTheme === "system") {
+        applyTheme("system");
+      }
+    });
+
+    applyTheme(activeTheme);
+
+    const songs = [
+      { file: "Music1.mp3", credit: "Donkey Kong Country 2 - Stickerbush Symphony - Nintendo", icon: "Music1.png" },
+      { file: "Music2.mp3", credit: "Lisa: The Pointless OST - Soft Hearts (World's Last Autumn Version)", icon: "Music2.png" },
+      { file: "Music3.mp3", credit: "Deltarune Chapter 3 + 4 - 12 am - Toby Fox", icon: "Music3.png" }
+    ];
+
+    let currentSong = 0;
+    const audio = document.getElementById("bg-music");
+    const songInfo = document.getElementById("song-info");
+    const songIcon = document.getElementById("song-icon");
+    const volumeSlider = document.getElementById("volume");
+    const jukebox = document.getElementById("jukebox");
+    const mainSection = document.getElementById("main");
+
+    function playSong(index) {
+      currentSong = index;
+      audio.src = songs[index].file;
+      songIcon.src = songs[index].icon;
+      audio.play().then(() => {
+        songInfo.textContent = songs[index].credit;
+      }).catch(() => {
+        songInfo.textContent = "tap to allow audio :)";
+      });
+    }
+
+    function startSite() {
+      document.getElementById("enter").style.display = "none";
+      mainSection.style.display = "flex";
+      mainSection.classList.add("revealed");
+      jukebox.style.display = "flex";
+      audio.volume = parseFloat(volumeSlider.value);
+
+      const randomIndex = Math.floor(Math.random() * songs.length);
+      playSong(randomIndex);
+    }
+
+    function nextSong() {
+      const next = (currentSong + 1) % songs.length;
+      playSong(next);
+    }
+
+    function prevSong() {
+      const prev = (currentSong - 1 + songs.length) % songs.length;
+      playSong(prev);
+    }
+
+    audio.addEventListener("ended", () => {
+      const next = (currentSong + 1) % songs.length;
+      playSong(next);
+    });
+
+    volumeSlider.addEventListener("input", () => {
+      audio.volume = parseFloat(volumeSlider.value);
+    });
+  </script>
+</body>
+</html>
