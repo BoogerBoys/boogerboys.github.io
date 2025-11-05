@@ -1,138 +1,367 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>riley i love you oh my godddddd</title>
-<style>
-  body {
-    margin: 0;
-    height: 100vh;
-    background: #ffffff; /* pure white background */
-    overflow: hidden;
-    font-family: sans-serif;
-    color: black; /* text color adjusted for white background */
-    cursor: none; /* optional: hide default cursor */
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>riley's sorta website</title>
+  <meta name="description" content="Riley keeps a tiny whiteboard page with doodles, notes, and a couple of gentle surprises." />
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1f1f1f;
+      --ghost-ink: #7f7f7f;
+      --paper: #ffffff;
+      --paper-soft: #f7f7f7;
+      --accent: #ff7aa2;
+      --accent-soft: rgba(255, 122, 162, 0.12);
+      --border: #e5e5e5;
+      --radius: 18px;
+      font-family: "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
+    }
 
-  #clicker {
-    width: 80px;
-    height: 80px;
-    cursor: pointer;
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    z-index: 2;
-  }
+    * {
+      box-sizing: border-box;
+    }
 
-  .bounce {
-    animation: bounce 0.3s ease;
-  }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--paper);
+      color: var(--ink);
+    }
 
-  @keyframes bounce {
-    0%   { transform: scale(1); }
-    50%  { transform: scale(1.4); }
-    100% { transform: scale(1); }
-  }
+    main {
+      max-width: 720px;
+      margin: clamp(3rem, 10vw, 6rem) auto;
+      padding: 0 1.75rem 4rem;
+    }
 
-  #songLabel {
-    position: fixed;
-    bottom: 120px;
-    right: 20px;
-    background: rgba(0,0,0,0.1); /* subtle for white background */
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    z-index: 2;
-  }
+    header {
+      margin-bottom: clamp(3rem, 9vw, 5rem);
+      text-align: center;
+    }
 
-  #songGif {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    width: 120px;
-    height: auto;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    z-index: 1;
-  }
+    h1 {
+      font-size: clamp(2.4rem, 6vw, 3.2rem);
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.02em;
+    }
 
-  #topGif {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px; /* really small, like Omori bulb */
-    height: auto;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    z-index: 1;
-    background: transparent;
-  }
-</style>
+    header p {
+      margin: 0 auto;
+      max-width: 26ch;
+      color: var(--ghost-ink);
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    section {
+      margin-bottom: clamp(2.5rem, 7vw, 4rem);
+      padding: 1.75rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--paper-soft);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.4rem;
+      letter-spacing: -0.01em;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0 0;
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    ul li::before {
+      content: "✳";
+      display: inline-block;
+      margin-right: 0.75rem;
+      color: var(--accent);
+    }
+
+    details {
+      margin-top: 1.25rem;
+      border-radius: calc(var(--radius) - 6px);
+      border: 1px dashed var(--border);
+      padding: 1rem 1.25rem;
+      background: #fff;
+    }
+
+    details[open] {
+      border-color: var(--accent);
+      background: linear-gradient(135deg, #fff, #fff6fb);
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+      outline: none;
+    }
+
+    button,
+    .ghost-button {
+      appearance: none;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.6rem 1.25rem;
+      font: inherit;
+      background: #fff;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    button:hover,
+    button:focus-visible,
+    .ghost-button:hover,
+    .ghost-button:focus-visible {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(255, 122, 162, 0.18);
+      border-color: rgba(255, 122, 162, 0.4);
+    }
+
+    .playlist button.active {
+      background: var(--accent-soft);
+      border-color: rgba(255, 122, 162, 0.6);
+      box-shadow: 0 10px 24px rgba(255, 122, 162, 0.2);
+    }
+
+    .note-grid {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .note {
+      padding: 1.2rem 1.4rem;
+      border-radius: calc(var(--radius) - 8px);
+      background: #fff;
+      border: 1px solid var(--border);
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.03);
+      line-height: 1.55;
+    }
+
+    .note strong {
+      font-size: 1rem;
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+
+    .playlist {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    audio {
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .secret-link {
+      color: inherit;
+      border-bottom: 1px dotted var(--ghost-ink);
+      text-decoration: none;
+      position: relative;
+    }
+
+    .secret-link::after {
+      content: "👀";
+      opacity: 0;
+      position: absolute;
+      right: -1.5rem;
+      transition: opacity 0.2s ease;
+    }
+
+    .secret-link:focus-visible::after,
+    .secret-link:hover::after {
+      opacity: 1;
+    }
+
+    footer {
+      text-align: center;
+      margin: 2.5rem 0 0;
+      font-size: 0.9rem;
+      color: var(--ghost-ink);
+    }
+
+    body.fun-mode {
+      background: #fff7ff;
+    }
+
+    body.fun-mode section {
+      background: #fff;
+      border-color: rgba(255, 122, 162, 0.35);
+    }
+
+    body.fun-mode .hidden-note {
+      display: block;
+    }
+
+    .hidden-note {
+      display: none;
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    @media (max-width: 640px) {
+      section {
+        padding: 1.4rem;
+      }
+
+      header p {
+        font-size: 1rem;
+      }
+    }
+  </style>
 </head>
 <body>
+  <main>
+    <header>
+      <h1>riley's tiny blank space</h1>
+      <p>
+        Mostly a white page. kind of like a desk napkin where scribbles, plans, and questionable ideas pile up quietly.
+      </p>
+    </header>
 
-<!-- Changed from noob.png to pc.gif -->
-<img id="clicker" src="pc.gif" alt="Click me!">
-<div id="songLabel">Click to play music</div>
-<audio id="music" preload="auto"></audio>
-<img id="songGif" src="" alt="Song GIF">
-<img id="topGif" src="white.gif" alt="Top GIF">
+    <section aria-labelledby="notes-title">
+      <h2 id="notes-title">currently floating around</h2>
+      <div class="note-grid">
+        <p class="note">
+          <strong>story crumbs</strong>
+          mini sci-fi novella about a runaway library card that gains sentience. needs an ending that isn't "and then the moon applauded."
+        </p>
+        <p class="note">
+          <strong>half-built projects</strong>
+          browser toy that lets you rearrange constellations by dragging sticky stars. doesn't do anything practical. that's the point.
+        </p>
+        <p class="note">
+          <strong>misc. obsessions</strong>
+          looping soundtracks, liminal hallways, and writing notes on the back of receipts because notebooks feel too official.
+        </p>
+      </div>
+    </section>
 
-<script>
-  const music = document.getElementById('music');
-  const clicker = document.getElementById('clicker');
-  const songLabel = document.getElementById('songLabel');
-  const songGif = document.getElementById('songGif');
-  const topGif = document.getElementById('topGif');
+    <section aria-labelledby="button-title">
+      <h2 id="button-title">switches & tiny secrets</h2>
+      <div class="playlist">
+        <button id="toggle-mood" type="button">flip on the cozy lights</button>
+        <p id="mood-caption" aria-live="polite">default daylight mode.</p>
 
-  // Songs and corresponding GIFs
-  const songs = [
-    {
-      file: "die_of_death.mp3", 
-      display: "Die of Death Untitled Orchestraful Theme (Artful Orchestraful Chase Theme)",
-      gif: "limbus-company-ahab.gif"
-    },
-    {
-      file: "compass.mp3",
-      display: "Compass",
-      gif: "die-of-death-artful.gif"
+        <details>
+          <summary>open the hidden drawer</summary>
+          <p>
+            there's a folder labelled "for later" that is absolutely full of finished ideas. they're just waiting for courage.
+          </p>
+          <p class="hidden-note" id="hidden-message">
+            psst. tap <button type="button" class="ghost-button" id="knock">knock knock</button> for a secret playlist pick.
+            <span id="secret-note" hidden></span>
+          </p>
+        </details>
+
+        <audio id="secret-player" controls preload="metadata" hidden>
+          <source src="compass.mp3" type="audio/mpeg" />
+          your browser doesn't support audio playback.
+        </audio>
+
+        <p>
+          also, this <a href="#" class="secret-link" id="secret-link">link doesn't go anywhere</a>. but it might change the note above.
+        </p>
+      </div>
+    </section>
+
+    <section aria-labelledby="playlist-title">
+      <h2 id="playlist-title">soundtrack (one song at a time)</h2>
+      <div class="playlist">
+        <button type="button" data-track="compass">compass — soft synth drift</button>
+        <button type="button" data-track="chase">die of death (chase edit) — dramatic strings</button>
+        <audio id="main-player" controls preload="metadata"></audio>
+        <p id="now-playing">pick a track above to hear whatever riley is looping this week.</p>
+      </div>
+    </section>
+
+    <footer>
+      built by riley, probably late at night. refreshed once the tea runs out.
+    </footer>
+  </main>
+
+  <script>
+    const body = document.body;
+    const toggleButton = document.getElementById('toggle-mood');
+    const moodCaption = document.getElementById('mood-caption');
+    const hiddenMessage = document.getElementById('hidden-message');
+    const hiddenDrawer = document.querySelector('details');
+    const secretNote = document.getElementById('secret-note');
+    const secretLink = document.getElementById('secret-link');
+    const knockButton = document.getElementById('knock');
+    const secretPlayer = document.getElementById('secret-player');
+    const playlistButtons = document.querySelectorAll('[data-track]');
+    const mainPlayer = document.getElementById('main-player');
+    const nowPlaying = document.getElementById('now-playing');
+
+    toggleButton.addEventListener('click', () => {
+      const funMode = body.classList.toggle('fun-mode');
+      moodCaption.textContent = funMode ? 'warm glow activated. everything looks 14% softer.' : 'default daylight mode.';
+    });
+
+    const messages = [
+      'playlist clue unlocked. go dramatic.',
+      'the drawer smells like dust and bubblegum.',
+      'note to self: remember to stretch.',
+      'bonus mission: send a postcard to future you.'
+    ];
+
+    secretLink.addEventListener('click', (event) => {
+      event.preventDefault();
+      const message = messages[Math.floor(Math.random() * messages.length)];
+      hiddenDrawer.open = true;
+      hiddenMessage.style.display = 'block';
+      secretNote.hidden = false;
+      secretNote.textContent = message;
+    });
+
+    function playSecret() {
+      secretPlayer.hidden = false;
+      hiddenMessage.style.display = 'block';
+      secretNote.hidden = false;
+      secretNote.textContent = 'secret track playing quietly in the background.';
+      if (secretPlayer.paused) {
+        secretPlayer.currentTime = 0;
+        secretPlayer.play().catch(() => {});
+      }
     }
-  ];
 
-  let currentIndex = 0;
+    knockButton.addEventListener('click', playSecret);
 
-  clicker.addEventListener('click', () => {
-    // Bounce animation
-    clicker.classList.add('bounce');
-    setTimeout(() => clicker.classList.remove('bounce'), 300);
+    const tracks = {
+      compass: {
+        src: 'compass.mp3',
+        description: 'soft synth drift is excellent for writing emails you will never send.'
+      },
+      chase: {
+        src: 'die_of_death.mp3',
+        description: 'dramatic strings for when a to-do list needs a boss battle.'
+      }
+    };
 
-    // Set music
-    music.src = songs[currentIndex].file;
+    playlistButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const key = button.dataset.track;
+        const track = tracks[key];
+        if (!track) return;
 
-    // Update label
-    songLabel.textContent = "Playing: " + songs[currentIndex].display;
-
-    // Fade out current bottom GIF, then set new one and fade in
-    songGif.style.opacity = 0;
-    setTimeout(() => {
-      songGif.src = songs[currentIndex].gif;
-      songGif.style.opacity = 1;
-    }, 200);
-
-    // Fade in top white.gif bulb
-    topGif.style.opacity = 1;
-
-    // Play music
-    music.play().catch(err => console.log("Play failed:", err));
-
-    // Next song
-    currentIndex = (currentIndex + 1) % songs.length;
-  });
-</script>
-
+        playlistButtons.forEach((btn) => btn.classList.toggle('active', btn === button));
+        mainPlayer.src = track.src;
+        nowPlaying.textContent = track.description;
+        mainPlayer.play().catch(() => {});
+      });
+    });
+  </script>
 </body>
 </html>
