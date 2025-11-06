@@ -22,6 +22,14 @@
       font-display: swap;
     }
 
+    @font-face {
+      font-family: 'TomorrowLightItalic';
+      src: url('Tomorrow-LightItalic.ttf') format('truetype');
+      font-display: swap;
+      font-style: italic;
+      font-weight: 300;
+    }
+
     /*
       ==========================================================================
       GLOBAL STYLES & LAYOUT
@@ -38,8 +46,10 @@
       --green-start-hover: #316ac5;
       --red-turn-off: #b32a2a;
       --orange-logoff: #e69317;
-      --xp-font-main: 'Tiny5', sans-serif;
-      --xp-font-title: 'Bytesized', sans-serif;
+      --xp-font-main: 'TomorrowLightItalic', 'Segoe UI', sans-serif;
+      --xp-font-title: 'Tiny5', 'TomorrowLightItalic', sans-serif;
+      --xp-font-small: 'TomorrowLightItalic', 'Segoe UI', sans-serif;
+      --xp-font-tooltip: 'Bytesized', 'TomorrowLightItalic', sans-serif;
     }
 
     html, body {
@@ -49,13 +59,13 @@
       overflow: hidden;
       background-color: #000;
       cursor: url('cursor.png'), auto;
-      text-shadow: 0 0 1px #fff;
+      text-shadow: none;
+      color: #000;
     }
 
     .desktop-icon:hover,
     #start-btn:hover,
     .taskbar-app-icon,
-    .login-user,
     .turn-off-btn,
     .window-button,
     .start-menu-entry,
@@ -63,7 +73,8 @@
     .jukebox-controls button,
     #browser-content img,
     #clock,
-    .minesweeper-controls button {
+    .minesweeper-reset,
+    .user-tile {
       cursor: url('pointer.png'), pointer;
     }
 
@@ -126,91 +137,274 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(to right, #004d9b, #007bff);
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        gap: 18px;
         color: white;
         z-index: 1001;
+        background: linear-gradient(180deg, #0d3da5 0%, #1958d5 45%, #0b2f7b 100%);
+        padding: 40px 20px 30px;
     }
 
-    .login-container {
-        width: 60%;
-        max-width: 600px;
-        background-color: #e6e6e6;
-        border-radius: 10px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    #login-welcome::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(circle at 25% 35%, rgba(255,255,255,0.18), transparent 55%),
+            radial-gradient(circle at 80% 15%, rgba(255,255,255,0.15), transparent 55%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    #login-welcome > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .login-frame {
+        width: clamp(320px, calc(100vw - 40px), 960px);
+        max-width: 960px;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        padding: 20px;
+        border-radius: 22px;
+        overflow: hidden;
+        border: 2px solid rgba(255,255,255,0.35);
+        box-shadow: 0 25px 60px rgba(0,0,0,0.45);
+        backdrop-filter: blur(4px);
     }
 
-    .login-header {
+    .login-shell {
         width: 100%;
-        background: linear-gradient(to right, #4a8cd4, #004d9b);
-        color: white;
-        padding: 5px 15px;
-        border-radius: 8px 8px 0 0;
-        box-sizing: border-box;
+        min-height: clamp(360px, 60vh, 520px);
+        display: flex;
+        border-radius: 0;
+        overflow: hidden;
+        background: linear-gradient(180deg, rgba(14, 79, 182, 0.6) 0%, rgba(79, 143, 233, 0.35) 100%);
+    }
+
+    .welcome-panel {
+        flex: 0 0 40%;
+        background: linear-gradient(180deg, #0e4fb6 0%, #1b6be0 45%, #4f8fe9 100%);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 48px 36px;
+        gap: 18px;
+        position: relative;
+    }
+
+    .welcome-panel::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.25), transparent 55%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .welcome-panel > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .xp-logo {
+        display: grid;
+        grid-template-columns: repeat(2, 18px);
+        grid-gap: 3px;
+    }
+
+    .xp-logo span {
+        width: 18px;
+        height: 18px;
+        border-radius: 2px;
+    }
+
+    .xp-logo .red { background:#d3302f; }
+    .xp-logo .green { background:#2f9a1f; }
+    .xp-logo .blue { background:#1a49d8; }
+    .xp-logo .yellow { background:#f3c641; }
+
+    .welcome-panel h1 {
+        font-family: var(--xp-font-title);
+        font-size: 46px;
+        text-transform: uppercase;
+        margin: 0;
+        text-shadow: 2px 2px 0 rgba(0,0,0,0.35);
+        letter-spacing: 0.08em;
+    }
+
+    .welcome-message {
+        font-family: var(--xp-font-main);
+        font-size: 16px;
+        margin: 0;
+        text-shadow: 1px 1px 0 rgba(0,0,0,0.25);
+    }
+
+    .user-panel {
+        flex: 1;
+        background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(223,231,255,0.85) 100%);
+        display: flex;
+        flex-direction: column;
+        padding: 36px 32px;
+        position: relative;
+        color: #102b60;
+    }
+
+    .user-panel::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-left: 1px solid rgba(255,255,255,0.6);
+        pointer-events: none;
+        opacity: 0.5;
+        z-index: 0;
+    }
+
+    .user-panel h2 {
+        font-family: var(--xp-font-title);
+        font-size: 24px;
+        margin: 0 0 24px;
+        text-transform: uppercase;
+        text-shadow: 1px 1px 0 rgba(255,255,255,0.7);
+        z-index: 1;
+        position: relative;
+    }
+
+    .user-list {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        overflow-y: auto;
+        padding-right: 6px;
+        z-index: 1;
+        position: relative;
+    }
+
+    .user-tile {
         display: flex;
         align-items: center;
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 14px;
+        border: 1px solid rgba(49,106,197,0.25);
+        background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(198,213,246,0.8) 100%);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.7);
+        text-align: left;
+        color: inherit;
+        text-decoration: none;
+        font-family: var(--xp-font-main);
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
     }
 
-    .login-header h1 {
+    .user-tile:hover {
+        border-color: rgba(49,106,197,0.8);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.9), 0 8px 18px rgba(16,43,96,0.25);
+        transform: translateX(4px);
+    }
+
+    .user-tile img {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        margin-right: 16px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .user-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .user-name {
         font-family: var(--xp-font-title);
         font-size: 20px;
-        font-weight: bold;
-        margin: 0;
-        flex-grow: 1;
-        text-align: center;
+        letter-spacing: 0.04em;
     }
 
-    .login-body {
+    .user-sub {
+        font-size: 13px;
+        opacity: 0.85;
+    }
+
+    .login-footer {
         width: 100%;
-        padding: 20px;
-        background-color: var(--xp-window-bg);
-        border-radius: 0 0 8px 8px;
-        box-sizing: border-box;
-        text-align: center;
-    }
-
-    .login-user-list {
         display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        margin-top: 20px;
-    }
-
-    .login-user {
-        display: flex;
-        flex-direction: column;
         align-items: center;
-        cursor: pointer;
-        padding: 10px;
-        border: 1px solid transparent;
-        transition: all 0.2s ease;
-        margin: 0 10px;
-    }
-    
-    .login-user:hover {
-        background-color: #d7e0f3;
-        border: 1px solid #7f9ec3;
+        justify-content: space-between;
+        background: linear-gradient(180deg, #0b3180 0%, #0a2c6a 100%);
+        color: rgba(255,255,255,0.9);
+        padding: 10px 24px;
+        font-family: var(--xp-font-main);
+        font-size: 12px;
+        letter-spacing: 0.03em;
+        border-top: 1px solid rgba(0, 0, 0, 0.35);
     }
 
-    .login-user img {
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        border: 2px solid white;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    @media (max-width: 900px) {
+        .login-frame {
+            width: calc(100vw - 40px);
+        }
+
+        .login-shell {
+            flex-direction: column;
+            min-height: auto;
+        }
+
+        .welcome-panel,
+        .user-panel {
+            flex: 1 0 auto;
+            width: 100%;
+        }
+
+        .welcome-panel {
+            align-items: center;
+            text-align: center;
+            padding: 36px 28px;
+        }
+
+        .user-panel {
+            align-items: center;
+            text-align: center;
+            padding: 28px 28px 36px;
+        }
+
+        .user-list {
+            width: 100%;
+            align-items: center;
+        }
+
+        .login-footer {
+            flex-direction: column;
+            gap: 12px;
+            padding: 12px 24px 18px;
+            text-align: center;
+        }
+
+        .turn-off-btn {
+            order: -1;
+        }
     }
 
-    .login-user span {
-        font-size: 14px;
-        margin-top: 5px;
-        color: #000;
+    @media (max-width: 520px) {
+        .login-frame {
+            width: calc(100vw - 24px);
+            border-radius: 18px;
+        }
+
+        .turn-off-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    .login-footer-text {
+        opacity: 0.85;
     }
 
     .turn-off-btn {
@@ -222,14 +416,22 @@
         border: 1px solid #8e1e1e;
         border-radius: 5px;
         cursor: pointer;
-        margin-top: 20px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        font-family: var(--xp-font-main);
+        font-size: 14px;
+        letter-spacing: 0.02em;
+        transition: background-color 0.15s ease, box-shadow 0.15s ease;
     }
     
     .turn-off-btn img {
         width: 24px;
         height: 24px;
         margin-right: 8px;
+    }
+
+    .turn-off-btn:hover {
+        background-color: #c63737;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.35);
     }
 
     /*
@@ -279,8 +481,9 @@
     
     .desktop-icon span {
       color: white;
-      text-shadow: 1px 1px 2px #000, 0 0 5px #fff;
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.7), 0 0 3px rgba(255,255,255,0.6);
       font-size: 12px;
+      font-family: var(--xp-font-main);
       pointer-events: none;
     }
 
@@ -357,6 +560,13 @@
     .taskbar-app-icon img {
       margin-right: 5px;
     }
+
+    .taskbar-app-icon span {
+      font-family: var(--xp-font-main);
+      font-size: 12px;
+      color: #0b2254;
+      text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.6);
+    }
     
     .taskbar-app-icon.active {
       background: linear-gradient(to bottom, #c4d7ed, #e6f0fa);
@@ -364,6 +574,10 @@
       border-left: 1px solid #c4d7ed;
       border-right: 1px solid #003366;
       border-bottom: 1px solid #003366;
+    }
+
+    .taskbar-app-icon.active span {
+      color: #000;
     }
 
     #system-tray {
@@ -396,6 +610,8 @@
       display: flex;
       align-items: flex-start;
       gap: 10px;
+      font-family: var(--xp-font-tooltip);
+      letter-spacing: 0.02em;
       animation: fade-in-up 0.5s ease-out;
     }
     
@@ -432,6 +648,8 @@
       background-color: #5587e6;
       border-radius: 3px;
       cursor: pointer;
+      font-family: var(--xp-font-main);
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.6);
     }
 
     /* NEW: Calendar pop-up styles */
@@ -562,13 +780,17 @@
       margin-bottom: 5px;
       border: 1px solid transparent;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13px;
+      font-family: var(--xp-font-main);
+      color: #000;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.7);
     }
     
     .start-menu-entry:hover {
       background-color: var(--green-start-hover);
       color: white;
       border-color: #316ac5;
+      text-shadow: none;
     }
 
     .start-menu-entry img {
@@ -607,6 +829,7 @@
       margin-left: 5px;
       cursor: pointer;
       font-size: 12px;
+      font-family: var(--xp-font-main);
     }
 
     .logoff-shutdown-btn img {
@@ -642,17 +865,24 @@
     */
     .xp-window {
       position: absolute;
-      background-color: var(--xp-window-bg);
+      background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(241,237,224,0.97) 52%, rgba(223,220,207,0.96) 100%);
       border-width: 1px 2px 2px 1px;
       border-style: solid;
       border-color: var(--xp-window-border-light) var(--xp-window-border-dark) var(--xp-window-border-dark) var(--xp-window-border-light);
-      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.25);
       border-radius: 5px;
       min-width: 200px;
       min-height: 100px;
       overflow: hidden;
       z-index: 10;
       animation: window-open 0.3s ease-out;
+      font-family: var(--xp-font-main);
+      transition: filter 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .xp-window:not(.active-window) {
+      filter: saturate(0.85);
+      box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
     }
 
     #window-Jukebox {
@@ -705,6 +935,7 @@
         grid-template-rows: repeat(10, 25px);
         background-color: #c0c0c0;
         border: 2px inset #505050;
+        margin: 0 auto;
     }
 
     .minesweeper-cell {
@@ -747,23 +978,66 @@
     .minesweeper-cell.number-7 { color: #830083; }
     .minesweeper-cell.number-8 { color: #000; }
     
-    .minesweeper-controls {
+    .minesweeper-wrapper {
+        background-color: #bdbdbd;
+        border: 4px outset #f0f0f0;
+        padding: 6px;
         display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 10px;
+        flex-direction: column;
+        gap: 6px;
+        align-items: center;
     }
 
-    .minesweeper-controls button {
-        background: none;
-        border: none;
-        padding: 0;
-        cursor: pointer;
+    .minesweeper-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #c0c0c0;
+        border: 2px inset #ffffff;
+        padding: 4px;
+        width: 100%;
     }
-    
-    .minesweeper-controls img {
-        width: 32px;
-        height: 32px;
+
+    .minesweeper-counter {
+        background-color: #000;
+        color: #ff2a2a;
+        font-family: var(--xp-font-title);
+        font-size: 22px;
+        line-height: 1;
+        padding: 4px 8px;
+        border: 2px inset #7f7f7f;
+        min-width: 56px;
+        text-align: center;
+        text-shadow: 0 0 2px rgba(255, 42, 42, 0.6);
+        letter-spacing: 0.1em;
+    }
+
+    .minesweeper-reset {
+        width: 36px;
+        height: 36px;
+        border: 2px outset #ffffff;
+        background-color: #c0c0c0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.1s ease;
+        font-size: 0;
+        position: relative;
+    }
+
+    .minesweeper-reset::after {
+        content: attr(data-face-glyph);
+        font-family: var(--xp-font-title);
+        font-size: 18px;
+        line-height: 1;
+        color: #111;
+        text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+    }
+
+    .minesweeper-reset:active {
+        border-style: inset;
+        transform: translateY(1px);
     }
 
     .xp-window.closed {
@@ -781,16 +1055,28 @@
     }
     
     .window-titlebar {
-      height: 25px;
-      background: linear-gradient(to right, #0a246a, #a6caf0);
+      height: 26px;
+      background: linear-gradient(to right, #0a3aa2, #5a8de5);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-left: 5px;
+      padding: 0 8px;
       cursor: move;
-      color: white;
+      color: #fff;
       font-family: var(--xp-font-title);
-      font-weight: bold;
+      font-weight: normal;
+      text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
+    }
+
+    .window-titlebar span {
+      font-size: 14px;
+      letter-spacing: 0.02em;
+    }
+
+    .xp-window:not(.active-window) .window-titlebar {
+      background: linear-gradient(to right, #5671a8, #9bb2d7);
+      color: rgba(255,255,255,0.85);
+      text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
     }
 
     .window-buttons {
@@ -824,8 +1110,13 @@
     .window-content {
       padding: 10px;
       overflow-y: auto;
-      height: calc(100% - 25px);
+      height: calc(100% - 26px);
       box-sizing: border-box;
+      background: linear-gradient(180deg, #ffffff 0%, #f6f3e7 100%);
+      font-family: var(--xp-font-small);
+      font-size: 13px;
+      color: #111;
+      line-height: 1.4;
     }
     
     .window-content img, .window-content iframe {
@@ -846,16 +1137,21 @@
     #jukebox-content {
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: stretch;
       gap: 10px;
       font-size: 0.9rem;
       font-weight: bold;
+      width: 100%;
     }
 
     .jukebox-song {
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+
+    .jukebox-song > *:first-child {
+      flex-shrink: 0;
     }
 
     .jukebox-song img {
@@ -872,21 +1168,24 @@
     }
 
     .jukebox-controls button {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: none;
-      background: #2196f3;
-      color: white;
-      font-size: 1.2rem;
+      min-width: 48px;
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 6px;
+      border: 1px solid #3a6ea5;
+      background: linear-gradient(to bottom, #fdfdff, #d1e3fa);
+      color: #0b2254;
+      font-size: 13px;
+      font-family: var(--xp-font-main);
       cursor: pointer;
-      box-shadow: 0 0 10px #2196f3;
-      transition: transform 0.2s, background 0.2s;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6);
+      transition: transform 0.1s ease, background 0.2s ease, box-shadow 0.2s ease;
     }
 
     .jukebox-controls button:hover {
-      background: #42a5f5;
-      transform: scale(1.1);
+      background: linear-gradient(to bottom, #e6f2ff, #b9d4fa);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.85), 0 0 8px rgba(58,110,165,0.3);
+      transform: translateY(-1px);
     }
     
     .volume-container {
@@ -898,6 +1197,210 @@
 
     .volume-container input[type="range"] {
       flex: 1;
+    }
+
+    .jukebox-progress {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--xp-font-small);
+      font-size: 12px;
+      color: #0b2254;
+    }
+
+    .jukebox-progress time {
+      min-width: 44px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #jukebox-seek {
+      flex: 1;
+      accent-color: #245edb;
+      cursor: pointer;
+    }
+
+    .jukebox-options {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      font-family: var(--xp-font-small);
+      color: #0b2254;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .jukebox-options .option-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .loop-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border: 1px solid rgba(58,110,165,0.6);
+      border-radius: 6px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(200,220,250,0.8) 100%);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.75);
+      cursor: pointer;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .jukebox-action-btn {
+      min-width: 68px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #3a6ea5;
+      background: linear-gradient(to bottom, #fdfdff, #d1e3fa);
+      color: #0b2254;
+      font-family: var(--xp-font-main);
+      font-size: 12px;
+      cursor: pointer;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.7);
+      transition: transform 0.1s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .jukebox-action-btn:hover {
+      background: linear-gradient(to bottom, #e6f2ff, #b9d4fa);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.85), 0 0 8px rgba(58,110,165,0.3);
+      transform: translateY(-1px);
+    }
+
+    .loop-toggle.active {
+      border-color: #245edb;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.9), 0 0 6px rgba(58,110,165,0.35);
+    }
+
+    #lyrics-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 10px 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(231,236,247,0.95) 100%);
+      border: 2px inset #c5d4ed;
+      border-radius: 8px;
+      font-family: var(--xp-font-main);
+      color: #0b2254;
+    }
+
+    .lyrics-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .lyrics-header span:first-child {
+      font-family: var(--xp-font-title);
+      font-size: 16px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    #lyrics-status {
+      font-size: 11px;
+      opacity: 0.7;
+      font-family: var(--xp-font-small);
+    }
+
+    #lyrics-scroll {
+      position: relative;
+      max-height: 160px;
+      overflow-y: auto;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid #9db5e2;
+      border-radius: 6px;
+      padding: 6px 8px;
+      box-shadow: inset 0 1px 4px rgba(11,34,84,0.15);
+    }
+
+    #lyrics-lines {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .lyrics-line {
+      padding: 4px 6px;
+      border-radius: 4px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      line-height: 1.35;
+      font-size: 13px;
+      color: #122a56;
+    }
+
+    .lyrics-line[data-section] {
+      font-family: var(--xp-font-title);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      opacity: 0.75;
+    }
+
+    .lyrics-line.active {
+      background: linear-gradient(90deg, rgba(49,106,197,0.35) 0%, rgba(93,142,228,0.55) 100%);
+      color: #fff;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+    }
+
+    .lyrics-line[data-muted="true"] {
+      opacity: 0.6;
+      font-style: italic;
+    }
+
+    .lyrics-empty {
+      margin: 12px 0 6px;
+      text-align: center;
+      font-size: 12px;
+      color: #455a96;
+      display: none;
+    }
+
+    #lyrics-panel[data-state="empty"] .lyrics-empty {
+      display: block;
+    }
+
+    #lyrics-panel[data-state="empty"] #lyrics-lines {
+      display: none;
+    }
+
+    #lyrics-panel[data-mode="compact"] #lyrics-scroll {
+      max-height: none;
+      overflow-y: hidden;
+    }
+
+    .lyrics-disclaimer {
+      margin-top: 6px;
+      padding: 10px 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(231,236,247,0.95) 100%);
+      border: 1px solid #9db5e2;
+      border-radius: 8px;
+      font-family: var(--xp-font-small);
+      font-size: 12px;
+      color: #0b2254;
+      line-height: 1.45;
+      box-shadow: inset 0 1px 2px rgba(11,34,84,0.12);
+    }
+
+    .lyrics-disclaimer strong {
+      display: block;
+      font-family: var(--xp-font-title);
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .lyrics-disclaimer p {
+      margin: 0 0 6px;
     }
 
     /* UPDATED: Browser styles */
@@ -978,24 +1481,39 @@
 
   <div id="login-screen">
     <div id="login-welcome">
-        <h1 style="font-family: var(--xp-font-title); font-size: 4em; font-weight: bold; margin-bottom: 20px;">Welcome</h1>
-        <div class="login-container">
-            <div class="login-header">
-                <h1>Click your user to login.</h1>
+      <div class="login-frame">
+        <div class="login-shell">
+          <div class="welcome-panel">
+            <div class="xp-logo">
+              <span class="red"></span>
+              <span class="green"></span>
+              <span class="blue"></span>
+              <span class="yellow"></span>
             </div>
-            <div class="login-body">
-                <div class="login-user-list">
-                    <div class="login-user" onclick="attemptLogin(); clickSound.play();">
-                        <img src="alex.png" alt="User">
-                        <span>alex</span>
-                    </div>
+            <h1>welcome</h1>
+            <p class="welcome-message">Click your user name to begin.</p>
+          </div>
+          <div class="user-panel">
+            <h2>select a user</h2>
+            <div class="user-list">
+              <button class="user-tile" onclick="attemptLogin(); clickSound.play();">
+                <img src="alex.png" alt="alex">
+                <div class="user-info">
+                  <span class="user-name">alex</span>
+                  <span class="user-sub">Type your password</span>
                 </div>
-                <button class="turn-off-btn" onclick="shutdownSequence(); clickSound.play();">
-                    <img src="13.png" alt="Turn Off">
-                    Turn Off Computer
-                </button>
+              </button>
             </div>
+          </div>
         </div>
+        <div class="login-footer">
+          <button class="turn-off-btn" onclick="shutdownSequence(); clickSound.play();">
+            <img src="13.png" alt="Turn Off">
+            Turn Off Computer
+          </button>
+          <span class="login-footer-text">To add or change accounts go to Control Panel.</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1170,6 +1688,7 @@
 
     // --- Audio Elements ---
     const jukeboxAudio = document.getElementById('bg-music');
+    jukeboxAudio.volume = 0.35;
     const startupSound = new Audio('XPstartup.mp3');
     const shutdownSound = new Audio('XPshutdown.mp3');
     const clickSound = new Audio('open.mp3');
@@ -1194,7 +1713,7 @@
         "dial up reference no. 4",
         "don't forget to defragment your hard drive for optimal performance!",
         "you've been using your computer for a while. maybe it's time to take a break?",
-        "you see SPAWN by evan fong? that guy is actually vanossgaming 😭",
+        "you see Spawn! by evan fong? that guy is actually vanossgaming ðŸ˜­",
         "im probably not putting THIS much effort into the other sites, i love favouritism!",
         "dont worry, as long as its in the recycle bin, its trashed, right?",
         "Kindly check the attached love letter from me! ~ LOVE-LETTER-FOR-YOU.TXT.vbs"
@@ -1206,24 +1725,119 @@
 
     // --- Jukebox songs data ---
     const songs = [
-      { file: "Music1.mp3", credit: "SPAWN • Evan Fong", icon: "Music1.jpg" },
+      { file: "Music1.mp3", credit: "Spawn! - Evan Fong", icon: "Music1.jpg", lyricsId: "spawn" },
       { file: "Music2.mp3", credit: "Vapor Buster - Deltarune Chapter 3 + 4 - Toby Fox", icon: "Music2.jpg" },
-      { file: "Music3.mp3", credit: "Fireplace • Deltarune Chapter 3 + 4 • Toby Fox", icon: "Music3.jpg" },
-      { file: "Music4.mp3", credit: "Air Waves • Deltarune Chapter 3 + 4 • Toby Fox", icon: "Music4.jpg" },
-      { file: "Music5.mp3", credit: "Home Sweet Grave • Arc System Works • GUILTY GEAR SOUND COMPLETE BOX (7)", icon: "Music5.jpg" },
-      { file: "Music6.mp3", credit: "Don't Preheat your Oven Because if you do the Song Won't Play • Pizza Tower", icon: "Music6.jpg" },
-      { file: "Music7.mp3", credit: "BLOODY STREAM • JJBA", icon: "Music7.jpg" },
-      { file: "Music8.mp3", credit: "growing on me • snayk", icon: "Music8.jpg" },
-      { file: "Music9.mp3", credit: "Friday Theme • uglyburger0", icon: "Music9.jpg" },
-      { file: "Music10.mp3", credit: "Great Days • JJBA", icon: "Music10.jpg" },
-      { file: "Music11.mp3", credit: "Red Sun • METAL GEAR RISING: REVENGEANCE", icon: "Music11.jpg" },
+      { file: "Music3.mp3", credit: "Fireplace - Deltarune Chapter 3 + 4 - Toby Fox", icon: "Music3.jpg" },
+      { file: "Music4.mp3", credit: "Air Waves - Deltarune Chapter 3 + 4 - Toby Fox", icon: "Music4.jpg" },
+      { file: "Music5.mp3", credit: "Home Sweet Grave - Arc System Works - GUILTY GEAR SOUND COMPLETE BOX (7)", icon: "Music5.jpg" },
+      { file: "Music6.mp3", credit: "Don't Preheat your Oven Because if you do the Song Won't Play - Pizza Tower", icon: "Music6.jpg" },
+      { file: "Music7.mp3", credit: "BLOODY STREAM - JJBA", icon: "Music7.jpg", lyricsId: "bloodyStream" },
+      { file: "Music8.mp3", credit: "growing on me - snayk", icon: "Music8.jpg" },
+      { file: "Music9.mp3", credit: "Friday Theme - uglyburger0", icon: "Music9.jpg" },
+      { file: "Music10.mp3", credit: "Great Days - JJBA", icon: "Music10.jpg", lyricsId: "greatDays" },
+      { file: "Music11.mp3", credit: "Red Sun - METAL GEAR RISING: REVENGEANCE", icon: "Music11.jpg", lyricsId: "redSun" },
       { file: "Music12.mp3", credit: "Famine (Pursuer Jason) || FORSAKEN OST", icon: "MISSING.png" }
     ];
     let currentSongIndex = 0;
 
+    const jukeboxControls = {
+      elements: null,
+      isSeeking: false
+    };
+
+    const lyricsLibrary = {
+      spawn: {
+        note: "Auto-synced (approx.)",
+        cues: [
+          { section: "Intro" },
+          { time: 3.8, text: "Kapooya!" },
+          { time: 12.7, text: "One, two, three, four!" },
+          { section: "Verse 1" },
+          { time: 43, text: "(In my bed)", muted: true },
+          { time: 46, text: "(Counting stars on my ceiling)", muted: true },
+          { time: 48.4, text: "(Before I paint it red)", muted: true },
+          { time: 53, text: "(In my mess)", muted: true },
+          { time: 55, text: "(Spawn a new face on my head)", muted: true },
+          { time: 58, text: "(I will not regret)", muted: true },
+          { time: 62.5, text: "In my bed (my bed, my bed)" },
+          { time: 65, text: "Counting stars on my ceiling (ceiling, ceiling)" },
+          { time: 67.4, text: "Before I paint it red (paint it red)" },
+          { time: 72, text: "In my mess (my mess, my mess)" },
+          { time: 74, text: "Spawn a new face on my head (my head, my head)" },
+          { time: 77, text: "I will not regret (regret, regret)" },
+          { section: "Chorus" },
+          { time: 80.6, text: "When I feel lost" },
+          { time: 84, text: "Man, I swear to God, I don't feel my brain" },
+          { time: 87.3, text: "Last chance, I won't be coming back" },
+          { time: 94.8, text: "Will they understand, understand?" },
+          { section: "Verse 2" },
+          { time: 100.8, text: "Back again (back again)" },
+          { time: 103, text: "Project Mayhem, evil friend (evil friend)" },
+          { time: 106, text: "Solace in the end (the end)" },
+          { time: 110, text: "Smoke some Reds (smoke some Reds)" },
+          { time: 112.3, text: "Spawn a new face on my head (my head)" },
+          { time: 113.2, text: "I will not regret (regret)" },
+          { section: "Chorus" },
+          { time: 117.9, text: "When I feel lost" },
+          { time: 122.7, text: "Man, I swear to God, I don't feel my brain" },
+          { time: 128, text: "Last chance, I won't be coming back" },
+          { time: 133, text: "Will they understand, understand?" },
+          { time: 138, text: "When I feel lost" },
+          { time: 142, text: "Man, I swear to God, I don't feel my brain" },
+          { time: 147, text: "Last chance, I won't be coming back" },
+          { time: 152, text: "Will they understand, understand? (Understand)" },
+          { section: "Hook" },
+          { time: 157.0, text: "In my bed (understand)" },
+          { time: 158.5, text: "I lose my breath (understand)" },
+          { time: 160.0, text: "Should I eject? (Understand)" },
+          { time: 161.5, text: "And lay to rest (understand)" },
+          { time: 163.0, text: "In my bed (understand)" },
+          { time: 164.5, text: "I lose my breath (understand)" },
+          { time: 166.0, text: "Should I eject? (Understand)" },
+          { time: 167.5, text: "And lay to rest (understand)" },
+          { section: "Outro" },
+          { time: 177.0, text: "In my mess (understand)" },
+          { time: 180.0, text: "Spawn a new face on my head" },
+          { time: 183.0, text: "I will not regret" },
+          { time: 186.0, text: "When I feel lost" },
+        ]
+      },
+      bloodyStream: {
+        note: "",
+        cues: [
+          { section: "Lyrics removed" },
+          { time: 0, text: "(Lyrics removed until permitted by copyright holders)" }
+        ]
+      },
+      greatDays: {
+        note: "",
+        cues: [
+          { section: "Lyrics removed" },
+          { time: 0, text: "(Lyrics removed until permitted by copyright holders)" }
+        ]
+      },
+      redSun: {
+        note: "",
+        cues: [
+          { section: "Lyrics removed" },
+          { time: 0, text: "(Lyrics removed until permitted by copyright holders)" }
+        ]
+      }
+    };
+
+    const LYRICS_SYNC_LEEWAY = 0.35;
+
+    const lyricsState = {
+      cues: [],
+      currentIndex: -1,
+      pending: null,
+      songFile: null,
+      ui: null
+    };
+
     // --- App content data ---
     const windowContent = {
-      'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>im alex, 16 (feb 21, 2009) soooo uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid,</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs</p><p>i hope you like the site though, im working with my other friends to get theirs setup then yall will be able to interact with it ✌️</p><p>ill update this when my friends are finished their site, currently riley is working on his and im helping saur with hers, so eventually they'll be done and temkky, hoodie and valks will be done aswell :)</p><p>ill probably add some other friends aswell :P</p></div>`,
+      'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>im alex, 16 (feb 21, 2009) soooo uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid,</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs</p><p>i hope you like the site though, im working with my other friends to get theirs setup then yall will be able to interact with it 👅</p><p>ill update this when my friends are finished their site, currently riley is working on his and im helping saur with hers, so eventually they'll be done and temkky, hoodie and valks will be done aswell :)</p><p>ill probably add some other friends aswell :P</p></div>`,
       'Interests': `<div class="window-entry"><p>i like playing games, especially sandbox and pvp games. i also enjoy drawing and programming. i listen to music and stuff, or call my girlfriend cause shes sweet</p><p>IM DEVELOPING A GAME COME BACK LATER PLS!!!</div>`,
       'DNI': `<p>if you are older than me by about ~3-5 ish years dont expect me to be super comfortable around you unless i know you (unless you're my goat retro being 34 years older than me bro!!)</p><p>but i also dont like heavy racist stuff (stupid instagram reels are ok cause I send them ((im just such a nice hypocritical guy)</p><p>also adult people in general make me uncomfortable if i dont know them (cause obviously im not 16 talking to a 25 year old brotato chip)</p><p>and im a huge g(j)ermaphobe and i hate anything like blood, mucus, etc. it just makes me a little uneasy but i wont like scream from it.</p><p>yes, even i have parameters im comfortable with, you FUCKS</p><p>aka the rodents that saw ts and was picking at me for it, you're getting FELT up tonight BUDDY.</p></div>`,
       'Journal': `<textarea id="journal-text-area" placeholder="wait i forgot this is a input area not a text area, oopsies"></textarea>`,
@@ -1246,16 +1860,53 @@
       'Jukebox': `
         <div id="jukebox-content">
           <div class="jukebox-song">
-            <img id="song-icon" src="Music1.png" alt="Song Icon">
-            <div id="song-info">Loading...</div>
+            <img id="song-icon" src="Music1.jpg" alt="Song artwork">
+            <div id="song-info" aria-live="polite">Loading...</div>
           </div>
           <div class="jukebox-controls">
-            <button onclick="prevSong(); clickSound.play();">⏮️</button>
-            <button onclick="nextSong(); clickSound.play();">⏭️</button>
+            <button onclick="prevSong(); clickSound.play();">⏪</button>
+            <button onclick="nextSong(); clickSound.play();">⏩</button>
           </div>
           <div class="volume-container">
             <label for="volume">🔊</label>
             <input id="volume" type="range" min="0" max="1" step="0.01" value="0.35">
+          </div>
+          <div class="jukebox-progress">
+            <time id="jukebox-current-time">0:00</time>
+            <input id="jukebox-seek" type="range" min="0" max="0" step="0.1" value="0" disabled>
+            <time id="jukebox-duration">0:00</time>
+          </div>
+          <div class="jukebox-options">
+            <div class="option-group">
+              <label class="loop-toggle" id="jukebox-loop-toggle">
+                <input type="checkbox" id="jukebox-loop">
+                <span>Loop track</span>
+              </label>
+            </div>
+            <div class="option-group">
+              <button type="button" class="jukebox-action-btn" id="jukebox-play">Start</button>
+              <button type="button" class="jukebox-action-btn" id="jukebox-stop">Stop</button>
+              <button type="button" class="jukebox-action-btn" id="lyrics-disclaimer-toggle" aria-expanded="false">Copyright notice</button>
+            </div>
+          </div>
+          <div id="lyrics-disclaimer-panel" class="lyrics-disclaimer" hidden>
+            <strong>Copyright Notice &amp; Disclaimer</strong>
+            <p>This project includes references to the song &quot;Spawn!&quot; by Evan Fong (Vanoss), and possibly other copyrighted musical works.</p>
+            <p>All lyrics, compositions, and recordings are the intellectual property of their respective copyright holders.</p>
+            <p>No ownership of the original music, lyrics, or artwork is claimed by the project author. All referenced material is used for demonstration, educational, or fan purposes only, and no revenue is generated from its use.</p>
+            <p>This repository does NOT distribute or host any copyrighted audio, nor does it seek to replace, monetize, or compete with the original work. It is hosted, however it is NOT monetized or permitted for download off this repository.</p>
+            <p>If you are a rights holder and believe any portion of this project violates your rights, please contact me directly for removal or modification.</p>
+            <p>&copy; Evan Fong / Vanoss &amp; respective rights holders. All rights reserved. Project maintained by im.notalex.</p>
+          </div>
+          <div id="lyrics-panel" data-state="loading">
+            <div class="lyrics-header">
+              <span>Lyrics</span>
+              <span id="lyrics-status">Loading...</span>
+            </div>
+            <div id="lyrics-scroll">
+              <ul id="lyrics-lines"></ul>
+              <p class="lyrics-empty">Lyrics not available for this track.</p>
+            </div>
           </div>
         </div>
       `,
@@ -1265,7 +1916,7 @@
             <button class="calc-btn" onclick="handleCalculatorInput('C');">C</button>
             <button class="calc-btn operator" onclick="handleCalculatorInput('/');">÷</button>
             <button class="calc-btn operator" onclick="handleCalculatorInput('*');">×</button>
-            <button class="calc-btn operator" onclick="handleCalculatorInput('-');">−</button>
+            <button class="calc-btn operator" onclick="handleCalculatorInput('-');">-</button>
             <button class="calc-btn" onclick="handleCalculatorInput('7');">7</button>
             <button class="calc-btn" onclick="handleCalculatorInput('8');">8</button>
             <button class="calc-btn" onclick="handleCalculatorInput('9');">9</button>
@@ -1282,12 +1933,14 @@
         </div>
       `,
       'Minesweeper': `
-        <div class="minesweeper-controls">
-            <button onclick="toggleMinesweeperIcon(); initializeMinesweeper(); clickSound.play();">
-                <img id="minesweeper-reset-icon" src="favicon.png" alt="Reset">
-            </button>
+        <div class="minesweeper-wrapper">
+          <div class="minesweeper-top">
+            <div class="minesweeper-counter" id="minesweeper-mine-counter">000</div>
+            <button class="minesweeper-reset" id="minesweeper-reset-button" data-face="neutral" data-face-glyph=":)" title="Reset game" aria-label="Reset game" onclick="resetMinesweeper(); clickSound.play();">:)</button>
+            <div class="minesweeper-counter" id="minesweeper-timer">000</div>
+          </div>
+          <div class="minesweeper-grid" id="minesweeper-grid"></div>
         </div>
-        <div class="minesweeper-grid" id="minesweeper-grid"></div>
       `
     };
 
@@ -1416,13 +2069,15 @@
     // --- Window logic ---
     function openWindow(title, iconNumber, initialX = 50, initialY = 50) {
       if (openWindows[title]) {
-        bringToFront(openWindows[title]);
+        const existing = openWindows[title];
+        existing.style.display = 'block';
+        bringToFront(existing);
         return;
       }
       
       zIndexCounter++;
       const win = document.createElement('div');
-      win.className = 'xp-window';
+      win.className = 'xp-window active-window';
       win.style.left = `${initialX}px`;
       win.style.top = `${initialY}px`;
       win.style.zIndex = zIndexCounter;
@@ -1464,6 +2119,7 @@
       win.innerHTML = windowHtml;
       desktop.appendChild(win);
       openWindows[title] = win;
+      bringToFront(win);
 
       win.addEventListener('mousedown', (e) => {
         if (!e.target.closest('.window-content') || e.target.closest('.window-titlebar')) {
@@ -1472,10 +2128,7 @@
       });
 
       if (title === 'Jukebox') {
-        const volumeSlider = win.querySelector('#volume');
-        volumeSlider.addEventListener('input', () => {
-          jukeboxAudio.volume = volumeSlider.value;
-        });
+        setupJukeboxWindow(win);
         playSong(Math.floor(Math.random() * songs.length));
       } else if (title === 'Minesweeper') {
         initializeMinesweeper();
@@ -1485,12 +2138,19 @@
     function closeWindow(win) {
       const title = win.id.replace('window-', '').replace(/-/g, ' ');
       win.classList.add('closed');
+      win.classList.remove('active-window');
       if (win.taskbarIcon) win.taskbarIcon.remove();
       delete openWindows[title];
       
       if (title === 'Jukebox') {
           jukeboxAudio.pause();
           jukeboxAudio.currentTime = 0;
+          resetLyricsUI();
+          lyricsState.ui = null;
+          jukeboxControls.elements = null;
+          jukeboxControls.isSeeking = false;
+      } else if (title === 'Minesweeper') {
+          stopMinesweeperTimer();
       }
       
       setTimeout(() => {
@@ -1500,6 +2160,7 @@
 
     function minimizeWindow(win) {
       win.style.display = 'none';
+      win.classList.remove('active-window');
       if (win.taskbarIcon) win.taskbarIcon.classList.remove('active');
     }
 
@@ -1507,8 +2168,11 @@
       zIndexCounter++;
       win.style.zIndex = zIndexCounter;
       Object.values(openWindows).forEach(w => {
+          if (!w) return;
+          w.classList.remove('active-window');
           if (w.taskbarIcon) w.taskbarIcon.classList.remove('active');
       });
+      win.classList.add('active-window');
       if (win.taskbarIcon) win.taskbarIcon.classList.add('active');
     }
 
@@ -1605,6 +2269,16 @@
     
     // --- Jukebox Logic ---
     jukeboxAudio.addEventListener("ended", nextSong);
+    jukeboxAudio.addEventListener("timeupdate", () => {
+        syncLyricsToTime(jukeboxAudio.currentTime);
+        updatePlaybackTimeUI();
+    });
+    jukeboxAudio.addEventListener("seeked", () => {
+        syncLyricsToTime(jukeboxAudio.currentTime);
+        updatePlaybackTimeUI(true);
+    });
+    jukeboxAudio.addEventListener("loadedmetadata", handleAudioMetadata);
+    jukeboxAudio.addEventListener("durationchange", () => updatePlaybackTimeUI(true));
 
     function playSong(index) {
         currentSongIndex = index;
@@ -1616,7 +2290,26 @@
         const songIconEl = document.getElementById("song-icon");
 
         if (songInfoEl) songInfoEl.textContent = song.credit;
-        if (songIconEl) songIconEl.src = song.icon;
+        if (songIconEl) {
+            songIconEl.src = song.icon || 'Music1.jpg';
+            songIconEl.alt = `Artwork for ${song.credit}`;
+        }
+
+        jukeboxControls.isSeeking = false;
+        updatePlaybackTimeUI(true);
+        const controls = getJukeboxControls();
+        if (controls) {
+            if (controls.seek) {
+                controls.seek.disabled = !Number.isFinite(jukeboxAudio.duration);
+                controls.seek.value = 0;
+            }
+            if (controls.loopToggle) {
+                controls.loopToggle.checked = jukeboxAudio.loop;
+                setLoopIndicator(jukeboxAudio.loop);
+            }
+        }
+
+        updateLyricsForSong(song);
     }
 
     function nextSong() {
@@ -1627,6 +2320,422 @@
     function prevSong() {
         let prev = (currentSongIndex - 1 + songs.length) % songs.length;
         playSong(prev);
+    }
+    
+    function getLyricsUI() {
+        if (lyricsState.ui && document.body.contains(lyricsState.ui.panel)) {
+            return lyricsState.ui;
+        }
+        const panel = document.getElementById('lyrics-panel');
+        if (!panel) {
+            lyricsState.ui = null;
+            return null;
+        }
+        lyricsState.ui = {
+            panel,
+            status: document.getElementById('lyrics-status'),
+            list: document.getElementById('lyrics-lines'),
+            scroll: document.getElementById('lyrics-scroll')
+        };
+        return lyricsState.ui;
+    }
+
+    function resetLyricsUI() {
+        lyricsState.cues = [];
+        lyricsState.currentIndex = -1;
+        lyricsState.pending = null;
+        lyricsState.songFile = null;
+        closeDisclaimerPanel();
+        const ui = getLyricsUI();
+        if (!ui) {
+            lyricsState.ui = null;
+            return;
+        }
+        if (ui.list) {
+            ui.list.innerHTML = '';
+        }
+        ui.panel.dataset.state = 'loading';
+        ui.panel.dataset.mode = 'compact';
+        if (ui.status) {
+            ui.status.textContent = 'Lyrics will appear when a compatible song plays.';
+        }
+    }
+
+    function getJukeboxControls(forceRefresh = false) {
+        if (!forceRefresh && jukeboxControls.elements && jukeboxControls.elements.seek && document.body.contains(jukeboxControls.elements.seek)) {
+            return jukeboxControls.elements;
+        }
+
+        const seek = document.getElementById('jukebox-seek');
+        if (!seek) {
+            jukeboxControls.elements = null;
+            return null;
+        }
+
+        jukeboxControls.elements = {
+            seek,
+            current: document.getElementById('jukebox-current-time'),
+            duration: document.getElementById('jukebox-duration'),
+            loopToggle: document.getElementById('jukebox-loop'),
+            loopLabel: document.getElementById('jukebox-loop-toggle'),
+            volume: document.getElementById('volume')
+        };
+        return jukeboxControls.elements;
+    }
+
+    function setLoopIndicator(isOn) {
+        const controls = getJukeboxControls();
+        if (!controls || !controls.loopLabel) return;
+        controls.loopLabel.classList.toggle('active', !!isOn);
+    }
+
+    function getDisclaimerElements() {
+        return {
+            panel: document.getElementById('lyrics-disclaimer-panel'),
+            button: document.getElementById('lyrics-disclaimer-toggle')
+        };
+    }
+
+    function toggleDisclaimerPanel(forceShow) {
+        const { panel, button } = getDisclaimerElements();
+        if (!panel || !button) return;
+        const currentlyHidden = panel.hasAttribute('hidden');
+        const shouldShow = typeof forceShow === 'boolean' ? forceShow : currentlyHidden;
+        if (typeof forceShow === 'undefined') {
+            clickSound.play();
+        }
+        if (shouldShow) {
+            panel.removeAttribute('hidden');
+        } else {
+            panel.setAttribute('hidden', '');
+        }
+        button.setAttribute('aria-expanded', shouldShow ? 'true' : 'false');
+        button.textContent = shouldShow ? 'Hide notice' : 'Copyright notice';
+    }
+
+    function closeDisclaimerPanel() {
+        const { panel, button } = getDisclaimerElements();
+        if (!panel || !button) return;
+        panel.setAttribute('hidden', '');
+        button.setAttribute('aria-expanded', 'false');
+        button.textContent = 'Copyright notice';
+    }
+
+    function stopCurrentTrack() {
+        jukeboxAudio.pause();
+        jukeboxAudio.currentTime = 0;
+        jukeboxControls.isSeeking = false;
+        syncLyricsToTime(0);
+        updatePlaybackTimeUI(true);
+    }
+
+    function setupJukeboxWindow(win) {
+        const controls = getJukeboxControls(true);
+        if (!controls) return;
+        jukeboxControls.isSeeking = false;
+
+        if (controls.volume) {
+            controls.volume.value = jukeboxAudio.volume;
+            controls.volume.addEventListener('input', () => {
+                jukeboxAudio.volume = parseFloat(controls.volume.value);
+            });
+            jukeboxAudio.volume = parseFloat(controls.volume.value);
+        }
+
+        const playBtn = document.getElementById('jukebox-play');
+        if (playBtn) {
+            playBtn.onclick = () => {
+                clickSound.play();
+                jukeboxAudio.play().catch(e => console.error("Audio playback failed:", e));
+            };
+        }
+
+        const stopBtn = document.getElementById('jukebox-stop');
+        if (stopBtn) {
+            stopBtn.onclick = () => {
+                clickSound.play();
+                stopCurrentTrack();
+            };
+        }
+
+        const disclaimerBtn = document.getElementById('lyrics-disclaimer-toggle');
+        if (disclaimerBtn) {
+            disclaimerBtn.onclick = () => toggleDisclaimerPanel();
+        }
+        closeDisclaimerPanel();
+
+        const seek = controls.seek;
+        if (seek) {
+            seek.min = 0;
+            seek.value = jukeboxAudio.currentTime || 0;
+            seek.disabled = !Number.isFinite(jukeboxAudio.duration);
+            seek.addEventListener('input', handleSeekInput);
+            seek.addEventListener('change', commitSeek);
+            ['pointerdown', 'mousedown', 'touchstart'].forEach(evt => {
+                seek.addEventListener(evt, () => { jukeboxControls.isSeeking = true; });
+            });
+            ['pointerup', 'mouseup', 'touchend', 'touchcancel', 'pointercancel'].forEach(evt => {
+                seek.addEventListener(evt, commitSeek);
+            });
+        }
+
+        if (controls.loopToggle) {
+            controls.loopToggle.checked = jukeboxAudio.loop;
+            jukeboxAudio.loop = controls.loopToggle.checked;
+            controls.loopToggle.addEventListener('change', () => {
+                jukeboxAudio.loop = controls.loopToggle.checked;
+                setLoopIndicator(controls.loopToggle.checked);
+            });
+            setLoopIndicator(controls.loopToggle.checked);
+        }
+
+        updatePlaybackTimeUI(true);
+    }
+
+    function handleSeekInput() {
+        const controls = getJukeboxControls();
+        if (!controls || !controls.seek) return;
+        const value = parseFloat(controls.seek.value);
+        if (!Number.isFinite(value)) return;
+        jukeboxControls.isSeeking = true;
+        if (controls.current) {
+            controls.current.textContent = formatTime(value);
+        }
+        if (Number.isFinite(jukeboxAudio.duration) && jukeboxAudio.duration > 0) {
+            jukeboxAudio.currentTime = Math.min(Math.max(value, 0), jukeboxAudio.duration);
+            syncLyricsToTime(jukeboxAudio.currentTime);
+        }
+    }
+
+    function commitSeek() {
+        const controls = getJukeboxControls();
+        if (!controls || !controls.seek) {
+            jukeboxControls.isSeeking = false;
+            return;
+        }
+        const value = parseFloat(controls.seek.value);
+        if (Number.isFinite(value)) {
+            const duration = Number.isFinite(jukeboxAudio.duration) && jukeboxAudio.duration > 0 ? jukeboxAudio.duration : value;
+            const clamped = Math.min(Math.max(value, 0), duration);
+            jukeboxAudio.currentTime = clamped;
+            syncLyricsToTime(clamped);
+        }
+        jukeboxControls.isSeeking = false;
+        updatePlaybackTimeUI(true);
+    }
+
+    function formatTime(seconds) {
+        if (!Number.isFinite(seconds) || seconds < 0) seconds = 0;
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updatePlaybackTimeUI(force = false) {
+        const controls = getJukeboxControls();
+        if (!controls) return;
+        const duration = Number.isFinite(jukeboxAudio.duration) && jukeboxAudio.duration > 0 ? jukeboxAudio.duration : 0;
+        const current = Number.isFinite(jukeboxAudio.currentTime) && jukeboxAudio.currentTime > 0 ? jukeboxAudio.currentTime : 0;
+
+        if (controls.duration) {
+            controls.duration.textContent = duration ? formatTime(duration) : '--:--';
+        }
+
+        if (controls.seek) {
+            controls.seek.min = 0;
+            if (duration > 0) {
+                controls.seek.disabled = false;
+                controls.seek.max = duration;
+                controls.seek.step = Math.max(duration / 1200, 0.05);
+                if (!jukeboxControls.isSeeking || force) {
+                    controls.seek.value = current;
+                }
+            } else {
+                controls.seek.disabled = true;
+                controls.seek.value = 0;
+            }
+        }
+
+        if (controls.current && (!jukeboxControls.isSeeking || force)) {
+            controls.current.textContent = formatTime(current);
+        }
+    }
+
+    function updateLyricsForSong(song) {
+        const ui = getLyricsUI();
+        lyricsState.songFile = song.file;
+        lyricsState.cues = [];
+        lyricsState.pending = null;
+        setActiveLyricsIndex(-1);
+        if (!ui) {
+            return;
+        }
+        closeDisclaimerPanel();
+        ui.panel.dataset.mode = 'full';
+        if (ui.list) {
+            ui.list.innerHTML = '';
+        }
+        if (!song.lyricsId || !lyricsLibrary[song.lyricsId]) {
+            ui.panel.dataset.state = 'empty';
+            ui.panel.dataset.mode = 'compact';
+            if (ui.status) {
+                ui.status.textContent = 'Lyrics unavailable for this track.';
+            }
+            lyricsState.pending = null;
+            return;
+        }
+        const entry = lyricsLibrary[song.lyricsId];
+        const duration = Number.isFinite(jukeboxAudio.duration) ? jukeboxAudio.duration : 0;
+        const needsDuration = entry.cues.some(cue => typeof cue.fraction === 'number');
+
+        ui.panel.dataset.state = 'loading';
+        if (ui.status) {
+            ui.status.textContent = 'Syncing lyrics...';
+        }
+
+        if (needsDuration && duration <= 0) {
+            lyricsState.pending = { entry, songFile: song.file };
+            ui.panel.dataset.mode = entry.cues.length <= 4 ? 'compact' : 'full';
+            return;
+        }
+
+        renderLyrics(entry, duration);
+        lyricsState.pending = null;
+    }
+
+    function renderLyrics(entry, duration) {
+        const ui = getLyricsUI();
+        if (!ui || !ui.list) return;
+        ui.list.innerHTML = '';
+        lyricsState.cues = [];
+        lyricsState.currentIndex = -1;
+
+        const safeDuration = Number.isFinite(duration) && duration > 0 ? duration : 0;
+        const upperClamp = safeDuration > 0 ? Math.max(safeDuration - 0.2, safeDuration * 0.95) : 0;
+
+        entry.cues.forEach(item => {
+            if (item.section) {
+                const sectionEl = document.createElement('li');
+                sectionEl.className = 'lyrics-line';
+                sectionEl.dataset.section = 'true';
+                sectionEl.textContent = item.section;
+                ui.list.appendChild(sectionEl);
+                return;
+            }
+
+            const lineEl = document.createElement('li');
+            lineEl.className = 'lyrics-line';
+            if (item.muted) {
+                lineEl.dataset.muted = 'true';
+            }
+            lineEl.textContent = item.text;
+
+            let cueTime = 0;
+            if (typeof item.time === 'number') {
+                cueTime = item.time;
+            } else if (typeof item.fraction === 'number' && safeDuration > 0) {
+                cueTime = item.fraction * safeDuration;
+            }
+
+            if (safeDuration > 0) {
+                cueTime = Math.min(Math.max(cueTime, 0), upperClamp);
+            } else {
+                cueTime = Math.max(cueTime, 0);
+            }
+
+            lineEl.dataset.time = cueTime.toFixed(3);
+            lyricsState.cues.push({ time: cueTime, element: lineEl });
+            ui.list.appendChild(lineEl);
+        });
+
+        if (lyricsState.cues.length) {
+            lyricsState.cues.sort((a, b) => a.time - b.time);
+            ui.panel.dataset.state = 'ready';
+            ui.panel.dataset.mode = lyricsState.cues.length <= 4 ? 'compact' : 'full';
+        } else {
+            ui.panel.dataset.state = 'empty';
+            ui.panel.dataset.mode = 'compact';
+        }
+
+        if (ui.status) {
+            ui.status.textContent = entry.note || 'Synced lyrics';
+        }
+
+        syncLyricsToTime(jukeboxAudio.currentTime);
+    }
+
+    function handleAudioMetadata() {
+        updatePlaybackTimeUI(true);
+        const song = songs[currentSongIndex];
+        if (!song) return;
+        if (lyricsState.pending && song.file === lyricsState.pending.songFile) {
+            renderLyrics(lyricsState.pending.entry, jukeboxAudio.duration);
+            lyricsState.pending = null;
+        }
+        syncLyricsToTime(jukeboxAudio.currentTime);
+    }
+
+    function syncLyricsToTime(currentTime) {
+        if (!lyricsState.cues.length) {
+            if (lyricsState.currentIndex !== -1) {
+                setActiveLyricsIndex(-1);
+            }
+            return;
+        }
+
+        let nextIndex = -1;
+        for (let i = lyricsState.cues.length - 1; i >= 0; i--) {
+            const cueTime = Number(lyricsState.cues[i].time ?? 0);
+            if (currentTime + LYRICS_SYNC_LEEWAY >= cueTime) {
+                nextIndex = i;
+                break;
+            }
+        }
+
+        if (nextIndex !== lyricsState.currentIndex) {
+            setActiveLyricsIndex(nextIndex);
+        }
+    }
+
+    function setActiveLyricsIndex(index) {
+        const ui = getLyricsUI();
+        if (!ui || !ui.list) return;
+
+        if (lyricsState.currentIndex >= 0 && lyricsState.cues[lyricsState.currentIndex]) {
+            lyricsState.cues[lyricsState.currentIndex].element.classList.remove('active');
+        }
+
+        lyricsState.currentIndex = index;
+
+        if (index >= 0 && lyricsState.cues[index]) {
+            const lineEl = lyricsState.cues[index].element;
+            lineEl.classList.add('active');
+            scrollLyricsIntoView(lineEl, ui.scroll);
+        }
+    }
+
+    function scrollLyricsIntoView(lineEl, container) {
+        if (!container || !lineEl) return;
+        const lineTop = lineEl.offsetTop;
+        const lineBottom = lineTop + lineEl.offsetHeight;
+        const viewTop = container.scrollTop;
+        const viewBottom = viewTop + container.clientHeight;
+
+        if (lineTop < viewTop) {
+            const target = Math.max(lineTop - 12, 0);
+            if (typeof container.scrollTo === 'function') {
+                container.scrollTo({ top: target, behavior: 'smooth' });
+            } else {
+                container.scrollTop = target;
+            }
+        } else if (lineBottom > viewBottom) {
+            const target = lineBottom - container.clientHeight + 12;
+            if (typeof container.scrollTo === 'function') {
+                container.scrollTo({ top: target, behavior: 'smooth' });
+            } else {
+                container.scrollTop = target;
+            }
+        }
     }
     
     // --- "You Are An Idiot" Virus Logic ---
@@ -1655,7 +2764,7 @@
         win.className = 'idiot-window';
         win.style.zIndex = zIndexCounter;
         win.innerHTML = `
-            <div class="idiot-window-content">bouncing skull virus 2025 no virus😱</div>
+            <div class="idiot-window-content">bouncing skull virus 2025 no virusðŸ˜±</div>
             <img src="skull.gif" alt="skull" style="width: 64px; height: 64px; margin-top: 10px;">
         `;
         
@@ -1774,14 +2883,101 @@
     const MINESWEEPER_MINE_COUNT = 15;
     let minesweeperBoard = [];
     let minesweeperGameover = false;
+    let minesweeperFlagsPlaced = 0;
+    let minesweeperTimerSeconds = 0;
+    let minesweeperTimerInterval = null;
+    let minesweeperStarted = false;
+    const MINESWEEPER_FACES = {
+        neutral: ':)',
+        dead: 'X(',
+        cool: 'B)'
+    };
+
+    const MINESWEEPER_FACE_LABELS = {
+        neutral: 'Start a new game',
+        dead: 'Game over',
+        cool: 'Minefield cleared'
+    };
+
+
+    function formatCounter(value) {
+        const clamped = Math.max(-99, Math.min(999, value));
+        if (clamped < 0) {
+            const digits = Math.abs(clamped).toString().padStart(2, '0');
+            return `-${digits}`;
+        }
+        return Math.abs(clamped).toString().padStart(3, '0');
+    }
+
+    function updateMineCounter() {
+        const el = document.getElementById('minesweeper-mine-counter');
+        if (!el) return;
+        const remaining = MINESWEEPER_MINE_COUNT - minesweeperFlagsPlaced;
+        el.textContent = formatCounter(remaining);
+    }
+
+    function updateTimerDisplay() {
+        const el = document.getElementById('minesweeper-timer');
+        if (!el) return;
+        el.textContent = formatCounter(minesweeperTimerSeconds);
+    }
+
+    function setMinesweeperFace(state) {
+        const btn = document.getElementById('minesweeper-reset-button');
+        if (!btn) return;
+        const glyph = MINESWEEPER_FACES[state] || MINESWEEPER_FACES.neutral;
+        btn.dataset.face = state;
+        btn.dataset.faceGlyph = glyph;
+        const label = MINESWEEPER_FACE_LABELS[state] || MINESWEEPER_FACE_LABELS.neutral;
+        btn.setAttribute('aria-label', label);
+        btn.setAttribute('title', label);
+    }
+
+
+    function startMinesweeperTimer() {
+        if (minesweeperStarted) return;
+        minesweeperStarted = true;
+        minesweeperTimerInterval = setInterval(() => {
+            if (minesweeperGameover) return;
+            minesweeperTimerSeconds = Math.min(999, minesweeperTimerSeconds + 1);
+            updateTimerDisplay();
+        }, 1000);
+    }
+
+    function stopMinesweeperTimer() {
+        if (minesweeperTimerInterval) {
+            clearInterval(minesweeperTimerInterval);
+            minesweeperTimerInterval = null;
+        }
+        minesweeperStarted = false;
+    }
+
+    function resetMinesweeper() {
+        initializeMinesweeper();
+    }
+
 
     function initializeMinesweeper() {
+        setMinesweeperFace('neutral');
         const grid = document.getElementById('minesweeper-grid');
         if (!grid) return;
-        
-        grid.innerHTML = '';
+
+        if (!grid.dataset.bound) {
+            grid.addEventListener('click', handleMinesweeperClick);
+            grid.addEventListener('contextmenu', handleMinesweeperRightClick);
+            grid.dataset.bound = 'true';
+        }
+
+        stopMinesweeperTimer();
         minesweeperBoard = [];
         minesweeperGameover = false;
+        minesweeperFlagsPlaced = 0;
+        minesweeperTimerSeconds = 0;
+        minesweeperStarted = false;
+        updateMineCounter();
+        updateTimerDisplay();
+
+        grid.innerHTML = '';
 
         for (let i = 0; i < MINESWEEPER_BOARD_SIZE * MINESWEEPER_BOARD_SIZE; i++) {
             const cell = document.createElement('div');
@@ -1810,9 +3006,6 @@
                 minesweeperBoard[i].neighborMines = countNeighborMines(i);
             }
         }
-        
-        grid.addEventListener('click', handleMinesweeperClick);
-        grid.addEventListener('contextmenu', handleMinesweeperRightClick);
     }
     
     function handleMinesweeperClick(e) {
@@ -1827,12 +3020,18 @@
             return;
         }
 
+        if (!minesweeperStarted) {
+            startMinesweeperTimer();
+        }
+
         if (cellData.isMine) {
             cellEl.classList.add('revealed');
             cellEl.innerHTML = `<img src="mine.png">`;
             minesweeperGameover = true;
+            setMinesweeperFace('dead');
+            stopMinesweeperTimer();
             revealAllMines();
-            alert('Game Over! You hit a mine!');
+            updateMineCounter();
         } else {
             revealCell(index);
             checkWinCondition();
@@ -1850,12 +3049,16 @@
         
         if (cellData.isRevealed) return;
         
-        cellData.isFlagged = !cellData.isFlagged;
         if (cellData.isFlagged) {
-            cellEl.innerHTML = `<img src="flag.png">`;
-        } else {
+            cellData.isFlagged = false;
             cellEl.innerHTML = '';
+            minesweeperFlagsPlaced -= 1;
+        } else {
+            cellData.isFlagged = true;
+            cellEl.innerHTML = `<img src="flag.png">`;
+            minesweeperFlagsPlaced += 1;
         }
+        updateMineCounter();
         checkWinCondition();
     }
     
@@ -1914,48 +3117,55 @@
         minesweeperBoard.forEach((cell, index) => {
             if (cell.isMine) {
                 const cellEl = document.querySelector(`.minesweeper-cell[data-index="${index}"]`);
-                cellEl.innerHTML = `<img src="mine.png">`;
+                cellEl.classList.add('revealed');
+                if (!cell.isFlagged) {
+                    cellEl.innerHTML = `<img src="mine.png">`;
+                }
             }
         });
     }
 
     function checkWinCondition() {
         let revealedCount = 0;
-        let flaggedCount = 0;
+        let correctlyFlagged = 0;
         minesweeperBoard.forEach(cell => {
             if (cell.isRevealed) {
                 revealedCount++;
             }
             if (cell.isFlagged && cell.isMine) {
-                flaggedCount++;
+                correctlyFlagged++;
             }
         });
-        
+
+        let playerWon = false;
+
         if (revealedCount === (MINESWEEPER_BOARD_SIZE * MINESWEEPER_BOARD_SIZE) - MINESWEEPER_MINE_COUNT) {
             minesweeperGameover = true;
-            alert('Congratulations! You won!');
-        } else if (flaggedCount === MINESWEEPER_MINE_COUNT) {
+            playerWon = true;
+        } else if (correctlyFlagged === MINESWEEPER_MINE_COUNT) {
             let allMinesFlagged = true;
+            let hasWrongFlags = false;
             minesweeperBoard.forEach(cell => {
                 if (cell.isMine && !cell.isFlagged) {
                     allMinesFlagged = false;
                 }
+                if (!cell.isMine && cell.isFlagged) {
+                    hasWrongFlags = true;
+                }
             });
-            if (allMinesFlagged) {
+            if (allMinesFlagged && !hasWrongFlags) {
                 minesweeperGameover = true;
-                alert('Congratulations! You won!');
+                playerWon = true;
             }
+        }
+
+        if (playerWon) {
+            stopMinesweeperTimer();
+            setMinesweeperFace('cool');
+            updateMineCounter();
         }
     }
 
-    function toggleMinesweeperIcon() {
-        const icon = document.getElementById('minesweeper-reset-icon');
-        if (icon.src.endsWith('favicon.png')) {
-            icon.src = 'favicon2.png';
-        } else {
-            icon.src = 'favicon.png';
-        }
-    }
 
   </script>
 </body>
