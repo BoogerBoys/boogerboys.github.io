@@ -126,6 +126,30 @@
       pointer-events: none;
     }
 
+    #login-hint {
+      position: absolute;
+      bottom: 12%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: clamp(220px, 80%, 620px);
+      padding: 10px 18px;
+      color: #fff;
+      font-size: clamp(0.9rem, 2.6vw, 1.2rem);
+      line-height: 1.5;
+      letter-spacing: 0.02em;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.85);
+      background: rgba(6, 6, 6, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 10px;
+      opacity: 0;
+      transition: opacity 0.4s ease-in-out;
+      pointer-events: none;
+    }
+
+    #login-hint.visible {
+      opacity: 1;
+    }
+
     .crt-effect {
       position: absolute;
       top: 0;
@@ -501,6 +525,9 @@
       margin: 10px;
       cursor: pointer;
       width: 80px;
+      padding: 6px 4px;
+      gap: 4px;
+      border-radius: 6px;
       transition: background-color 0.1s ease-in-out;
       user-select: none;
     }
@@ -522,6 +549,21 @@
       font-size: 12px;
       font-family: var(--xp-font-main);
       pointer-events: none;
+    }
+
+    @media (min-width: 768px) {
+      .desktop-icon {
+        width: 108px;
+        padding: 8px 6px 10px;
+        gap: 6px;
+      }
+      .desktop-icon img {
+        width: 64px;
+        height: 64px;
+      }
+      .desktop-icon span {
+        font-size: 14px;
+      }
     }
 
     /*
@@ -1203,9 +1245,9 @@
     }
 
     .jukebox-song img {
-      width: 48px;
-      height: 48px;
-      border-radius: 10px;
+      width: 84px;
+      height: 84px;
+      border-radius: 12px;
       object-fit: cover;
     }
 
@@ -1565,6 +1607,9 @@
         </div>
       </div>
     </div>
+    <div id="login-hint" role="status" aria-live="polite" aria-hidden="true">
+      Hint: Double tap the desktop icons to open them, and press the toolbar windows at the bottom of the screen to easily minimize tabs.
+    </div>
   </div>
 
   <div id="shutdown-screen" style="display: none;">
@@ -1721,6 +1766,7 @@
     // --- Core UI elements ---
     const loginScreen = document.getElementById('login-screen');
     const loginWelcome = document.getElementById('login-welcome');
+    const loginHint = document.getElementById('login-hint');
     const desktop = document.getElementById('desktop');
     const shutdownScreen = document.getElementById('shutdown-screen');
     const startMenu = document.getElementById('start-menu');
@@ -1861,24 +1907,24 @@
         ]
       },
       bloodyStream: {
-        note: "(Lyrics removed until permitted by copyright holders)",
+        note: "[Lyrics Unavailable]",
         cues: [
-          { section: "Lyrics removed" },
-          { time: 0, text: "(Lyrics removed until permitted by copyright holders)" }
+          { section: "[Lyrics Unavailable]" },
+          { time: 0, text: "[Lyrics Unavailable]" }
         ]
       },
       greatDays: {
-        note: "(Lyrics removed until permitted by copyright holders)",
+        note: "[Lyrics Unavailable]",
         cues: [
-          { section: "Lyrics removed" },
-          { time: 0, text: "(Lyrics removed until permitted by copyright holders)" }
+          { section: "[Lyrics Unavailable]" },
+          { time: 0, text: "[Lyrics Unavailable]" }
         ]
       },
       redSun: {
-        note: "(Lyrics removed until permitted by copyright holders)",
+        note: "[Lyrics Unavailable]",
         cues: [
-          { section: "Lyrics removed" },
-          { time: 0, text: "(Lyrics removed until permitted by copyright holders)" }
+          { section: "[Lyrics Unavailable]" },
+          { time: 0, text: "[Lyrics Unavailable]" }
         ]
       }
     };
@@ -1976,7 +2022,7 @@
             <li>Tap <strong>X &rarr; P &rarr; !</strong> to surface this secret again.</li>
             <li>Use the jukebox <em>Start</em>/<em>Stop</em> buttons to quickly audition a track without leaving the window.</li>
           </ul>
-          <p>Keep poking around—this desktop still hides a few stories.</p>
+          <p>Now shoo.</p>
         </div>
       `,
       'Calculator': `
@@ -2028,13 +2074,32 @@
     // --- Login & Shutdown logic ---
     function attemptLogin() {
       loginWelcome.style.opacity = '0';
+      if (loginHint) {
+        loginHint.classList.add('visible');
+        loginHint.setAttribute('aria-hidden', 'false');
+      }
       startupSound.play().catch(e => console.error("Startup sound failed:", e));;
       setTimeout(() => {
         loginScreen.classList.add('hidden');
         desktop.classList.add('visible');
-        const startX = Math.max(12, Math.min(window.innerWidth - 320, (window.innerWidth / 2) - 160));
-        const startY = Math.max(24, Math.min(window.innerHeight - 260, (window.innerHeight / 3)));
+        const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 360;
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 640;
+        const isCompactViewport = window.matchMedia
+          ? window.matchMedia('(max-width: 600px)').matches
+          : viewportWidth <= 600;
+        const jukeboxWidth = isCompactViewport
+          ? Math.max(240, viewportWidth - 12)
+          : Math.max(240, Math.min(360, viewportWidth - 24));
+        const startX = Math.max(12, Math.round((viewportWidth - jukeboxWidth) / 2));
+        const estimatedHeight = isCompactViewport ? 460 : 340;
+        const maxTop = Math.max(32, viewportHeight - estimatedHeight - 16);
+        const preferredTop = viewportHeight * 0.22;
+        const startY = Math.max(32, Math.min(maxTop, preferredTop));
         openWindow('Jukebox', 10, startX, startY); 
+        if (loginHint) {
+          loginHint.classList.remove('visible');
+          loginHint.setAttribute('aria-hidden', 'true');
+        }
       }, 4500);
     }
 
