@@ -50,13 +50,29 @@
       --xp-font-title: 'Tiny5', 'TomorrowLightItalic', sans-serif;
       --xp-font-small: 'TomorrowLightItalic', 'Segoe UI', sans-serif;
       --xp-font-tooltip: 'Bytesized', 'TomorrowLightItalic', sans-serif;
+      --viewport-height: 100vh;
+    }
+
+    @supports (height: 100svh) {
+      :root {
+        --viewport-height: 100svh;
+      }
+    }
+
+    @supports (height: 100dvh) {
+      :root {
+        --viewport-height: 100dvh;
+      }
     }
 
     html, body {
-      height: 100%;
+      height: var(--viewport-height);
+      min-height: var(--viewport-height);
+      width: 100%;
       margin: 0;
       font-family: var(--xp-font-main);
       overflow: hidden;
+      overscroll-behavior: none;
       background-color: #000;
       cursor: url('cursor.png'), auto;
       text-shadow: none;
@@ -88,11 +104,12 @@
       ==========================================================================
     */
     #login-screen, #shutdown-screen {
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      height: 100%;
+      height: var(--viewport-height);
+      min-height: var(--viewport-height);
       background-color: #000;
       color: #fff;
       display: flex;
@@ -403,6 +420,22 @@
         }
     }
 
+    @media (max-width: 768px) {
+        html, body {
+            height: 100%;
+            min-height: 100svh;
+        }
+
+        #login-screen,
+        #shutdown-screen,
+        #desktop {
+            min-height: 100svh;
+        }
+    }
+
+    @media (max-width: 600px) {
+    }
+
     .login-footer-text {
         opacity: 0.85;
     }
@@ -440,12 +473,16 @@
       ==========================================================================
     */
     #desktop {
-      position: relative;
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
-      height: 100%;
+      height: var(--viewport-height);
+      min-height: var(--viewport-height);
       background: url('XP.png') no-repeat center center;
       background-size: cover;
       display: block;
+      overflow: hidden;
       opacity: 0;
       transition: opacity 1s ease-in-out;
       z-index: 0;
@@ -493,7 +530,7 @@
       ==========================================================================
     */
     #taskbar {
-      position: absolute;
+      position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
@@ -878,6 +915,8 @@
       animation: window-open 0.3s ease-out;
       font-family: var(--xp-font-main);
       transition: filter 0.2s ease, box-shadow 0.2s ease;
+      max-width: calc(100vw - 24px);
+      max-height: calc(100vh - 32px);
     }
 
     .xp-window:not(.active-window) {
@@ -886,7 +925,14 @@
     }
 
     #window-Jukebox {
-        width: 260px;
+        width: min(360px, calc(100vw - 24px));
+        min-width: 240px;
+    }
+
+    @media (max-width: 600px) {
+        #window-Jukebox {
+            width: calc(100vw - 12px);
+        }
     }
 
     /* UPDATED: Calculator styles */
@@ -1110,7 +1156,9 @@
     .window-content {
       padding: 10px;
       overflow-y: auto;
+      overflow-x: hidden;
       height: calc(100% - 26px);
+      max-height: calc(100% - 26px);
       box-sizing: border-box;
       background: linear-gradient(180deg, #ffffff 0%, #f6f3e7 100%);
       font-family: var(--xp-font-small);
@@ -1155,22 +1203,23 @@
     }
 
     .jukebox-song img {
-      width: 35px;
-      height: 35px;
-      border-radius: 8px;
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
       object-fit: cover;
     }
 
     .jukebox-controls {
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: center;
+      gap: 12px;
     }
 
     .jukebox-controls button {
-      min-width: 48px;
-      height: 28px;
-      padding: 0 10px;
+      min-width: 56px;
+      height: 30px;
+      padding: 0 12px;
       border-radius: 6px;
       border: 1px solid #3a6ea5;
       background: linear-gradient(to bottom, #fdfdff, #d1e3fa);
@@ -1239,7 +1288,7 @@
       flex-wrap: wrap;
     }
 
-    .loop-toggle {
+    .loop-toggle, .jukebox-nav {
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -1313,6 +1362,7 @@
       position: relative;
       max-height: 160px;
       overflow-y: auto;
+      overflow-x: hidden;
       background: rgba(255,255,255,0.9);
       border: 1px solid #9db5e2;
       border-radius: 6px;
@@ -1624,7 +1674,7 @@
           <img src="8.png" alt="My Computer">
           <span>My Computer</span>
         </div>
-        <div class="start-menu-entry" onclick="openWindow('Jukebox', 10); toggleStartMenu(); clickSound.play();">
+        <div class="start-menu-entry" onclick="openWindow('Jukebox', 10, Math.max(12, window.innerWidth / 2 - 160), Math.max(32, window.innerHeight / 3 - 120)); toggleStartMenu(); clickSound.play();">
           <img src="10.png" alt="Jukebox">
           <span>Jukebox</span>
         </div>
@@ -1677,7 +1727,8 @@
     const taskbarApps = document.getElementById('taskbar-apps');
     const clock = document.getElementById('clock');
     const dragPreview = document.getElementById('window-drag-preview');
-
+    const crtOverlay = document.querySelector('.crt-effect');
+    
     // NEW: Calendar elements
     const calendarPopup = document.getElementById('calendar-popup');
     const calendarTitle = document.getElementById('calendar-title');
@@ -1685,14 +1736,19 @@
 
     // Calendar state
     let currentCalendarDate = new Date();
+    let crtEnabled = true;
 
     // --- Audio Elements ---
     const jukeboxAudio = document.getElementById('bg-music');
-    jukeboxAudio.volume = 0.35;
+    let jukeboxBaseVolume = 0.35;
+    let currentSongVolumeMultiplier = 1;
+    jukeboxAudio.volume = jukeboxBaseVolume;
     const startupSound = new Audio('XPstartup.mp3');
     const shutdownSound = new Audio('XPshutdown.mp3');
     const clickSound = new Audio('open.mp3');
     const notificationSound = document.getElementById('notification-sound');
+    let awaitingAudioUnlock = false;
+    let autoplayNoticeShown = false;
 
     // --- Easter Egg Messages ---
     const easterEggs = [
@@ -1731,7 +1787,7 @@
       { file: "Music4.mp3", credit: "Air Waves - Deltarune Chapter 3 + 4 - Toby Fox", icon: "Music4.jpg" },
       { file: "Music5.mp3", credit: "Home Sweet Grave - Arc System Works - GUILTY GEAR SOUND COMPLETE BOX (7)", icon: "Music5.jpg" },
       { file: "Music6.mp3", credit: "Don't Preheat your Oven Because if you do the Song Won't Play - Pizza Tower", icon: "Music6.jpg" },
-      { file: "Music7.mp3", credit: "BLOODY STREAM - JJBA", icon: "Music7.jpg", lyricsId: "bloodyStream" },
+      { file: "Music7.mp3", credit: "BLOODY STREAM - JJBA", icon: "Music7.jpg", lyricsId: "bloodyStream", volumeMultiplier: 0.5 },
       { file: "Music8.mp3", credit: "growing on me - snayk", icon: "Music8.jpg" },
       { file: "Music9.mp3", credit: "Friday Theme - uglyburger0", icon: "Music9.jpg" },
       { file: "Music10.mp3", credit: "Great Days - JJBA", icon: "Music10.jpg", lyricsId: "greatDays" },
@@ -1744,6 +1800,8 @@
       elements: null,
       isSeeking: false
     };
+    const SECRET_SEQUENCE = ['x', 'p', '!'];
+    let secretSequenceProgress = 0;
 
     const lyricsLibrary = {
       spawn: {
@@ -1803,24 +1861,24 @@
         ]
       },
       bloodyStream: {
-        note: "",
+        note: "(Lyrics removed until permitted by copyright holders)",
         cues: [
           { section: "Lyrics removed" },
-          { time: 0, text: "(Lyrics unavailable.)" }
+          { time: 0, text: "(Lyrics removed until permitted by copyright holders)" }
         ]
       },
       greatDays: {
-        note: "",
+        note: "(Lyrics removed until permitted by copyright holders)",
         cues: [
           { section: "Lyrics removed" },
-          { time: 0, text: "(Lyrics unavailable.)" }
+          { time: 0, text: "(Lyrics removed until permitted by copyright holders)" }
         ]
       },
       redSun: {
-        note: "",
+        note: "(Lyrics removed until permitted by copyright holders)",
         cues: [
           { section: "Lyrics removed" },
-          { time: 0, text: "(Lyrics unavailable.)" }
+          { time: 0, text: "(Lyrics removed until permitted by copyright holders)" }
         ]
       }
     };
@@ -1864,11 +1922,11 @@
             <div id="song-info" aria-live="polite">Loading...</div>
           </div>
           <div class="jukebox-controls">
-            <button onclick="prevSong(); clickSound.play();">⏪</button>
-            <button onclick="nextSong(); clickSound.play();">⏩</button>
+            <button class="jukebox-nav" onclick="prevSong(); clickSound.play();">&laquo;</button>
+            <button class="jukebox-nav" onclick="nextSong(); clickSound.play();">&raquo;</button>
           </div>
           <div class="volume-container">
-            <label for="volume">🔊</label>
+            <label for="volume">Volume</label>
             <input id="volume" type="range" min="0" max="1" step="0.01" value="0.35">
           </div>
           <div class="jukebox-progress">
@@ -1896,7 +1954,7 @@
             <p>No ownership of the original music, lyrics, or artwork is claimed by the project author. All referenced material is used for demonstration, educational, or fan purposes only, and no revenue is generated from its use.</p>
             <p>This repository does NOT distribute or host any copyrighted audio, nor does it seek to replace, monetize, or compete with the original work. It is hosted, however it is NOT monetized or permitted for download off this repository.</p>
             <p>If you are a rights holder and believe any portion of this project violates your rights, please contact me directly for removal or modification.</p>
-            <p>&copy; Evan Fong / Vanoss &amp; respective rights holders. All rights reserved. Project maintained by im.notalex. I am no way affiliated with the copyright holders of these musical works.</p>
+            <p>&copy; Evan Fong / Vanoss &amp; respective rights holders. All rights reserved. Project maintained by im.notalex.</p>
           </div>
           <div id="lyrics-panel" data-state="loading">
             <div class="lyrics-header">
@@ -1908,6 +1966,17 @@
               <p class="lyrics-empty">Lyrics not available for this track.</p>
             </div>
           </div>
+        </div>
+      `,
+      'XP Tips': `
+        <div class="window-entry">
+          <p>Hidden tricks for wandering XP explorers:</p>
+          <ul>
+            <li><strong>Ctrl&nbsp;+&nbsp;Alt&nbsp;+&nbsp;C</strong> toggles the CRT bloom overlay.</li>
+            <li>Tap <strong>X &rarr; P &rarr; !</strong> to surface this secret again.</li>
+            <li>Use the jukebox <em>Start</em>/<em>Stop</em> buttons to quickly audition a track without leaving the window.</li>
+          </ul>
+          <p>Keep poking around—this desktop still hides a few stories.</p>
         </div>
       `,
       'Calculator': `
@@ -1963,7 +2032,9 @@
       setTimeout(() => {
         loginScreen.classList.add('hidden');
         desktop.classList.add('visible');
-        openWindow('Jukebox', 10, desktop.offsetWidth - 280, 20); 
+        const startX = Math.max(12, Math.min(window.innerWidth - 320, (window.innerWidth / 2) - 160));
+        const startY = Math.max(24, Math.min(window.innerHeight - 260, (window.innerHeight / 3)));
+        openWindow('Jukebox', 10, startX, startY); 
       }, 4500);
     }
 
@@ -2041,12 +2112,12 @@
     }
 
     // --- Notification Logic ---
-    function showEasterEgg() {
+    function announceDesktopMessage(message) {
       const notificationArea = document.getElementById('notification-area');
-      const randomMessage = easterEggs[Math.floor(Math.random() * easterEggs.length)];
+      if (!notificationArea) return;
       const notification = document.createElement('div');
       notification.className = 'notification';
-      notification.innerHTML = `<img src="11.png" alt="Notification"><p>${randomMessage}</p>`;
+      notification.innerHTML = `<img src="11.png" alt="Notification"><p>${message}</p>`;
       notificationArea.appendChild(notification);
       
       notificationSound.play();
@@ -2058,6 +2129,66 @@
           notification.remove();
         }, 500);
       }, 5000);
+    }
+    
+    function showEasterEgg() {
+      const randomMessage = easterEggs[Math.floor(Math.random() * easterEggs.length)];
+      announceDesktopMessage(randomMessage);
+    }
+    
+    function setCRTEnabled(enabled, silent = false) {
+      crtEnabled = enabled;
+      if (crtOverlay) {
+        crtOverlay.style.display = enabled ? 'block' : 'none';
+      }
+      document.body.classList.toggle('crt-disabled', !enabled);
+      if (!silent) {
+        announceDesktopMessage(enabled ? 'CRT bloom enabled.' : 'CRT bloom disabled.');
+      }
+    }
+
+    function toggleCRT(force) {
+      const targetState = typeof force === 'boolean' ? force : !crtEnabled;
+      setCRTEnabled(targetState);
+    }
+    
+    setCRTEnabled(true, true);
+
+    function constrainWindowToViewport(win) {
+      if (!win) return;
+      const rect = win.getBoundingClientRect();
+      const desiredLeft = parseFloat(win.style.left) || rect.left;
+      const desiredTop = parseFloat(win.style.top) || rect.top;
+      const maxLeft = Math.max(8, window.innerWidth - rect.width - 8);
+      const maxTop = Math.max(32, window.innerHeight - rect.height - 16);
+      const clampedLeft = Math.min(Math.max(desiredLeft, 8), maxLeft);
+      const clampedTop = Math.min(Math.max(desiredTop, 32), maxTop);
+      win.style.left = `${clampedLeft}px`;
+      win.style.top = `${clampedTop}px`;
+    }
+
+    function handleViewportResize() {
+      Object.values(openWindows).forEach(win => {
+        if (!win) return;
+        constrainWindowToViewport(win);
+      });
+    }
+    
+    window.addEventListener('resize', handleViewportResize);
+    
+    function getSongVolumeMultiplier(song) {
+      if (!song) return 1;
+      return typeof song.volumeMultiplier === 'number' ? song.volumeMultiplier : 1;
+    }
+
+    function applySongVolume(updateSlider = false) {
+      const actualVolume = Math.max(0, Math.min(1, jukeboxBaseVolume * currentSongVolumeMultiplier));
+      jukeboxAudio.volume = actualVolume;
+      if (!updateSlider) return;
+      const controls = getJukeboxControls();
+      if (controls && controls.volume && document.activeElement !== controls.volume) {
+        controls.volume.value = jukeboxBaseVolume;
+      }
     }
     
     function showRandomEasterEgg() {
@@ -2120,6 +2251,7 @@
       desktop.appendChild(win);
       openWindows[title] = win;
       bringToFront(win);
+      constrainWindowToViewport(win);
 
       win.addEventListener('mousedown', (e) => {
         if (!e.target.closest('.window-content') || e.target.closest('.window-titlebar')) {
@@ -2129,7 +2261,7 @@
 
       if (title === 'Jukebox') {
         setupJukeboxWindow(win);
-        playSong(Math.floor(Math.random() * songs.length));
+        playSong(Math.floor(Math.random() * songs.length), { notifyOnBlock: true });
       } else if (title === 'Minesweeper') {
         initializeMinesweeper();
       }
@@ -2143,8 +2275,7 @@
       delete openWindows[title];
       
       if (title === 'Jukebox') {
-          jukeboxAudio.pause();
-          jukeboxAudio.currentTime = 0;
+          stopCurrentTrack(true);
           resetLyricsUI();
           lyricsState.ui = null;
           jukeboxControls.elements = null;
@@ -2216,6 +2347,7 @@
         activeWindow.style.left = newX + 'px';
         activeWindow.style.top = newY + 'px';
         activeWindow.style.opacity = '1';
+        constrainWindowToViewport(activeWindow);
         
         dragPreview.style.display = 'none';
         activeWindow = null;
@@ -2279,12 +2411,59 @@
     });
     jukeboxAudio.addEventListener("loadedmetadata", handleAudioMetadata);
     jukeboxAudio.addEventListener("durationchange", () => updatePlaybackTimeUI(true));
+    jukeboxAudio.addEventListener("play", () => {
+        awaitingAudioUnlock = false;
+        autoplayNoticeShown = false;
+    });
 
-    function playSong(index) {
+    function attemptJukeboxPlayback(options = {}) {
+        const notifyOnBlock = !!options.notifyOnBlock;
+        const playAttempt = jukeboxAudio.play();
+        if (!playAttempt || typeof playAttempt.catch !== 'function') {
+            return;
+        }
+        playAttempt.then(() => {
+            awaitingAudioUnlock = false;
+        }).catch((error) => {
+            if (notifyOnBlock && isAutoplayBlock(error)) {
+                handleAutoplayBlock();
+            } else {
+                console.error("Audio playback failed:", error);
+            }
+        });
+    }
+
+    function isAutoplayBlock(error) {
+        if (!error) return false;
+        return error.name === 'NotAllowedError' || error.name === 'SecurityError' || error.name === 'NotSupportedError';
+    }
+
+    function handleAutoplayBlock() {
+        if (!autoplayNoticeShown) {
+            announceDesktopMessage('Browser blocked the jukebox autoplay. Press Start in the jukebox window to enable sound.');
+            autoplayNoticeShown = true;
+        }
+        armAudioUnlock();
+    }
+
+    function armAudioUnlock() {
+        if (awaitingAudioUnlock) return;
+        awaitingAudioUnlock = true;
+        const unlock = () => {
+            document.removeEventListener('pointerdown', unlock);
+            document.removeEventListener('keydown', unlock);
+            awaitingAudioUnlock = false;
+            attemptJukeboxPlayback({ notifyOnBlock: false });
+        };
+        document.addEventListener('pointerdown', unlock);
+        document.addEventListener('keydown', unlock);
+    }
+
+    function playSong(index, options = {}) {
         currentSongIndex = index;
         const song = songs[index];
         jukeboxAudio.src = song.file;
-        jukeboxAudio.play().catch(e => console.error("Audio playback failed:", e));
+        attemptJukeboxPlayback({ notifyOnBlock: !!options.notifyOnBlock });
 
         const songInfoEl = document.getElementById("song-info");
         const songIconEl = document.getElementById("song-icon");
@@ -2294,6 +2473,9 @@
             songIconEl.src = song.icon || 'Music1.jpg';
             songIconEl.alt = `Artwork for ${song.credit}`;
         }
+
+        currentSongVolumeMultiplier = getSongVolumeMultiplier(song);
+        applySongVolume(true);
 
         jukeboxControls.isSeeking = false;
         updatePlaybackTimeUI(true);
@@ -2306,6 +2488,9 @@
             if (controls.loopToggle) {
                 controls.loopToggle.checked = jukeboxAudio.loop;
                 setLoopIndicator(jukeboxAudio.loop);
+            }
+            if (controls.volume && document.activeElement !== controls.volume) {
+                controls.volume.value = jukeboxBaseVolume;
             }
         }
 
@@ -2421,12 +2606,19 @@
         button.textContent = 'Copyright notice';
     }
 
-    function stopCurrentTrack() {
+    function stopCurrentTrack(resetPosition = false) {
         jukeboxAudio.pause();
-        jukeboxAudio.currentTime = 0;
         jukeboxControls.isSeeking = false;
-        syncLyricsToTime(0);
-        updatePlaybackTimeUI(true);
+        if (resetPosition) {
+            jukeboxAudio.currentTime = 0;
+            syncLyricsToTime(0);
+            updatePlaybackTimeUI(true);
+            closeDisclaimerPanel();
+        } else {
+            syncLyricsToTime(jukeboxAudio.currentTime);
+            updatePlaybackTimeUI();
+        }
+        applySongVolume(true);
     }
 
     function setupJukeboxWindow(win) {
@@ -2435,18 +2627,22 @@
         jukeboxControls.isSeeking = false;
 
         if (controls.volume) {
-            controls.volume.value = jukeboxAudio.volume;
+            controls.volume.value = jukeboxBaseVolume;
             controls.volume.addEventListener('input', () => {
-                jukeboxAudio.volume = parseFloat(controls.volume.value);
+                const nextValue = parseFloat(controls.volume.value);
+                if (Number.isFinite(nextValue)) {
+                    jukeboxBaseVolume = Math.max(0, Math.min(1, nextValue));
+                    applySongVolume();
+                }
             });
-            jukeboxAudio.volume = parseFloat(controls.volume.value);
+            applySongVolume(true);
         }
 
         const playBtn = document.getElementById('jukebox-play');
         if (playBtn) {
             playBtn.onclick = () => {
                 clickSound.play();
-                jukeboxAudio.play().catch(e => console.error("Audio playback failed:", e));
+                attemptJukeboxPlayback();
             };
         }
 
@@ -2454,7 +2650,7 @@
         if (stopBtn) {
             stopBtn.onclick = () => {
                 clickSound.play();
-                stopCurrentTrack();
+                stopCurrentTrack(false);
             };
         }
 
@@ -2668,6 +2864,7 @@
         updatePlaybackTimeUI(true);
         const song = songs[currentSongIndex];
         if (!song) return;
+        applySongVolume(true);
         if (lyricsState.pending && song.file === lyricsState.pending.songFile) {
             renderLyrics(lyricsState.pending.entry, jukeboxAudio.duration);
             lyricsState.pending = null;
@@ -2737,6 +2934,48 @@
             }
         }
     }
+
+    function handleGlobalHotkeys(event) {
+        const keyLower = event.key && event.key.toLowerCase ? event.key.toLowerCase() : event.key;
+        if (event.ctrlKey && event.altKey && keyLower === 'c') {
+            event.preventDefault();
+            toggleCRT();
+            return;
+        }
+        if (event.ctrlKey && event.altKey && keyLower === 'p') {
+            event.preventDefault();
+            clickSound.play();
+            const alreadyOpen = !!openWindows['XP Tips'];
+            openWindow('XP Tips', 'XP', 160, 110);
+            if (!alreadyOpen) {
+                announceDesktopMessage('XP Tips unlocked. Press X -> P -> ! anytime.');
+            }
+            return;
+        }
+        if (event.ctrlKey || event.altKey || event.metaKey) {
+            secretSequenceProgress = 0;
+            return;
+        }
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        const expected = SECRET_SEQUENCE[secretSequenceProgress];
+        const expectedNormalized = expected.length === 1 ? expected.toLowerCase() : expected;
+        if (key === expectedNormalized) {
+            secretSequenceProgress++;
+            if (secretSequenceProgress === SECRET_SEQUENCE.length) {
+                secretSequenceProgress = 0;
+                const alreadyOpen = !!openWindows['XP Tips'];
+                openWindow('XP Tips', 'XP', 160, 110);
+                if (!alreadyOpen) {
+                    announceDesktopMessage('XP Tips unlocked. Press Ctrl+Alt+C to toggle CRT bloom.');
+                }
+            }
+        } else {
+            const firstNormalized = SECRET_SEQUENCE[0].length === 1 ? SECRET_SEQUENCE[0].toLowerCase() : SECRET_SEQUENCE[0];
+            secretSequenceProgress = key === firstNormalized ? 1 : 0;
+        }
+    }
+    
+    document.addEventListener('keydown', handleGlobalHotkeys);
     
     // --- "You Are An Idiot" Virus Logic ---
     let idiotWindows = [];
@@ -2764,7 +3003,7 @@
         win.className = 'idiot-window';
         win.style.zIndex = zIndexCounter;
         win.innerHTML = `
-            <div class="idiot-window-content">bouncing skull virus 2025 no virusðŸ˜±</div>
+            <div class="idiot-window-content">bouncing skull virus 2025 no virus 😱😱</div>
             <img src="skull.gif" alt="skull" style="width: 64px; height: 64px; margin-top: 10px;">
         `;
         
