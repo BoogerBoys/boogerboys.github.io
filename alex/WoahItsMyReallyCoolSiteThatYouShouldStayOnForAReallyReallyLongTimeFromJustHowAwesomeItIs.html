@@ -150,6 +150,29 @@
       opacity: 1;
     }
 
+    #login-warning {
+      position: absolute;
+      bottom: 3%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: clamp(240px, 70%, 520px);
+      padding: 8px 16px;
+      color: #000;
+      font-size: clamp(0.8rem, 2.4vw, 1rem);
+      line-height: 1.4;
+      background: rgba(255, 241, 130, 0.95);
+      border: 1px solid rgba(0, 0, 0, 0.25);
+      border-radius: 10px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+      opacity: 0;
+      transition: opacity 0.4s ease-in-out;
+      pointer-events: none;
+    }
+
+    #login-warning.visible {
+      opacity: 1;
+    }
+
     .crt-effect {
       position: absolute;
       top: 0;
@@ -977,6 +1000,152 @@
         }
     }
 
+    #window-Chat {
+        width: min(540px, calc(100vw - 24px));
+        min-width: 260px;
+        min-height: clamp(520px, 72vh, 760px);
+    }
+
+    .chat-window {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        height: 100%;
+        min-height: clamp(520px, 68vh, 720px);
+    }
+
+    .chat-window p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #0a2d63;
+    }
+
+    .chat-iframe {
+        flex: 1;
+        width: 100%;
+        min-height: clamp(400px, 60vh, 640px);
+        border-radius: 10px;
+        border: 0;
+        background: #0a2250;
+        box-shadow: inset 0 0 14px rgba(0,0,0,0.35);
+    }
+
+    .chat-status {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(0,0,0,0.2);
+        background: rgba(255,255,255,0.7);
+        color: #0a2d63;
+        font-family: var(--xp-font-main);
+        letter-spacing: 0.03em;
+    }
+
+    .chat-status[data-state="ready"] {
+        color: #0f5a2f;
+        border-color: rgba(17, 184, 73, 0.4);
+        background: rgba(17, 184, 73, 0.12);
+    }
+
+    /* PowerShell Styles */
+    .powershell-window {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        height: 100%;
+        background: radial-gradient(circle at 20% 20%, rgba(25,40,64,0.9), #020305 70%);
+        color: #c7d5ff;
+        border-radius: 12px;
+        border: 2px solid #0d3b9c;
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 18px rgba(4,12,32,0.6);
+        font-family: "Consolas", "Courier New", monospace;
+    }
+
+    .powershell-output {
+        flex: 1;
+        background: #010204;
+        border-radius: 8px;
+        border: 1px solid #0b2f7a;
+        padding: 14px;
+        overflow-y: auto;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+    }
+
+    .ps-line {
+        margin-bottom: 6px;
+        white-space: pre-wrap;
+    }
+
+    .ps-line-command {
+        color: #4ec9b0;
+    }
+
+    .ps-line-system {
+        color: #9cdcfe;
+    }
+
+    .ps-line-error {
+        color: #f44747;
+    }
+
+    .powershell-input-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(2,12,28,0.85);
+        border-radius: 8px;
+        border: 1px solid #0b2f7a;
+        padding: 8px;
+    }
+
+    .powershell-prompt {
+        color: #9cdcfe;
+        font-weight: bold;
+        font-size: 0.85rem;
+    }
+
+    .powershell-input {
+        flex: 1;
+        background: #050c19;
+        border: 1px solid #0b2f7a;
+        border-radius: 6px;
+        color: #d7e6ff;
+        padding: 8px 10px;
+        font-family: "Consolas", "Courier New", monospace;
+        font-size: 0.92rem;
+        box-shadow: inset 0 0 6px rgba(0,0,0,0.6);
+    }
+
+    .powershell-input:focus {
+        outline: 1px solid #3ea6ff;
+    }
+
+    .powershell-submit {
+        background: linear-gradient(180deg, #1f6de2 0%, #0e3a87 100%);
+        color: white;
+        border: 1px solid #0d2c73;
+        padding: 6px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+
+    .powershell-submit:hover {
+        background: linear-gradient(180deg, #2e7bff 0%, #1348a5 100%);
+    }
+
+    .powershell-hint {
+        margin: 0;
+        font-size: 0.75rem;
+        letter-spacing: 0.02em;
+        color: rgba(199, 213, 255, 0.75);
+    }
+
     /* UPDATED: Calculator styles */
     .calculator-grid {
       display: grid;
@@ -1542,32 +1711,32 @@
     /* "You Are An Idiot" Virus Window Styles */
     .idiot-window {
       position: absolute;
-      width: 300px;
-      height: 200px;
-      background-color: black;
-      color: white;
-      border: 2px solid white;
+      width: 280px;
+      height: 210px;
+      background: #000;
+      border: 2px solid #fff;
       overflow: hidden;
       z-index: 900;
-      text-align: center;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
+      border-radius: 6px;
+      box-shadow: 0 0 16px rgba(0,0,0,0.6);
     }
 
-    .idiot-window-content {
-      font-size: 24px;
-      font-weight: bold;
-      animation: color-flash 0.5s infinite;
+    .idiot-window img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      image-rendering: pixelated;
     }
-    
-    @keyframes color-flash {
-      0%, 100% { color: white; background: black; }
-      50% { color: black; background: white; }
+
+    .idiot-window:hover {
+      cursor: url('No.png'), not-allowed;
     }
     
   </style>
+  <script src="https://iframe.chat/scripts/main.min.js" defer></script>
 </head>
 <body>
 
@@ -1609,6 +1778,10 @@
     </div>
     <div id="login-hint" role="status" aria-live="polite" aria-hidden="true">
       Hint: Double tap the desktop icons to open them, and press the toolbar windows at the bottom of the screen to easily minimize tabs.
+      Also, tell hoodie he smells like a dingus. :]
+    </div>
+    <div id="login-warning" role="status" aria-live="polite" aria-hidden="true">
+      Photosensitivity warning: some parts are flashing colors (black and white). Please look away if you are sensitive to strobing visuals.
     </div>
   </div>
 
@@ -1658,6 +1831,18 @@
     <div class="desktop-icon" data-title="Minesweeper" style="top: 120px; left: 220px;">
         <img src="minesweeper.png" alt="Minesweeper">
         <span>Minesweeper</span>
+    </div>
+    <div class="desktop-icon" data-title="Chat" style="top: 220px; left: 220px;">
+        <img src="chat.png" alt="Chat">
+        <span>Chat</span>
+    </div>
+    <div class="desktop-icon" data-title="Browser" style="top: 20px; left: 320px;">
+        <img src="12.png" alt="Browser">
+        <span>Browser</span>
+    </div>
+    <div class="desktop-icon" data-title="PowerShell" style="top: 120px; left: 320px;">
+        <img src="ps.png" alt="PowerShell">
+        <span>PowerShell</span>
     </div>
   </div>
 
@@ -1723,9 +1908,17 @@
           <img src="10.png" alt="Jukebox">
           <span>Jukebox</span>
         </div>
-        <div class="start-menu-entry" onclick="openWindow('Browser', 12); toggleStartMenu(); clickSound.play();">
+        <div class="start-menu-entry" onclick="openWindow('Browser', 'browser'); toggleStartMenu(); clickSound.play();">
           <img src="12.png" alt="Browser">
           <span>Browser</span>
+        </div>
+        <div class="start-menu-entry" onclick="openWindow('Chat', 'chat'); toggleStartMenu(); clickSound.play();">
+          <img src="chat.png" alt="Chat">
+          <span>Chat</span>
+        </div>
+        <div class="start-menu-entry" onclick="openWindow('PowerShell', 'ps'); toggleStartMenu(); clickSound.play();">
+          <img src="ps.png" alt="PowerShell">
+          <span>PowerShell</span>
         </div>
         <div class="start-menu-entry" onclick="openWindow('Calculator', 'calculator'); toggleStartMenu(); clickSound.play();">
             <img src="calculator.png" alt="Calculator">
@@ -1767,6 +1960,7 @@
     const loginScreen = document.getElementById('login-screen');
     const loginWelcome = document.getElementById('login-welcome');
     const loginHint = document.getElementById('login-hint');
+    const loginWarning = document.getElementById('login-warning');
     const desktop = document.getElementById('desktop');
     const shutdownScreen = document.getElementById('shutdown-screen');
     const startMenu = document.getElementById('start-menu');
@@ -1824,6 +2018,20 @@
     // --- State variables ---
     let openWindows = {};
     let zIndexCounter = 100;
+    let chatEmbedInitialized = false;
+    const powerShellHistory = [];
+    const powerShellEasterEggs = {
+      IHATEALIENS: {
+        message: 'Detected hostile life forms. Redirecting to emergency briefing...',
+        url: 'https://www.youtube.com/watch?v=p_khWy7GAcQ'
+      },
+      ILOVEALIENS: {
+        message: 'Establishing peaceful communication channel...',
+        url: 'https://www.youtube.com/watch?v=8Dsf5j-jUZo'
+      }
+    };
+    let idiotAudio = null;
+    let angelSummoned = false;
 
     // --- Jukebox songs data ---
     const songs = [
@@ -1941,7 +2149,7 @@
 
     // --- App content data ---
     const windowContent = {
-      'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>im alex, 16 (feb 21, 2009) soooo uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid,</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs</p><p>i hope you like the site though, im working with my other friends to get theirs setup then yall will be able to interact with it 👅</p><p>ill update this when my friends are finished their site, currently riley is working on his and im helping saur with hers, so eventually they'll be done and temkky, hoodie and valks will be done aswell :)</p><p>ill probably add some other friends aswell :P</p></div>`,
+      'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>im alex, 16 (feb 21, 2009) soooo uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid, (BUT I DID DO A BIG MARGIN OF IT OK)</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs</p><p>i hope you like the site though, im working with my other friends to get theirs setup then yall will be able to interact with it 👅</p><p>ill update this when my friends are finished their site, currently riley is working on his and im helping saur with hers, so eventually they'll be done and temkky, hoodie and valks will be done aswell :)</p><p>ill probably add some other friends aswell :P</p></div>`,
       'Interests': `<div class="window-entry"><p>i like playing games, especially sandbox and pvp games. i also enjoy drawing and programming. i listen to music and stuff, or call my girlfriend cause shes sweet</p><p>IM DEVELOPING A GAME COME BACK LATER PLS!!!</div>`,
       'DNI': `<p>if you are older than me by about ~3-5 ish years dont expect me to be super comfortable around you unless i know you (unless you're my goat retro being 34 years older than me bro!!)</p><p>but i also dont like heavy racist stuff (stupid instagram reels are ok cause I send them ((im just such a nice hypocritical guy)</p><p>also adult people in general make me uncomfortable if i dont know them (cause obviously im not 16 talking to a 25 year old brotato chip)</p><p>and im a huge g(j)ermaphobe and i hate anything like blood, mucus, etc. it just makes me a little uneasy but i wont like scream from it.</p><p>yes, even i have parameters im comfortable with, you FUCKS</p><p>aka the rodents that saw ts and was picking at me for it, you're getting FELT up tonight BUDDY.</p></div>`,
       'Journal': `<textarea id="journal-text-area" placeholder="wait i forgot this is a input area not a text area, oopsies"></textarea>`,
@@ -1951,7 +2159,7 @@
       'Recycle Bin': `<p>guys, awesome bin here, i cant wait to make a rm -rf /* joke on a windows os!</p>`,
       'Browser': `
         <div class="browser-toolbar">
-            <img src="browser.png" style="width: 16px; height: 16px;">
+            <img src="12.png" style="width: 16px; height: 16px;">
             <button>&larr;</button>
             <button>&rarr;</button>
             <button>&#8635;</button>
@@ -2025,6 +2233,24 @@
           <p>Now shoo.</p>
         </div>
       `,
+      'Chat': `
+        <div class="chat-window">
+          <p>Say hi, this is public and every message is visible!!</p>
+          <iframe src="https://iframe.chat/embed?chat=boogerchat" id="chattable" class="chat-iframe" title="boogerchat live room" loading="lazy"></iframe>
+          <div class="chat-status" data-state="connecting">Loading boogerchat...</div>
+        </div>
+      `,
+      'PowerShell': `
+        <div class="powershell-window">
+          <div class="powershell-output" role="log" aria-live="polite"></div>
+          <form class="powershell-input-row" autocomplete="off">
+            <span class="powershell-prompt">PS C:\\alex&gt;</span>
+            <input type="text" class="powershell-input" placeholder="Type a command" spellcheck="false">
+            <button type="submit" class="powershell-submit">Run</button>
+          </form>
+          <p class="powershell-hint">PRESS [[F1]] FOR HELP!</p>
+        </div>
+      `,
       'Calculator': `
         <div class="calculator-grid" id="calculator-grid">
             <div id="calculator-display">0</div>
@@ -2078,6 +2304,10 @@
         loginHint.classList.add('visible');
         loginHint.setAttribute('aria-hidden', 'false');
       }
+      if (loginWarning) {
+        loginWarning.classList.add('visible');
+        loginWarning.setAttribute('aria-hidden', 'false');
+      }
       startupSound.play().catch(e => console.error("Startup sound failed:", e));;
       setTimeout(() => {
         loginScreen.classList.add('hidden');
@@ -2099,6 +2329,10 @@
         if (loginHint) {
           loginHint.classList.remove('visible');
           loginHint.setAttribute('aria-hidden', 'true');
+        }
+        if (loginWarning) {
+          loginWarning.classList.remove('visible');
+          loginWarning.setAttribute('aria-hidden', 'true');
         }
       }, 4500);
     }
@@ -2262,6 +2496,134 @@
       setTimeout(showRandomEasterEgg, randomInterval);
     }
 
+    function initializeChatStylesheet(retry = 0) {
+      if (window.chattable && typeof window.chattable.initialize === 'function') {
+        window.chattable.initialize({
+          stylesheet: '/alex/chattables/chattable.css'
+        });
+        chatEmbedInitialized = true;
+        return true;
+      }
+      if (chatEmbedInitialized) {
+        return true;
+      }
+      if (retry < 8) {
+        setTimeout(() => initializeChatStylesheet(retry + 1), 500);
+      }
+      return false;
+    }
+
+    function setupChatWindow(win) {
+      if (!win) return;
+      const iframe = win.querySelector('#chattable');
+      const status = win.querySelector('.chat-status');
+      if (status) {
+        status.dataset.state = 'connecting';
+        status.textContent = 'Connecting to boogerchat...';
+      }
+      if (!iframe) {
+        initializeChatStylesheet();
+        return;
+      }
+
+      const markReady = () => {
+        if (status) {
+          status.dataset.state = 'ready';
+          status.textContent = 'Connected. Be nice!';
+        }
+      };
+
+      const handleLoad = () => {
+        markReady();
+        iframe.removeEventListener('load', handleLoad);
+        iframe.removeEventListener('error', handleError);
+      };
+
+      const handleError = () => {
+        if (status) {
+          status.dataset.state = 'error';
+          status.textContent = 'Could not reach boogerchat.';
+        }
+        iframe.removeEventListener('load', handleLoad);
+        iframe.removeEventListener('error', handleError);
+      };
+
+      iframe.addEventListener('load', handleLoad);
+      iframe.addEventListener('error', handleError);
+
+      initializeChatStylesheet();
+    }
+
+    function appendPowerShellLine(output, text, type = 'system') {
+      if (!output) return;
+      const line = document.createElement('div');
+      line.className = `ps-line ps-line-${type}`;
+      line.textContent = text;
+      output.appendChild(line);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function handlePowerShellCommand(command, output) {
+      if (!output) return;
+      const trimmed = command.trim();
+      if (!trimmed) return;
+      const upper = trimmed.toUpperCase();
+
+      if (upper === 'HELP') {
+        appendPowerShellLine(output, 'Available easter commands:', 'system');
+        Object.keys(powerShellEasterEggs).forEach(key => appendPowerShellLine(output, ` - ${key}`, 'system'));
+        appendPowerShellLine(output, 'Extra: CLS clears the screen.', 'system');
+        return;
+      }
+
+      if (upper === 'CLS') {
+        output.innerHTML = '';
+        appendPowerShellLine(output, 'Console cleared.', 'system');
+        return;
+      }
+
+      const egg = powerShellEasterEggs[upper];
+      if (egg) {
+        appendPowerShellLine(output, egg.message, 'system');
+        setTimeout(() => {
+          window.location.href = egg.url;
+        }, 900);
+        return;
+      }
+
+      appendPowerShellLine(output, `"${trimmed}" is not recognized. Type HELP for available commands.`, 'error');
+    }
+
+    function setupPowerShellWindow(win) {
+      if (!win || win.dataset.psReady === 'true') return;
+      const output = win.querySelector('.powershell-output');
+      const form = win.querySelector('.powershell-input-row');
+      const input = win.querySelector('.powershell-input');
+      if (!output || !form || !input) return;
+
+      const submitCommand = (event) => {
+        if (event) event.preventDefault();
+        const rawValue = input.value.trim();
+        if (!rawValue) return;
+        appendPowerShellLine(output, `PS C:\\alex>${rawValue}`, 'command');
+        powerShellHistory.push(rawValue);
+        handlePowerShellCommand(rawValue, output);
+        input.value = '';
+        input.focus();
+      };
+
+      form.addEventListener('submit', submitCommand);
+      const submitBtn = form.querySelector('.powershell-submit');
+      if (submitBtn) {
+        submitBtn.addEventListener('click', submitCommand);
+      }
+
+      appendPowerShellLine(output, 'Windows PowerShell 1.2', 'system');
+      appendPowerShellLine(output, 'Type HELP for help.', 'system');
+      win.dataset.psReady = 'true';
+      setTimeout(() => input.focus(), 50);
+    }
+
     // --- Window logic ---
     function openWindow(title, iconNumber, initialX = 50, initialY = 50) {
       if (openWindows[title]) {
@@ -2329,6 +2691,10 @@
         playSong(Math.floor(Math.random() * songs.length), { notifyOnBlock: true });
       } else if (title === 'Minesweeper') {
         initializeMinesweeper();
+      } else if (title === 'Chat') {
+        setupChatWindow(win);
+      } else if (title === 'PowerShell') {
+        setupPowerShellWindow(win);
       }
     }
 
@@ -3001,13 +3367,18 @@
     }
 
     function handleGlobalHotkeys(event) {
-        const keyLower = event.key && event.key.toLowerCase ? event.key.toLowerCase() : event.key;
-        if (event.ctrlKey && event.altKey && keyLower === 'c') {
-            event.preventDefault();
-            toggleCRT();
-            return;
-        }
-        if (event.ctrlKey && event.altKey && keyLower === 'p') {
+    const keyLower = event.key && event.key.toLowerCase ? event.key.toLowerCase() : event.key;
+    if (event.ctrlKey && event.altKey && keyLower === 'c') {
+      event.preventDefault();
+      toggleCRT();
+      return;
+    }
+    if (event.key === 'F1') {
+      event.preventDefault();
+      summonAngel();
+      return;
+    }
+    if (event.ctrlKey && event.altKey && keyLower === 'p') {
             event.preventDefault();
             clickSound.play();
             const alreadyOpen = !!openWindows['XP Tips'];
@@ -3045,8 +3416,102 @@
     // --- "You Are An Idiot" Virus Logic ---
     let idiotWindows = [];
     
+    function stopIdiotAudio() {
+        if (idiotAudio) {
+            idiotAudio.pause();
+            idiotAudio.currentTime = 0;
+            idiotAudio = null;
+        }
+    }
+    
+    function summonAngel() {
+        if (angelSummoned) {
+            announceDesktopMessage('Angel already assisting this session.');
+            return;
+        }
+        angelSummoned = true;
+
+        const angel = document.createElement('img');
+        angel.src = 'ANGEL.webp';
+        angel.alt = 'Guardian angel';
+        const angelSize = 44;
+        angel.style.position = 'absolute';
+        angel.style.width = `${angelSize}px`;
+        angel.style.height = `${angelSize}px`;
+        angel.style.pointerEvents = 'none';
+        angel.style.zIndex = 9999;
+
+        desktop.appendChild(angel);
+
+        const laugh = new Audio('laugh.mp3');
+        const heal = new Audio('heal.mp3');
+        const desktopRect = desktop.getBoundingClientRect();
+        const startPoint = {
+            x: Math.max(24, desktopRect.width - angelSize - 24),
+            y: 28
+        };
+        angel.style.left = `${startPoint.x}px`;
+        angel.style.top = `${startPoint.y}px`;
+
+        const controlPoint = {
+            x: Math.max(angelSize, desktopRect.width * 0.55 - angelSize * 0.5),
+            y: desktopRect.height * 0.18
+        };
+        const endPoint = {
+            x: 20,
+            y: 32
+        };
+
+        const halfDurations = [1700, 1700];
+
+        const getPointOnCurve = (t) => {
+            const u = 1 - t;
+            return {
+                x: u * u * startPoint.x + 2 * u * t * controlPoint.x + t * t * endPoint.x,
+                y: u * u * startPoint.y + 2 * u * t * controlPoint.y + t * t * endPoint.y
+            };
+        };
+
+        const animateHalf = (segmentIndex) => {
+            let startTime = null;
+            const duration = halfDurations[segmentIndex];
+            const step = (now) => {
+                if (startTime === null) startTime = now;
+                const progress = Math.min((now - startTime) / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const globalT = segmentIndex === 0 ? eased * 0.5 : 0.5 + eased * 0.5;
+                const point = getPointOnCurve(globalT);
+                angel.style.left = `${point.x}px`;
+                angel.style.top = `${point.y}px`;
+                if (segmentIndex === 0 && progress >= 0.5 && !angel.dataset.midReached) {
+                    angel.dataset.midReached = 'true';
+                    laugh.play().catch(() => {});
+                    setTimeout(() => heal.play().catch(() => {}), 600);
+                }
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                } else if (segmentIndex === 0) {
+                    animateHalf(1);
+                } else {
+                    setTimeout(() => {
+                        if (angel.parentNode) angel.parentNode.removeChild(angel);
+                    }, 600);
+                }
+            };
+            requestAnimationFrame(step);
+        };
+
+        animateHalf(0);
+    }
+    
     function triggerIdiotVirus() {
         if (idiotWindows.length > 0) return;
+
+        if (!idiotAudio) {
+            idiotAudio = new Audio('YAAI.mp3');
+            idiotAudio.loop = true;
+            idiotAudio.play().catch(err => console.warn('YAAI audio blocked:', err));
+        }
 
         for (let i = 0; i < 9; i++) {
             createIdiotWindow();
@@ -3059,6 +3524,7 @@
                 }
             });
             idiotWindows = [];
+            stopIdiotAudio();
         }, 15000);
     }
 
@@ -3067,18 +3533,15 @@
         const win = document.createElement('div');
         win.className = 'idiot-window';
         win.style.zIndex = zIndexCounter;
-        win.innerHTML = `
-            <div class="idiot-window-content">bouncing skull virus 2025 no virus 😱😱</div>
-            <img src="skull.gif" alt="skull" style="width: 64px; height: 64px; margin-top: 10px;">
-        `;
+        win.innerHTML = `<img src="You_Are_An_Idiot.gif" alt="You are an idiot">`;
         
         desktop.appendChild(win);
         
         const rect = desktop.getBoundingClientRect();
         
         let pos = {
-            x: Math.random() * (rect.width - 300),
-            y: Math.random() * (rect.height - 200 - 28)
+            x: Math.random() * (rect.width - 280),
+            y: Math.random() * (rect.height - 210 - 28)
         };
         let vel = {
             x: (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 2 + 1),
@@ -3094,8 +3557,8 @@
             pos.x += vel.x;
             pos.y += vel.y;
 
-            if (pos.x <= 0 || pos.x >= rect.width - 300) vel.x *= -1;
-            if (pos.y <= 0 || pos.y >= rect.height - 200 - 28) vel.y *= -1;
+            if (pos.x <= 0 || pos.x >= rect.width - 280) vel.x *= -1;
+            if (pos.y <= 0 || pos.y >= rect.height - 210 - 28) vel.y *= -1;
 
             win.style.left = pos.x + 'px';
             win.style.top = pos.y + 'px';
@@ -3474,3 +3937,5 @@
   </script>
 </body>
 </html>
+
+
