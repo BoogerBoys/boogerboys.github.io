@@ -1,1 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>calculator</title>
+    <style>
+        :root {
+            --panel: #f7f1e7;
+            --panel-dark: #dcecd7;
+            --screen: #21332c;
+            --accent: #ffb347;
+            --shadow: rgba(0, 0, 0, 0.18);
+        }
 
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Tiny5", "TomorrowLightItalic", "Trebuchet MS", sans-serif;
+            background: radial-gradient(circle at top, #fffef6, #c7d9f2 70%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1c1c1c;
+        }
+
+        .game-shell {
+            width: min(400px, 94vw);
+            background: var(--panel);
+            border-radius: 24px;
+            border: 4px solid #6b6b6b;
+            box-shadow: 0 12px 25px var(--shadow);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(180deg, #7ca47d, #496f52);
+            color: #fdf5c4;
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.05rem;
+            letter-spacing: 0.05em;
+        }
+
+        .stage-pill {
+            padding: 4px 12px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.25);
+            font-size: 0.85rem;
+        }
+
+        .status-panel {
+            background: var(--screen);
+            color: #a6ffc7;
+            padding: 18px;
+            display: grid;
+            row-gap: 8px;
+            font-family: "VT323", "Courier New", monospace;
+            font-size: 1.05rem;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .status-label {
+            opacity: 0.8;
+            letter-spacing: 0.08em;
+        }
+
+        .enemy-card {
+            background: var(--panel-dark);
+            margin: 14px;
+            border-radius: 16px;
+            border: 2px solid #7b8f7c;
+            padding: 12px 16px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+        }
+
+        .enemy-card h2 {
+            margin: 0 0 4px;
+            font-size: 1rem;
+        }
+
+        .enemy-card p {
+            margin: 4px 0 10px;
+            font-size: 0.85rem;
+        }
+
+        .hp-bar {
+            width: 100%;
+            height: 14px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .hp-bar span {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, #ff7373, #ffd173);
+            transition: width 0.3s ease;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            padding: 10px 16px;
+        }
+
+        .action-btn {
+            border: 2px solid rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            background: linear-gradient(180deg, #fff, #e1e1e1);
+            padding: 11px;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.9rem;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        .action-btn:active:not(:disabled) {
+            transform: translateY(1px);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.18);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .action-key {
+            font-size: 1.4rem;
+            color: var(--accent);
+        }
+
+        .perks-panel,
+        .skills-panel,
+        .abilities-panel {
+            margin: 0 16px 12px;
+            border-radius: 16px;
+            border: 2px dashed rgba(0, 0, 0, 0.18);
+            background: rgba(255, 255, 255, 0.6);
+            padding: 10px 14px;
+        }
+
+        .perks-panel h3,
+        .skills-panel h3,
+        .abilities-panel h3 {
+            margin: 0 0 6px;
+            font-size: 0.95rem;
+        }
+
+        .perk-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .perk-chip {
+            padding: 4px 9px;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            font-size: 0.78rem;
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+        .perk-chip--common { background: rgba(255,255,255,0.8); }
+        .perk-chip--rare { background: rgba(80,125,255,0.15); border-color: rgba(80,125,255,0.6); }
+        .perk-chip--epic { background: rgba(166, 94, 255, 0.18); border-color: rgba(166,94,255,0.6); }
+        .perk-chip--legendary { background: rgba(255,192,66,0.25); border-color: rgba(255,192,66,0.9); }
+
+        .perk-choice {
+            margin: 0 16px 12px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .reward-heading {
+            margin: 0;
+            font-size: 0.85rem;
+            color: rgba(0,0,0,0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .reward-card {
+            border: 2px solid rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            background: linear-gradient(180deg, #fff, #ededed);
+            padding: 9px 12px;
+            text-align: left;
+            cursor: pointer;
+            display: block;
+        }
+
+        .reward-card--common { border-color: rgba(0,0,0,0.2); }
+        .reward-card--rare { border-color: rgba(80,125,255,0.6); }
+        .reward-card--epic { border-color: rgba(166,94,255,0.7); }
+        .reward-card--legendary { border-color: rgba(255,192,66,0.9); }
+
+        .skill-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+        }
+
+        .skill-actions {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 6px;
+        }
+
+        .skill-btn {
+            border: 2px solid rgba(0, 0, 0, 0.15);
+            border-radius: 9px;
+            background: linear-gradient(180deg, #fff, #e3e3e3);
+            font-size: 0.8rem;
+            padding: 6px;
+            cursor: pointer;
+        }
+
+        .skill-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .ability-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+        }
+
+        .ability-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .ability-btn {
+            border: 2px solid rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            background: linear-gradient(180deg, #fff, #f0f0f0);
+            padding: 8px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .ability-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .ability-btn--common { border-color: rgba(0,0,0,0.2); }
+        .ability-btn--rare { border-color: rgba(80,125,255,0.6); box-shadow: inset 0 0 0 1px rgba(80,125,255,0.25); }
+        .ability-btn--epic { border-color: rgba(166,94,255,0.7); box-shadow: inset 0 0 0 1px rgba(166,94,255,0.3); }
+        .ability-btn--legendary { border-color: rgba(255,192,66,0.9); box-shadow: inset 0 0 0 1px rgba(255,192,66,0.4); }
+
+        .ability-empty {
+            margin: 0;
+            font-size: 0.85rem;
+            color: rgba(0,0,0,0.6);
+        }
+
+        .log {
+            margin: 0 16px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            background: rgba(0, 0, 0, 0.05);
+            padding: 12px 14px;
+            min-height: 100px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .log p {
+            margin: 0 0 4px;
+        }
+
+        .log p:last-child {
+            margin-bottom: 0;
+        }
+
+        .game-over {
+            text-align: center;
+            padding: 16px;
+        }
+
+        .restart-btn {
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(180deg, #ffb25f, #ff7c7c);
+            color: #fff;
+            padding: 9px 18px;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 420px) {
+            .actions {
+                grid-template-columns: 1fr;
+            }
+            .skill-actions {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-shell">
+        <header>
+            <h1>cal-cul-ator</h1>
+            <span class="stage-pill" id="stage-pill">Stage 1</span>
+        </header>
+
+        <div class="status-panel">
+            <div class="status-row">
+                <span class="status-label">HP</span>
+                <span id="player-hp">14 / 14</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">Mood</span>
+                <span id="mood-value">Chill</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">Score</span>
+                <span id="score-value">0000</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">Shield</span>
+                <span id="shield-value">0</span>
+            </div>
+        </div>
+
+        <div class="enemy-card">
+            <h2 id="enemy-name">booting...</h2>
+            <p id="enemy-note">please stand by while the calculator finds an opponent.</p>
+            <div class="hp-bar">
+                <span id="enemy-hp-bar" style="width:100%"></span>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="action-btn" id="btn-add">
+                <span class="action-key">+</span>
+                <span>addition (basic damage)</span>
+            </button>
+            <button class="action-btn" id="btn-sub">
+                <span class="action-key">&minus;</span>
+                <span>subtract (defend)</span>
+            </button>
+            <button class="action-btn" id="btn-mul">
+                <span class="action-key">×</span>
+                <span>multiply (chance of more damage)</span>
+            </button>
+            <button class="action-btn" id="btn-div">
+                <span class="action-key">÷</span>
+                <span>divide (heal)</span>
+            </button>
+        </div>
+
+        <div class="perks-panel">
+            <h3>Perks</h3>
+            <div class="perk-list" id="perk-list">
+                <span class="perk-chip">None yet</span>
+            </div>
+        </div>
+        <div class="perk-choice" id="perk-choice" hidden></div>
+
+        <div class="skills-panel">
+            <h3>Skills</h3>
+            <div class="skill-stats">
+                <span id="xp-value">XP 000 / 100</span>
+                <span id="skill-points">Skill Pts: 0</span>
+            </div>
+            <div class="skill-actions">
+                <button class="skill-btn" id="skill-hp" disabled>+1 HP</button>
+                <button class="skill-btn" id="skill-attack" disabled>+1 Dmg</button>
+                <button class="skill-btn" id="skill-shield" disabled>+1 Shield</button>
+            </div>
+        </div>
+
+        <div class="abilities-panel">
+            <h3>Abilities</h3>
+            <div class="ability-info">
+                <span id="charge-value">Charge: 0 / 6</span>
+                <span id="ability-status">Idle</span>
+            </div>
+            <div class="ability-actions" id="ability-list">
+                <p class="ability-empty">No abilities unlocked yet.</p>
+            </div>
+        </div>
+
+        <div class="log" id="log"></div>
+
+        <div class="game-over" id="game-over" hidden>
+            <strong>display overloaded.</strong>
+            <p>give it a sec, then try again.</p>
+            <button class="restart-btn" id="restart-btn">Reset adventure</button>
+        </div>
+    </div>
+
+        <script src="game.js"></script>
+</body>
+</html>
