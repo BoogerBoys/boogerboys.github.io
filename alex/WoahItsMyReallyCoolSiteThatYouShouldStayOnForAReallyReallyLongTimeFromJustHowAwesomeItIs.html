@@ -9,10 +9,11 @@
   <style>
     /* ========================
        CUSTOM FONTS
+       set the byte sized to Bytesized-Regular.ttf to its original, but its super small lol
        ======================== */
     @font-face {
       font-family: 'Bytesized';
-      src: url('Bytesized-Regular.ttf') format('truetype');
+      src: url('Tiny5-Regular.ttf') format('truetype');
       font-display: swap;
     }
 
@@ -1006,6 +1007,15 @@
         min-height: clamp(520px, 72vh, 760px);
     }
 
+    #window-Calculator {
+        width: min(380px, calc(100vw - 16px));
+        min-width: 320px;
+    }
+
+    #window-Calculator .window-content {
+        overflow: visible;
+    }
+
     .chat-window {
         display: flex;
         flex-direction: column;
@@ -1149,30 +1159,225 @@
     /* UPDATED: Calculator styles */
     .calculator-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-gap: 5px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 4px;
       padding: 10px;
       background-color: #c0c0c0;
       border: 2px outset #f0f0f0;
+      position: relative;
+      overflow: visible;
+      width: clamp(280px, 40vw, 340px);
+      margin: 0 auto;
     }
-    
-    #calculator-display {
+
+    .calculator-display-wrapper {
       grid-column: 1 / -1;
-      background-color: #a4c5a4;
+      background-color: #a7c59a;
       border: 2px inset #5e7e5e;
+      border-radius: 10px;
+      position: relative;
+      padding: 14px;
+      min-height: 140px;
+      overflow: visible;
+      z-index: 2;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .calculator-display-glass {
+      width: 100%;
+      min-height: 90px;
+      border: 2px inset #5e7e5e;
+      background: linear-gradient(180deg, #cbe2c0 0%, #b4d29e 100%);
+      padding: 8px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.25);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+      position: relative;
+      z-index: 2;
+      border-radius: 8px;
+    }
+
+    .calculator-display-wrapper.panel-active .calculator-display-glass {
+      opacity: 0;
+      transform: translateY(-12px) scale(0.97);
+      pointer-events: none;
+    }
+
+    #calculator-display {
+      width: 100%;
+      min-height: 72px;
+      background-color: #d1e7c3;
+      border: 2px inset #72926f;
       color: #000;
-      font-family: monospace;
-      font-size: 2em;
+      font-family: "Tiny5", "TomorrowLightItalic", monospace;
+      font-size: 2rem;
       text-align: right;
-      padding: 5px;
-      overflow: hidden;
+      padding: 6px 8px;
+      box-sizing: border-box;
+      transition: opacity 0.35s ease, transform 0.45s ease;
+    }
+
+    .calculator-display-wrapper.panel-active #calculator-display {
+      opacity: 0;
+      transform: translateY(-45px) rotateX(14deg);
+    }
+
+    .calc-screw {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 1px solid #1d1d1d;
+      background: radial-gradient(circle, #bbb 0%, #7c7c7c 60%, #555 100%);
+      color: #111;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      z-index: 5;
+    }
+
+    .calc-screw.unscrewed {
+      background: radial-gradient(circle, #eee 0%, #ccc 60%, #999 100%);
+      transform: translateY(-4px) rotate(40deg);
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .calc-screw.top-left { top: -8px; left: -8px; }
+    .calc-screw.top-right { top: -8px; right: -8px; }
+    .calc-screw.bottom-left { bottom: -8px; left: -8px; }
+    .calc-screw.bottom-right { bottom: -8px; right: -8px; }
+
+    .calculator-maintenance-panel {
+      position: absolute;
+      inset: 12px;
+      background: #f2f2eb;
+      border: 2px solid #8b8b7a;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 10px 18px rgba(0,0,0,0.3);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px) scale(0.98);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 1;
+    }
+
+    .calculator-display-wrapper.panel-active .calculator-maintenance-panel {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+      z-index: 4;
+    }
+
+    .secret-slot-row {
+      display: flex;
+      gap: 4px;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .secret-slot {
+      flex: 1;
+      min-height: 34px;
+      border: 2px dashed #7a7a6b;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Tiny5", "TomorrowLightItalic", monospace;
+      font-size: 1.1rem;
+      color: #3b3b2f;
+      transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .secret-slot.filled {
+      border-style: solid;
+      border-color: #5c7a5c;
+      background: #fff;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .secret-slot.selected {
+      border-color: #4d6fd3;
+      background: rgba(77,111,211,0.15);
+    }
+
+    .secret-token-tray {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .secret-token {
+      min-width: 32px;
+      min-height: 32px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid #3a3a36;
+      background: linear-gradient(180deg, #fff 0%, #e4e4da 100%);
+      cursor: pointer;
+      font-family: "Tiny5", "TomorrowLightItalic", monospace;
+      font-size: 1rem;
+      text-align: center;
+      opacity: 0.9;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .secret-token.disabled {
+      cursor: not-allowed;
+      opacity: 0.35;
+      filter: grayscale(0.65);
+    }
+
+    .secret-token.used {
+      cursor: default;
+      opacity: 0.3;
+      filter: grayscale(1);
+    }
+
+    .secret-token:active:not(.disabled):not(.used) {
+      transform: translateY(1px) scale(0.97);
+    }
+
+    .secret-reset-btn {
+      align-self: flex-end;
+      margin-top: 2px;
+      padding: 3px 8px;
+      font-family: "Tiny5", "TomorrowLightItalic", monospace;
+      font-size: 0.85rem;
+      border: 1px solid #6a6a58;
+      border-radius: 4px;
+      background: linear-gradient(180deg, #fff 0%, #e5e5d9 100%);
+      cursor: pointer;
+      color: #3b3b2f;
+    }
+
+    .secret-reset-btn:hover {
+      background: linear-gradient(180deg, #ffffff 0%, #f3f3e9 100%);
+    }
+
+    #window-Calculator .window-content {
+      padding: 6px 8px 10px;
+      display: flex;
+      justify-content: center;
     }
 
     .calc-btn {
-      height: 40px;
+      height: 38px;
       background-color: #e0e0e0;
       border: 2px outset #f0f0f0;
-      font-size: 1.2em;
+      font-size: 1.1em;
       cursor: pointer;
       text-shadow: 1px 1px #fff;
     }
@@ -1181,10 +1386,6 @@
       border-style: inset;
     }
     
-    .calc-btn.operator, .calc-btn.equals {
-      background-color: #d1d1d1;
-    }
-
     /* Minesweeper styles */
     .minesweeper-grid {
         display: grid;
@@ -2009,7 +2210,7 @@
         "dial up reference no. 4",
         "don't forget to defragment your hard drive for optimal performance!",
         "you've been using your computer for a while. maybe it's time to take a break?",
-        "you see Spawn! by evan fong? that guy is actually vanossgaming ðŸ˜­",
+        "you see Spawn! by evan fong? that guy is actually vanossgaming Ã°Å¸ËœÂ­",
         "im probably not putting THIS much effort into the other sites, i love favouritism!",
         "dont worry, as long as its in the recycle bin, its trashed, right?",
         "Kindly check the attached love letter from me! ~ LOVE-LETTER-FOR-YOU.TXT.vbs"
@@ -2149,7 +2350,7 @@
 
     // --- App content data ---
     const windowContent = {
-      'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>im alex, 16 (feb 21, 2009) soooo uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid, (BUT I DID DO A BIG MARGIN OF IT OK)</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs</p><p>i hope you like the site though, im working with my other friends to get theirs setup then yall will be able to interact with it 👅</p><p>ill update this when my friends are finished their site, currently riley is working on his and im helping saur with hers, so eventually they'll be done and temkky, hoodie and valks will be done aswell :)</p><p>ill probably add some other friends aswell :P</p></div>`,
+      'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>im alex, 16 (feb 21, 2009) soooo uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid, (BUT I DID DO A BIG MARGIN OF IT OK)</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs</p><p>i hope you like the site though, im working with my other friends to get theirs setup then yall will be able to interact with it ðŸ‘…</p><p>ill update this when my friends are finished their site, currently riley is working on his and im helping saur with hers, so eventually they'll be done and temkky, hoodie and valks will be done aswell :)</p><p>ill probably add some other friends aswell :P</p></div>`,
       'Interests': `<div class="window-entry"><p>i like playing games, especially sandbox and pvp games. i also enjoy drawing and programming. i listen to music and stuff, or call my girlfriend cause shes sweet</p><p>IM DEVELOPING A GAME COME BACK LATER PLS!!!</div>`,
       'DNI': `<p>if you are older than me by about ~3-5 ish years dont expect me to be super comfortable around you unless i know you (unless you're my goat retro being 34 years older than me bro!!)</p><p>but i also dont like heavy racist stuff (stupid instagram reels are ok cause I send them ((im just such a nice hypocritical guy)</p><p>also adult people in general make me uncomfortable if i dont know them (cause obviously im not 16 talking to a 25 year old brotato chip)</p><p>and im a huge g(j)ermaphobe and i hate anything like blood, mucus, etc. it just makes me a little uneasy but i wont like scream from it.</p><p>yes, even i have parameters im comfortable with, you FUCKS</p><p>aka the rodents that saw ts and was picking at me for it, you're getting FELT up tonight BUDDY.</p></div>`,
       'Journal': `<textarea id="journal-text-area" placeholder="wait i forgot this is a input area not a text area, oopsies"></textarea>`,
@@ -2253,10 +2454,40 @@
       `,
       'Calculator': `
         <div class="calculator-grid" id="calculator-grid">
-            <div id="calculator-display">0</div>
+            <div class="calculator-display-wrapper">
+                <button type="button" class="calc-screw top-left" aria-label="Unscrew top left" aria-disabled="false">&#8226;</button>
+                <button type="button" class="calc-screw top-right" aria-label="Unscrew top right" aria-disabled="false">&#8226;</button>
+                <button type="button" class="calc-screw bottom-left" aria-label="Unscrew bottom left" aria-disabled="false">&#8226;</button>
+                <button type="button" class="calc-screw bottom-right" aria-label="Unscrew bottom right" aria-disabled="false">&#8226;</button>
+                <div class="calculator-display-glass">
+                    <div id="calculator-display">0</div>
+                </div>
+                <div class="calculator-maintenance-panel" id="calculator-secret-panel" aria-hidden="true">
+                    <div class="secret-slot-row">
+                        <div class="secret-slot" data-index="0"></div>
+                        <div class="secret-slot" data-index="1"></div>
+                        <div class="secret-slot" data-index="2"></div>
+                        <div class="secret-slot" data-index="3"></div>
+                        <div class="secret-slot" data-index="4"></div>
+                        <div class="secret-slot" data-index="5"></div>
+                    </div>
+                    <div class="secret-token-tray">
+                        <button type="button" class="secret-token" data-value="1">1</button>
+                        <button type="button" class="secret-token" data-value="8">8</button>
+                        <button type="button" class="secret-token" data-value="*">&#215;</button>
+                        <button type="button" class="secret-token" data-value="/">&#247;</button>
+                        <button type="button" class="secret-token" data-value="5">5</button>
+                        <button type="button" class="secret-token" data-value="9">9</button>
+                        <button type="button" class="secret-token" data-value=")">)</button>
+                        <button type="button" class="secret-token" data-value="/">/</button>
+                        <button type="button" class="secret-token" data-value="=">=</button>
+                    </div>
+                    <button type="button" class="secret-reset-btn">Reset order</button>
+                </div>
+            </div>
             <button class="calc-btn" onclick="handleCalculatorInput('C');">C</button>
-            <button class="calc-btn operator" onclick="handleCalculatorInput('/');">÷</button>
-            <button class="calc-btn operator" onclick="handleCalculatorInput('*');">×</button>
+            <button class="calc-btn operator" onclick="handleCalculatorInput('/');">&#247;</button>
+            <button class="calc-btn operator" onclick="handleCalculatorInput('*');">&#215;</button>
             <button class="calc-btn operator" onclick="handleCalculatorInput('-');">-</button>
             <button class="calc-btn" onclick="handleCalculatorInput('7');">7</button>
             <button class="calc-btn" onclick="handleCalculatorInput('8');">8</button>
@@ -2273,6 +2504,7 @@
             <button class="calc-btn" onclick="handleCalculatorInput('.');">.</button>
         </div>
       `,
+
       'Minesweeper': `
         <div class="minesweeper-wrapper">
           <div class="minesweeper-top">
@@ -2695,6 +2927,8 @@
         setupChatWindow(win);
       } else if (title === 'PowerShell') {
         setupPowerShellWindow(win);
+      } else if (title === 'Calculator') {
+        setupCalculatorWindow(win);
       }
     }
 
@@ -3585,9 +3819,122 @@
         operator: null,
         waitingForSecondOperand: false
     };
+    function updateSecretTokenStates(panel) {
+        if (!panel) return;
+        const tokens = panel.querySelectorAll('.secret-token');
+        tokens.forEach(token => {
+            const available = !token.classList.contains('used');
+            token.disabled = !available;
+            token.setAttribute('aria-disabled', available ? 'false' : 'true');
+            token.classList.toggle('disabled', !available);
+            token.tabIndex = available ? 0 : -1;
+        });
+    }
+
+    function shuffleSecretTokens(panel) {
+        const tray = panel.querySelector('.secret-token-tray');
+        if (!tray) return;
+        const tokens = Array.from(tray.querySelectorAll('.secret-token'));
+        for (let i = tokens.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [tokens[i], tokens[j]] = [tokens[j], tokens[i]];
+        }
+        tokens.forEach(token => tray.appendChild(token));
+    }
+
+    function selectSecretSlot(panel, slot) {
+        const slots = panel.querySelectorAll('.secret-slot');
+        slots.forEach(s => s.classList.remove('selected'));
+        if (slot) {
+            slot.classList.add('selected');
+            panel.dataset.selectedSlot = slot.dataset.index;
+        } else {
+            delete panel.dataset.selectedSlot;
+        }
+    }
+
+    function releaseSecretSlot(panel, slot) {
+        if (!slot || !slot.dataset.tokenId) return;
+        const token = panel.querySelector(`.secret-token[data-token-id="${slot.dataset.tokenId}"]`);
+        if (token) {
+            token.classList.remove('used');
+            token.disabled = false;
+            token.setAttribute('aria-disabled', 'false');
+            token.classList.remove('disabled');
+            token.tabIndex = 0;
+        }
+        slot.dataset.value = '';
+        slot.dataset.tokenId = '';
+        slot.textContent = '';
+        slot.classList.remove('filled');
+        updateSecretTokenStates(panel);
+    }
+
+    function resetCalculatorSecret(panel) {
+        if (!panel) return;
+        panel.classList.remove('solved');
+        selectSecretSlot(panel, null);
+        const slots = panel.querySelectorAll('.secret-slot');
+        slots.forEach(slot => {
+            slot.dataset.value = '';
+            slot.dataset.tokenId = '';
+            slot.textContent = '';
+            slot.classList.remove('filled');
+        });
+        const tokens = panel.querySelectorAll('.secret-token');
+        tokens.forEach(token => {
+            token.classList.remove('used', 'disabled');
+            token.disabled = false;
+            token.setAttribute('aria-disabled', 'false');
+            token.tabIndex = 0;
+        });
+        shuffleSecretTokens(panel);
+        updateSecretTokenStates(panel);
+    }
+
+    function chooseSecretSlot(panel) {
+        const selectedIndex = panel.dataset.selectedSlot;
+        if (selectedIndex) {
+            const slot = panel.querySelector(`.secret-slot[data-index="${selectedIndex}"]`);
+            if (slot) return slot;
+        }
+        return Array.from(panel.querySelectorAll('.secret-slot')).find(slot => !slot.dataset.value) || null;
+    }
+
+    function handleSecretTokenClick(panel, token) {
+        if (!panel || !token || token.disabled || token.classList.contains('used')) return;
+        const slot = chooseSecretSlot(panel);
+        if (!slot) return;
+        slot.dataset.value = token.dataset.value;
+        slot.dataset.tokenId = token.dataset.tokenId;
+        slot.textContent = token.textContent;
+        slot.classList.add('filled');
+        token.classList.add('used');
+        token.disabled = true;
+        token.setAttribute('aria-disabled', 'true');
+        updateSecretTokenStates(panel);
+        selectSecretSlot(panel, null);
+        const allFilled = Array.from(panel.querySelectorAll('.secret-slot')).every(s => s.dataset.value);
+        if (allFilled) {
+            checkCalculatorSecret(panel);
+        }
+    }
+
+    function handleSecretSlotClick(panel, slot) {
+        if (!panel || !slot) return;
+        if (slot.classList.contains('selected')) {
+            if (slot.dataset.tokenId) {
+                releaseSecretSlot(panel, slot);
+            }
+            selectSecretSlot(panel, null);
+        } else {
+            selectSecretSlot(panel, slot);
+        }
+    }
 
     function updateCalculatorDisplay() {
-        document.getElementById('calculator-display').textContent = calcState.displayValue;
+        const el = document.getElementById('calculator-display');
+        if (el) el.textContent = calcState.displayValue;
     }
 
     function handleCalculatorInput(input) {
@@ -3643,8 +3990,83 @@
         if (op === '-') return a - b;
         if (op === '*') return a * b;
         if (op === '/') return a / b;
+        return b;
     }
-    
+
+    function setupCalculatorWindow(win) {
+        if (!win || win.dataset.calcReady === 'true') return;
+        win.dataset.calcReady = 'true';
+        const wrapper = win.querySelector('.calculator-display-wrapper');
+        const maintenancePanel = win.querySelector('#calculator-secret-panel');
+        const screws = win.querySelectorAll('.calc-screw');
+        if (!wrapper || !maintenancePanel || !screws.length) return;
+
+        const revealMaintenancePanel = () => {
+            if (wrapper.classList.contains('panel-active')) return;
+            wrapper.classList.add('panel-active');
+            maintenancePanel.setAttribute('aria-hidden', 'false');
+            initializeCalculatorSecret(maintenancePanel);
+        };
+
+        let unscrewed = 0;
+        screws.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.classList.contains('unscrewed')) return;
+                btn.classList.add('unscrewed');
+                btn.textContent = 'x';
+                btn.setAttribute('aria-disabled', 'true');
+                unscrewed += 1;
+                if (unscrewed === screws.length) {
+                    revealMaintenancePanel();
+                }
+            });
+        });
+    }
+
+    function initializeCalculatorSecret(panel) {
+        if (!panel) return;
+        const tokens = panel.querySelectorAll('.secret-token');
+        const slots = panel.querySelectorAll('.secret-slot');
+        if (panel.dataset.bound !== 'true') {
+            tokens.forEach((token, index) => {
+                if (!token.dataset.tokenId) {
+                    token.dataset.tokenId = `calc-token-${index}`;
+                }
+                token.addEventListener('click', () => handleSecretTokenClick(panel, token));
+            });
+            slots.forEach(slot => {
+                slot.addEventListener('click', () => handleSecretSlotClick(panel, slot));
+            });
+            const resetBtn = panel.querySelector('.secret-reset-btn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => resetCalculatorSecret(panel));
+            }
+            panel.dataset.bound = 'true';
+        }
+        resetCalculatorSecret(panel);
+    }
+
+    function checkCalculatorSecret(panel) {
+        const slots = panel.querySelectorAll('.secret-slot');
+        const values = Array.from(slots).map(slot => slot.dataset.value || null);
+        if (values.some(v => !v)) return;
+        const equationOk =
+            values[0] === '1' &&
+            values[1] === '8' &&
+            ['*', '/'].includes(values[2]) &&
+            values[3] === '5' &&
+            ['9', ')', '/'].includes(values[4]) &&
+            values[5] === '=';
+        if (equationOk) {
+            panel.classList.add('solved');
+            setTimeout(() => {
+                window.location.href = 'https://boogerboys.github.io/alex/calculator/game.html';
+            }, 900);
+        }
+    }
+
+    // --- Minesweeper Logic ---
+    // --- Minesweeper Logic ---
     // --- Minesweeper Logic ---
     const MINESWEEPER_BOARD_SIZE = 10;
     const MINESWEEPER_MINE_COUNT = 15;
@@ -3937,5 +4359,8 @@
   </script>
 </body>
 </html>
+
+
+
 
 
