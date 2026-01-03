@@ -54,7 +54,7 @@
         "ooooooooooooooooouuuuuggggghhhhh",
         "GITHUB developer CAUGHT using .WEBP files?!",
         "the computer says NO.",
-        "hi saur :smile:",
+        "hi nil :smile:",
         "LOVE-LETTER-FOR-YOU.TXT.vbs received in email!",
         "don't worry, the BSOD is just a feature.",
         "Warning: RETRO SLUDGE AHEAD.",
@@ -202,12 +202,31 @@
 
     // --- App content data ---
     const windowContent = {
-      'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>im alex, 16 (feb 21, 2009) soooo uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid, (BUT I DID DO A BIG MARGIN OF IT OK)</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs</p><p>i hope you like the site though, im working with my other friends to get theirs setup then yall will be able to interact with it ðŸ‘…</p><p>ill update this when my friends are finished their site, currently riley is working on his and im helping saur with hers, so eventually they'll be done and temkky, hoodie and valks will be done aswell :)</p><p>ill probably add some other friends aswell :P</p><p>abc for bf ahh 😭😭❤️‍🩹</div>`,
+      'Bio': `<p>hi, thanks for opening my page and stuff,,,,,</p><p>im alex, 16 (feb 21, 2009) soooo uhhh yea. this website is a personal project to practice my HTML, CSS, and JavaScript with the help of openai and gemini cause im batshit stupid, (BUT I DID DO A BIG MARGIN OF IT OK)</p><p>i might add some more stuff here some other time, but for now i hope you like it.</p><p>but this was a site i made as a replacement straw page for my friends :)</p><p>contact:</p><p>discord: im.notalex</p><p>roblox: midnightmesa</p><p>x: toomanyalexs</p><p>i hope you like the site though, im working with my other friends to get theirs setup then yall will be able to interact with it ðŸ‘…</p><p>ill update this when my friends are finished their site, currently riley is working on his and im helping nil with hers, so eventually they'll be done and temkky, hoodie and valks will be done aswell :)</p><p>ill probably add some other friends aswell :P</p><p>abc for bf ahh 😭😭❤️‍🩹</div>`,
       'Interests': `<div class="window-entry"><p>i like playing games, especially sandbox and pvp games. i also enjoy drawing and programming. i listen to music and stuff, or call people or sm</p><p>IM DEVELOPING A GAME COME BACK LATER PLS!!!</div>`,
       'DNI': `<p>if you are older than me by about ~3-5 ish years dont expect me to be super comfortable around you unless i know you (unless you're my goat retro being 34 years older than me bro!!)</p><p>but i also dont like heavy racist stuff (stupid instagram reels are ok cause I send them ((im just such a nice hypocritical guy)</p><p>also adult people in general make me uncomfortable if i dont know them (cause obviously im not 16 talking to a 25 year old brotato chip)</p><p>and im a huge g(j)ermaphobe and i hate anything like blood, mucus, etc. it just makes me a little uneasy but i wont like scream from it.</p><p>yes, even i have parameters im comfortable with, you FUCKS</p><p>aka the rodents that saw ts and was picking at me for it, you're getting FELT up tonight BUDDY.</p></div>`,
       'Journal': `<textarea id="journal-text-area" placeholder="wait i forgot this is a input area not a text area, oopsies"></textarea>`,
       'Drawings': `<p>heres some stuff i draw/drew</p><img src="15.png" alt="Drawing 1" loading="lazy" decoding="async"><img src="16.png" alt="Drawing 2" loading="lazy" decoding="async">`,
       'Games': `<p>i play these games:</p><ul><li>roblox</li><li>minecraft</li><li>terraria (sometimes)</li><li>stardew valley</li><li>ultrakill</li><li>gow:r</li><li>any multiplayer sandbox game pretty much.</li></ul><p>i don't play these games:</p><ul><li>fortnite</li><li>cod</li><li>overwatch</li><li>valorant</li><li>practically any fps game that is massively multiplayer, i dont play. maybe fort though</li></ul><p>things i frequent:</p><ul><li>roblox</li><li>discord</li></ul>`,
+      'Projects': `
+        <div class="projects-window">
+          <p>my projects:</p>
+          <div class="projects-list">
+            <a class="project-card" href="https://github.com/im-notalex/Botsmyth" target="_blank" rel="noopener">
+              <span class="project-title">Botsmyth</span>
+              <span class="project-meta">github.com/im-notalex/Botsmyth</span>
+            </a>
+            <a class="project-card" href="https://github.com/im-notalex/OCreator" target="_blank" rel="noopener">
+              <span class="project-title">OCreator</span>
+              <span class="project-meta">github.com/im-notalex/OCreator</span>
+            </a>
+            <a class="project-card" href="https://github.com/im-notalex/luau-assistant" target="_blank" rel="noopener">
+              <span class="project-title">luau-assistant</span>
+              <span class="project-meta">github.com/im-notalex/luau-assistant</span>
+            </a>
+          </div>
+        </div>
+      `,
       'My Computer': `<p>i forgot to put something here, uh ohhhh.... (what would i put here anyways?)</p>`,
       'Recycle Bin': `<p>guys, awesome bin here, i cant wait to make a rm -rf /* joke on a windows os!</p>`,
       'Browser': `
