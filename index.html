@@ -39,6 +39,22 @@
       padding: 18px;
     }
 
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 0,
+        rgba(0, 0, 0, 0) 2px,
+        rgba(0, 0, 0, 0.18) 3px,
+        rgba(0, 0, 0, 0.18) 4px
+      );
+      opacity: 0.55;
+      mix-blend-mode: multiply;
+    }
+
     button,
     input {
       font: inherit;
@@ -53,23 +69,37 @@
       min-height: calc(100vh - 36px);
       display: flex;
       flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(rgba(200, 255, 200, 0.03), rgba(0, 0, 0, 0.02));
     }
 
     .titlebar {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       gap: 16px;
       padding: 12px 16px;
       border-bottom: 1px solid var(--line);
       color: var(--text-dim);
       text-transform: lowercase;
       font-size: 0.95rem;
+      position: relative;
+      z-index: 1;
     }
 
     .content {
       flex: 1;
       display: grid;
       grid-template-columns: minmax(0, 1.5fr) minmax(280px, 340px);
+      position: relative;
+      z-index: 1;
     }
 
     .terminal-pane,
@@ -118,6 +148,7 @@
       background: #010601;
       color: var(--text);
       padding: 10px 12px;
+      caret-color: transparent;
     }
 
     #terminal-input:focus {
@@ -266,7 +297,6 @@
 
   <main id="app" class="screen advanced-mode">
     <div class="titlebar">
-      <span id="mode-label">mode: advanced</span>
       <span>bb terminal</span>
     </div>
 
@@ -274,27 +304,26 @@
       <section class="terminal-pane">
         <div id="terminal-output" class="terminal-output" aria-live="polite"></div>
         <div class="prompt-row">
-          <span class="prompt">bb@site:~$</span>
+          <span class="prompt">guest@boogerboys:~/temp$</span>
           <input id="terminal-input" type="text" spellcheck="false" autocomplete="off" aria-label="Terminal input">
         </div>
       </section>
 
       <aside class="side-pane">
         <section class="panel simple-only">
-          <h2>Simple Mode</h2>
+          <h2>Sites</h2>
           <ul class="simple-links">
             <li><a href="alex/WoahItsMyReallyCoolSiteThatYouShouldStayOnForAReallyReallyLongTimeFromJustHowAwesomeItIs.html">alex</a></li>
-            <li><a href="temp/">hoodie</a></li>
+            <li><a href="temp/index.html">hoodie</a></li>
             <li><a href="riley/reallycool.html">riley</a></li>
-            <li><a href="temp/">valk</a></li>
-            <li><a href="temp/">temp</a></li>
+            <li><a href="temp/index.html">valk</a></li>
+            <li><a href="temp/index.html">temp</a></li>
           </ul>
         </section>
 
         <section class="panel simple-only">
-          <h2>Switch Back</h2>
+          <h2>Toggle</h2>
           <ul class="help-list">
-            <li>From a shell in the repo, run:</li>
             <li><code>sed -i 's/simple/advanced/g' site.txt</code></li>
           </ul>
         </section>
@@ -325,13 +354,49 @@
   </main>
 
   <script>
+    const promptText = "guest@boogerboys:~/temp$";
+    const modeKey = "boogerboys-site-mode";
+    const sedToSimple = "sed -i 's/advanced/simple/g' site.txt";
+    const sedToAdvanced = "sed -i 's/simple/advanced/g' site.txt";
+    const typingDelayMs = 100;
+    const bootTime = Date.now();
     const siteRoutes = {
       alex: "alex/WoahItsMyReallyCoolSiteThatYouShouldStayOnForAReallyReallyLongTimeFromJustHowAwesomeItIs.html",
-      hoodie: "temp/",
+      hoodie: "temp/index.html",
       riley: "riley/reallycool.html",
-      valk: "temp/",
-      val: "temp/",
-      temp: "temp/"
+      valk: "temp/index.html",
+      val: "temp/index.html",
+      temp: "temp/index.html"
+    };
+
+    const fileSystem = {
+      "/etc/motd": [
+        "welcome to boogerboys.",
+        "bbOS 0.3 unstable",
+        "watch your step."
+      ],
+      "/etc/services": [
+        "jukebox.service online",
+        "router.service degraded",
+        "guestbook.socket idle"
+      ],
+      "/log/visitors": [
+        "alex: left the lights on",
+        "riley: pushed at 03:12",
+        "hoodie: no deployment yet",
+        "valk: route forwarded to temp"
+      ],
+      "/dev/notes": [
+        "disk activity: nominal",
+        "latency source: fake by design",
+        "mood: green"
+      ],
+      "/home/bb/feedback": [
+        "alex: site looks haunted in a good way",
+        "riley: terminal approved",
+        "hoodie: temp still temp",
+        "valk: send build when ready"
+      ]
     };
 
     const songs = [
@@ -341,7 +406,6 @@
     ];
 
     const app = document.getElementById("app");
-    const modeLabel = document.getElementById("mode-label");
     const terminalOutput = document.getElementById("terminal-output");
     const terminalInput = document.getElementById("terminal-input");
     const audio = document.getElementById("bg-music");
@@ -353,6 +417,16 @@
 
     let currentSong = Math.floor(Math.random() * songs.length);
     let currentMode = "advanced";
+    let displayValue = "";
+    let desiredValue = "";
+    let inputTimer = null;
+
+    function formatUptime() {
+      const elapsed = Math.floor((Date.now() - bootTime) / 1000);
+      const minutes = Math.floor(elapsed / 60);
+      const seconds = elapsed % 60;
+      return minutes + "m " + seconds + "s";
+    }
 
     function printLine(text) {
       const line = document.createElement("p");
@@ -362,8 +436,12 @@
       terminalOutput.scrollTop = terminalOutput.scrollHeight;
     }
 
+    function printLines(lines) {
+      lines.forEach(printLine);
+    }
+
     function printPrompt(command) {
-      printLine("bb@site:~$ " + command);
+      printLine(promptText + " " + command);
     }
 
     function updateSongDisplay(index, messageOverride) {
@@ -391,32 +469,36 @@
       playSong((currentSong - 1 + songs.length) % songs.length);
     }
 
-    function showAdvancedIntro() {
+    function showDefaultIntro() {
       terminalOutput.innerHTML = "";
-      printLine("welcome to boogerboys advanced mode.");
+      printLine("welcome to boogerboys.");
       printLine("type help for commands.");
-      printLine("available sites: alex hoodie riley valk temp");
-      printLine("to switch this page to simple mode from bash:");
-      printLine("sed -i 's/advanced/simple/g' site.txt");
+      printLine("site switch: " + sedToSimple);
     }
 
     function showSimpleIntro() {
       terminalOutput.innerHTML = "";
-      printLine("simple mode enabled.");
-      printLine("use the links on the right or type cd <site> here.");
-      printLine("to switch back from bash:");
-      printLine("sed -i 's/simple/advanced/g' site.txt");
+      printLine("welcome to boogerboys.");
+      printLine("type cd <site> or use the links on the right.");
+      printLine("site switch: " + sedToAdvanced);
+    }
+
+    function persistMode(mode) {
+      try {
+        localStorage.setItem(modeKey, mode);
+      } catch (error) {
+      }
     }
 
     function setMode(mode) {
       currentMode = mode === "simple" ? "simple" : "advanced";
       app.className = "screen " + currentMode + "-mode";
-      modeLabel.textContent = "mode: " + currentMode;
+      persistMode(currentMode);
 
       if (currentMode === "simple") {
         showSimpleIntro();
       } else {
-        showAdvancedIntro();
+        showDefaultIntro();
       }
     }
 
@@ -427,8 +509,56 @@
         return;
       }
 
-      printLine("navigating to " + name + "...");
+      printLine("cd " + name);
       window.location.href = route;
+    }
+
+    function syncInputToDesired() {
+      if (displayValue === desiredValue) {
+        inputTimer = null;
+        return;
+      }
+
+      if (displayValue.length < desiredValue.length) {
+        displayValue = desiredValue.slice(0, displayValue.length + 1);
+      } else {
+        displayValue = displayValue.slice(0, -1);
+      }
+
+      terminalInput.value = displayValue;
+      terminalInput.setSelectionRange(displayValue.length, displayValue.length);
+      inputTimer = window.setTimeout(syncInputToDesired, typingDelayMs);
+    }
+
+    function queueInputSync() {
+      if (inputTimer !== null) {
+        return;
+      }
+      inputTimer = window.setTimeout(syncInputToDesired, typingDelayMs);
+    }
+
+    function setDesiredValue(nextValue) {
+      desiredValue = nextValue;
+      queueInputSync();
+    }
+
+    function handleCat(target) {
+      if (!target) {
+        printLine("cat: missing file operand");
+        return;
+      }
+
+      if (target === "site.txt") {
+        printLine(currentMode);
+        return;
+      }
+
+      if (fileSystem[target]) {
+        printLines(fileSystem[target]);
+        return;
+      }
+
+      printLine("cat: " + target + ": No such file or directory");
     }
 
     function runCommand(rawValue) {
@@ -443,13 +573,46 @@
       const command = parts[0];
       const arg = parts[1];
 
+      if (normalized === sedToSimple) {
+        setMode("simple");
+        printLine("site.txt updated");
+        return;
+      }
+
+      if (normalized === sedToAdvanced) {
+        setMode("advanced");
+        printLine("site.txt updated");
+        return;
+      }
+
       if (normalized === "help") {
-        printLine("commands: help, ls, pwd, clear, cat site.txt, cd <alex|hoodie|riley|valk|temp>");
+        printLines([
+          "help",
+          "ls",
+          "pwd",
+          "clear",
+          "whoami",
+          "systeminfo",
+          "uptime",
+          "cat site.txt",
+          "cat /etc/motd",
+          "cat /etc/services",
+          "cat /log/visitors",
+          "cat /dev/notes",
+          "cat /home/bb/feedback",
+          sedToSimple,
+          sedToAdvanced,
+          "cd alex",
+          "cd hoodie",
+          "cd riley",
+          "cd valk",
+          "cd temp"
+        ]);
         return;
       }
 
       if (normalized === "ls") {
-        printLine("alex  hoodie  riley  valk  temp");
+        printLine("alex  hoodie  riley  valk  temp  etc  log  dev");
         return;
       }
 
@@ -458,17 +621,38 @@
         return;
       }
 
+      if (normalized === "whoami") {
+        printLine("guest");
+        return;
+      }
+
+      if (normalized === "uptime") {
+        printLine(formatUptime());
+        return;
+      }
+
+      if (normalized === "systeminfo") {
+        printLines([
+          "user: guest",
+          "host: boogerboys",
+          "os: bbOS 0.3 unstable",
+          "uptime: " + formatUptime(),
+          "services: jukebox.service (online)"
+        ]);
+        return;
+      }
+
       if (normalized === "clear") {
         if (currentMode === "simple") {
           showSimpleIntro();
         } else {
-          showAdvancedIntro();
+          showDefaultIntro();
         }
         return;
       }
 
-      if (normalized === "cat site.txt") {
-        printLine(currentMode);
+      if (command === "cat") {
+        handleCat(value.slice(4).trim());
         return;
       }
 
@@ -485,12 +669,41 @@
     }
 
     terminalInput.addEventListener("keydown", event => {
-      if (event.key !== "Enter") {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        const submittedValue = desiredValue;
+        displayValue = "";
+        desiredValue = "";
+        if (inputTimer !== null) {
+          window.clearTimeout(inputTimer);
+          inputTimer = null;
+        }
+        terminalInput.value = "";
+        runCommand(submittedValue);
         return;
       }
 
-      runCommand(terminalInput.value);
-      terminalInput.value = "";
+      if (event.key === "Backspace") {
+        event.preventDefault();
+        setDesiredValue(desiredValue.slice(0, -1));
+        return;
+      }
+
+      if (event.key === "Tab") {
+        event.preventDefault();
+        return;
+      }
+
+      if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        event.preventDefault();
+        setDesiredValue(desiredValue + event.key);
+      }
+    });
+
+    terminalInput.addEventListener("paste", event => {
+      event.preventDefault();
+      const pasted = (event.clipboardData || window.clipboardData).getData("text");
+      setDesiredValue(desiredValue + pasted);
     });
 
     prevButton.addEventListener("click", prevSong);
@@ -500,19 +713,18 @@
       audio.volume = parseFloat(volumeSlider.value);
     });
 
-    fetch("site.txt", { cache: "no-store" })
-      .then(response => response.ok ? response.text() : "advanced")
-      .then(text => {
-        const mode = text.trim().toLowerCase();
-        setMode(mode === "simple" ? "simple" : "advanced");
-      })
-      .catch(() => {
-        setMode("advanced");
-      })
-      .finally(() => {
-        terminalInput.focus();
-        updateSongDisplay(currentSong, "ready. press prev or next to start audio.");
-      });
+    let mode = "advanced";
+    try {
+      const savedMode = localStorage.getItem(modeKey);
+      if (savedMode === "simple" || savedMode === "advanced") {
+        mode = savedMode;
+      }
+    } catch (error) {
+    }
+
+    setMode(mode);
+    terminalInput.focus();
+    updateSongDisplay(currentSong, "ready. press prev or next to start audio.");
   </script>
 </body>
 </html>

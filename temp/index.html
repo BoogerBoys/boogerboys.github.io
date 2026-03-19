@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>placeholder terminal</title>
+  <title>temp terminal</title>
   <style>
     :root {
       color-scheme: dark;
@@ -15,13 +15,15 @@
       --text-soft: #356f35;
       --warn: #e4ff8e;
       --blue: #79c0ff;
-      --red: #ff7b72;
       --cyan: #7ee7ff;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
-    html, body {
+    html,
+    body {
       margin: 0;
       min-height: 100%;
       background: var(--bg);
@@ -41,21 +43,43 @@
       background-size: auto, 100% 4px;
     }
 
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 0,
+        rgba(0, 0, 0, 0) 2px,
+        rgba(0, 0, 0, 0.18) 3px,
+        rgba(0, 0, 0, 0.18) 4px
+      );
+      opacity: 0.55;
+      mix-blend-mode: multiply;
+    }
+
     .terminal {
       width: min(100%, 760px);
       border: 1px solid var(--line);
       background: linear-gradient(180deg, rgba(5, 12, 5, 0.97), rgba(2, 5, 2, 0.99));
       box-shadow: 0 0 0 1px rgba(146, 255, 146, 0.08), 0 0 36px rgba(33, 92, 33, 0.18);
       padding: 24px;
+      position: relative;
+      overflow: hidden;
     }
 
-    .titlebar {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      color: var(--text-dim);
-      font-size: 0.9rem;
-      margin-bottom: 18px;
+    .terminal::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(rgba(200, 255, 200, 0.03), rgba(0, 0, 0, 0.02));
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
     }
 
     .line,
@@ -69,11 +93,16 @@
       color: var(--warn);
     }
 
-    .cmd { color: var(--blue); }
-    .flag { color: var(--red); }
-    .path { color: var(--cyan); }
+    .cmd {
+      color: var(--blue);
+    }
 
-    .panel {
+    .path {
+      color: var(--cyan);
+    }
+
+    .panel,
+    #jukebox {
       margin-top: 18px;
       border: 1px solid var(--line);
       background: var(--panel);
@@ -96,14 +125,6 @@
       outline: none;
     }
 
-    #jukebox {
-      margin-top: 20px;
-      border: 1px solid var(--line);
-      background: var(--panel);
-      padding: 14px;
-      color: var(--text-dim);
-    }
-
     .status-line {
       color: var(--text-soft);
       margin-top: 18px;
@@ -116,29 +137,25 @@
   </audio>
 
   <main class="terminal">
-    <div class="titlebar">
-      <span>placeholder shell</span>
-      <span>site not deployed</span>
+    <div class="content">
+      <p class="prompt"><span class="cmd">cat</span> <span class="path">status.txt</span></p>
+      <p class="line">temporary page loaded.</p>
+      <p class="line">no site found here yet.</p>
+
+      <div class="panel">
+        <p class="prompt"><span class="cmd">help</span></p>
+        <p class="line"><span class="cmd">cd</span> <span class="path">..</span> to go back to the launcher.</p>
+        <p class="line"><span class="cmd">wait</span> for an actual page build.</p>
+        <a class="home-link" href="../index.html">return to launcher</a>
+      </div>
+
+      <div id="jukebox">
+        <p class="line">now looping: dialtone - toby fox</p>
+        <p class="line">if autoplay is blocked, click anywhere once.</p>
+      </div>
+
+      <p class="status-line">exit code: 127</p>
     </div>
-
-    <p class="prompt"><span class="cmd">cat</span> <span class="path">status.txt</span></p>
-    <p class="line">this page is a placeholder.</p>
-    <p class="line">the real site is not here yet, or someone broke something and left this terminal behind.</p>
-
-    <div class="panel">
-      <p class="prompt"><span class="cmd">help</span></p>
-      <p class="line">available actions:</p>
-      <p class="line"><span class="cmd">cd</span> <span class="path">..</span> and go back to the launcher.</p>
-      <p class="line"><span class="cmd">wait</span> for an actual page build.</p>
-      <a class="home-link" href="../index.html">return to launcher</a>
-    </div>
-
-    <div id="jukebox">
-      <p class="line">now looping: dialtone - toby fox</p>
-      <p class="line">if autoplay is blocked, click anywhere once.</p>
-    </div>
-
-    <p class="status-line">exit code: 127</p>
   </main>
 
   <script>
@@ -147,7 +164,6 @@
 
     function attemptPlay() {
       audio.play().catch(() => {
-        /* autoplay can fail until interaction */
       });
     }
 
