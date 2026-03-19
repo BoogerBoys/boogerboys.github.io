@@ -7,25 +7,22 @@
   <style>
     :root {
       color-scheme: dark;
-      --bg: #020402;
-      --panel: #061006;
-      --panel-strong: #0b170b;
-      --line: #163416;
-      --text: #93ff93;
-      --text-dim: #63d963;
-      --text-soft: #347a34;
-      --warn: #e0ff8a;
-      --red: #ff7b72;
-      --blue: #79c0ff;
-      --cyan: #7ee7ff;
-      --magenta: #d2a8ff;
+      --bg: #000000;
+      --panel: #021102;
+      --panel-strong: #062006;
+      --line: #134913;
+      --text: #8dff8d;
+      --text-dim: #59d859;
+      --text-soft: #2f7d2f;
+      --warn: #c8ffc8;
     }
 
     * {
       box-sizing: border-box;
     }
 
-    html, body {
+    html,
+    body {
       margin: 0;
       min-height: 100%;
       background: var(--bg);
@@ -36,156 +33,80 @@
       color: var(--text);
       min-height: 100vh;
       background-image:
-        radial-gradient(circle at top, rgba(28, 92, 28, 0.18), transparent 36%),
-        linear-gradient(rgba(147, 255, 147, 0.035) 1px, transparent 1px);
+        radial-gradient(circle at top, rgba(18, 75, 18, 0.22), transparent 34%),
+        linear-gradient(rgba(141, 255, 141, 0.045) 1px, transparent 1px);
       background-size: auto, 100% 4px;
-      display: flex;
-      justify-content: center;
-      padding: 24px;
+      padding: 18px;
     }
 
-    a {
-      color: inherit;
+    button,
+    input {
+      font: inherit;
     }
 
-    .terminal {
-      width: min(100%, 1180px);
+    .screen {
+      width: min(100%, 1100px);
+      margin: 0 auto;
       border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(5, 13, 5, 0.97), rgba(2, 5, 2, 0.99));
-      box-shadow: 0 0 0 1px rgba(147, 255, 147, 0.08), 0 0 40px rgba(34, 92, 34, 0.2);
-      display: grid;
-      grid-template-columns: minmax(0, 1.7fr) minmax(300px, 390px);
-      overflow: hidden;
-    }
-
-    .main-pane {
-      padding: 24px;
-      border-right: 1px solid var(--line);
-    }
-
-    .side-pane {
-      padding: 24px;
-      background: rgba(4, 10, 4, 0.94);
+      background: rgba(0, 8, 0, 0.96);
+      box-shadow: 0 0 0 1px rgba(141, 255, 141, 0.08), 0 0 40px rgba(22, 80, 22, 0.24);
+      min-height: calc(100vh - 36px);
+      display: flex;
+      flex-direction: column;
     }
 
     .titlebar {
       display: flex;
       justify-content: space-between;
       gap: 16px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
       color: var(--text-dim);
-      font-size: 0.9rem;
-      margin-bottom: 18px;
       text-transform: lowercase;
+      font-size: 0.95rem;
     }
 
-    .line,
-    .prompt-line {
-      margin: 0 0 10px;
-      line-height: 1.6;
+    .content {
+      flex: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(280px, 340px);
+    }
+
+    .terminal-pane,
+    .side-pane {
+      padding: 16px;
+    }
+
+    .terminal-pane {
+      min-height: 0;
+    }
+
+    .side-pane {
+      border-left: 1px solid var(--line);
+      background: rgba(2, 16, 2, 0.82);
+    }
+
+    .terminal-output {
+      min-height: 52vh;
+      white-space: pre-wrap;
       word-break: break-word;
     }
 
-    .prompt-line::before {
-      content: "guest@boogerboys:~$ ";
-      color: var(--warn);
+    .line {
+      margin: 0 0 8px;
+      line-height: 1.55;
     }
 
-    .intro {
-      margin-bottom: 26px;
-      padding-bottom: 18px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .syntax-command { color: var(--blue); }
-    .syntax-flag { color: var(--red); }
-    .syntax-path { color: var(--cyan); }
-    .syntax-user { color: var(--magenta); }
-
-    .command-list {
-      display: grid;
-      gap: 14px;
-      margin-top: 20px;
-    }
-
-    .command-card {
-      display: block;
-      text-decoration: none;
-      border: 1px solid var(--line);
-      background: var(--panel);
-      padding: 16px;
-      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
-    }
-
-    .command-card:hover,
-    .command-card:focus-visible {
-      background: var(--panel-strong);
-      border-color: var(--text-dim);
-      transform: translateX(4px);
-      outline: none;
-    }
-
-    .command {
-      margin-bottom: 6px;
-      font-weight: 700;
-    }
-
-    .target {
-      color: var(--text);
-      margin-bottom: 4px;
-    }
-
-    .note {
-      color: var(--text-dim);
-      font-size: 0.94rem;
-    }
-
-    .section-title {
-      margin: 0 0 14px;
-      color: var(--warn);
-      font-size: 1rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .help {
-      margin: 0 0 18px;
-      padding: 0;
-      list-style: none;
-    }
-
-    .help li {
-      margin-bottom: 10px;
-      color: var(--text-dim);
-      line-height: 1.5;
-    }
-
-    .help strong {
-      color: var(--text);
-      font-weight: 700;
-    }
-
-    .status,
-    .input-shell,
-    #jukebox {
-      border: 1px solid var(--line);
-      background: var(--panel);
-      padding: 14px;
-      margin-bottom: 18px;
-    }
-
-    .fake-terminal {
-      display: grid;
-      gap: 10px;
-    }
-
-    .input-row {
+    .prompt-row {
       display: flex;
       gap: 10px;
       align-items: center;
-      flex-wrap: wrap;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+      margin-top: 14px;
     }
 
-    .input-prefix {
+    .prompt {
       color: var(--warn);
       white-space: nowrap;
     }
@@ -194,10 +115,9 @@
       flex: 1;
       min-width: 0;
       border: 1px solid var(--line);
-      background: #020502;
+      background: #010601;
       color: var(--text);
       padding: 10px 12px;
-      font: inherit;
     }
 
     #terminal-input:focus {
@@ -205,9 +125,46 @@
       border-color: var(--text-dim);
     }
 
-    #terminal-output {
-      min-height: 1.4em;
+    .panel,
+    #jukebox {
+      border: 1px solid var(--line);
+      background: rgba(1, 15, 1, 0.72);
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      color: var(--warn);
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .help-list,
+    .simple-links {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .help-list li,
+    .simple-links li {
+      margin-bottom: 10px;
+      line-height: 1.5;
       color: var(--text-dim);
+    }
+
+    .simple-links a {
+      color: var(--text);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--text-soft);
+    }
+
+    .simple-links a:hover,
+    .simple-links a:focus-visible {
+      color: var(--warn);
+      outline: none;
     }
 
     .jukebox-head {
@@ -236,7 +193,6 @@
     }
 
     #song-info {
-      color: var(--text);
       line-height: 1.5;
       font-size: 0.92rem;
     }
@@ -246,11 +202,6 @@
       grid-template-columns: 1fr 1fr;
       gap: 10px;
       margin-bottom: 12px;
-    }
-
-    button,
-    input[type="range"] {
-      font: inherit;
     }
 
     button {
@@ -278,23 +229,34 @@
       accent-color: var(--text);
     }
 
-    .footer-line {
-      margin-top: 18px;
-      color: var(--text-soft);
+    .simple-only {
+      display: none;
+    }
+
+    .simple-mode .simple-only {
+      display: block;
+    }
+
+    .simple-mode .terminal-output {
+      min-height: 30vh;
     }
 
     @media (max-width: 900px) {
       body {
-        padding: 12px;
+        padding: 10px;
       }
 
-      .terminal {
+      .screen {
+        min-height: calc(100vh - 20px);
+      }
+
+      .content {
         grid-template-columns: 1fr;
       }
 
-      .main-pane {
-        border-right: 0;
-        border-bottom: 1px solid var(--line);
+      .side-pane {
+        border-left: 0;
+        border-top: 1px solid var(--line);
       }
     }
   </style>
@@ -302,147 +264,75 @@
 <body>
   <audio id="bg-music"></audio>
 
-  <main class="terminal">
-    <section class="main-pane">
-      <div class="titlebar">
-        <span>boogerboys bash</span>
-        <span>4 reachable sites</span>
-      </div>
+  <main id="app" class="screen advanced-mode">
+    <div class="titlebar">
+      <span id="mode-label">mode: advanced</span>
+      <span>bb terminal</span>
+    </div>
 
-      <div class="intro">
-        <p class="prompt-line"><span class="syntax-command">cat</span> <span class="syntax-path">motd</span></p>
-        <p class="line">welcome to my site... heh...</p>
-        <p class="line">click commands below or type one into the prompt panel.</p>
-      </div>
+    <div class="content">
+      <section class="terminal-pane">
+        <div id="terminal-output" class="terminal-output" aria-live="polite"></div>
+        <div class="prompt-row">
+          <span class="prompt">bb@site:~$</span>
+          <input id="terminal-input" type="text" spellcheck="false" autocomplete="off" aria-label="Terminal input">
+        </div>
+      </section>
 
-      <p class="prompt-line"><span class="syntax-command">help</span></p>
-      <p class="line">available launch commands:</p>
+      <aside class="side-pane">
+        <section class="panel simple-only">
+          <h2>Simple Mode</h2>
+          <ul class="simple-links">
+            <li><a href="alex/WoahItsMyReallyCoolSiteThatYouShouldStayOnForAReallyReallyLongTimeFromJustHowAwesomeItIs.html">alex</a></li>
+            <li><a href="temp/">hoodie</a></li>
+            <li><a href="riley/reallycool.html">riley</a></li>
+            <li><a href="temp/">valk</a></li>
+            <li><a href="temp/">temp</a></li>
+          </ul>
+        </section>
 
-      <div class="command-list" aria-label="Site launcher commands">
-        <a class="command-card" href="alex/WoahItsMyReallyCoolSiteThatYouShouldStayOnForAReallyReallyLongTimeFromJustHowAwesomeItIs.html">
-          <div class="command"><span class="syntax-command">open</span> <span class="syntax-user">alex</span></div>
-          <div class="target"><span class="syntax-path">/alex/</span></div>
-          <div class="note">midnight's page.</div>
-        </a>
+        <section class="panel simple-only">
+          <h2>Switch Back</h2>
+          <ul class="help-list">
+            <li>From a shell in the repo, run:</li>
+            <li><code>sed -i 's/simple/advanced/g' site.txt</code></li>
+          </ul>
+        </section>
 
-        <a class="command-card" href="temp/">
-          <div class="command"><span class="syntax-command">open</span> <span class="syntax-user">hoodie</span></div>
-          <div class="target"><span class="syntax-path">/temp/</span></div>
-          <div class="note">placeholder page until the real site lands.</div>
-        </a>
-
-        <a class="command-card" href="riley/reallycool.html">
-          <div class="command"><span class="syntax-command">open</span> <span class="syntax-user">riley</span></div>
-          <div class="target"><span class="syntax-path">/riley/reallycool.html</span></div>
-          <div class="note">white space room.</div>
-        </a>
-
-        <a class="command-card" href="temp/">
-          <div class="command"><span class="syntax-command">open</span> <span class="syntax-user">val</span></div>
-          <div class="target"><span class="syntax-path">/temp/</span></div>
-          <div class="note">placeholder page until valk has a build.</div>
-        </a>
-      </div>
-
-      <p class="footer-line">easter egg enabled. one command is a terrible idea.</p>
-    </section>
-
-    <aside class="side-pane">
-      <div class="status">
-        <h2 class="section-title">Help</h2>
-        <ul class="help">
-          <li><strong>`open alex`</strong> launches Alex.</li>
-          <li><strong>`open hoodie`</strong> launches the temp placeholder.</li>
-          <li><strong>`open riley`</strong> launches Riley.</li>
-          <li><strong>`open val`</strong> launches the temp placeholder.</li>
-          <li><strong>`sudo rm -rf --no-preserve-root`</strong> does not end well.</li>
-        </ul>
-      </div>
-
-      <div class="input-shell">
-        <h2 class="section-title">Prompt</h2>
-        <div class="fake-terminal">
-          <div class="input-row">
-            <span class="input-prefix">guest@boogerboys:~$</span>
-            <input id="terminal-input" type="text" spellcheck="false" autocomplete="off" aria-label="Terminal input">
+        <div id="jukebox" aria-label="Music player">
+          <div class="jukebox-head">
+            <span>jukebox.service</span>
+            <span>online</span>
           </div>
-          <div id="terminal-output">type a command and press enter.</div>
-        </div>
-      </div>
 
-      <div id="jukebox" aria-label="Music player">
-        <div class="jukebox-head">
-          <span>jukebox.service</span>
-          <span>online</span>
-        </div>
+          <div class="song">
+            <img id="song-icon" src="Music1.png" alt="Current song art">
+            <div id="song-info">ready. press prev or next to start audio.</div>
+          </div>
 
-        <div class="song">
-          <img id="song-icon" src="Music1.png" alt="Current song art">
-          <div id="song-info">ready. press prev or next to start audio.</div>
-        </div>
+          <div class="controls">
+            <button type="button" id="prev-button">prev</button>
+            <button type="button" id="next-button">next</button>
+          </div>
 
-        <div class="controls">
-          <button type="button" id="prev-button">prev</button>
-          <button type="button" id="next-button">next</button>
+          <label class="volume-container" for="volume">
+            <span>volume</span>
+            <input id="volume" type="range" min="0" max="1" step="0.01" value="0.85">
+          </label>
         </div>
-
-        <label class="volume-container" for="volume">
-          <span>volume</span>
-          <input id="volume" type="range" min="0" max="1" step="0.01" value="0.85">
-        </label>
-      </div>
-    </aside>
+      </aside>
+    </div>
   </main>
 
   <script>
-    const routes = {
-      "open alex": "alex/WoahItsMyReallyCoolSiteThatYouShouldStayOnForAReallyReallyLongTimeFromJustHowAwesomeItIs.html",
-      "open hoodie": "temp/",
-      "open riley": "riley/reallycool.html",
-      "open val": "temp/"
+    const siteRoutes = {
+      alex: "alex/WoahItsMyReallyCoolSiteThatYouShouldStayOnForAReallyReallyLongTimeFromJustHowAwesomeItIs.html",
+      hoodie: "temp/",
+      riley: "riley/reallycool.html",
+      valk: "temp/",
+      val: "temp/",
+      temp: "temp/"
     };
-
-    const dangerousCommand = "sudo rm -rf --no-preserve-root";
-    const terminalInput = document.getElementById("terminal-input");
-    const terminalOutput = document.getElementById("terminal-output");
-
-    terminalInput.addEventListener("keydown", event => {
-      if (event.key !== "Enter") {
-        return;
-      }
-
-      const value = terminalInput.value.trim();
-      const normalized = value.toLowerCase();
-
-      if (normalized === dangerousCommand) {
-        terminalOutput.textContent = "redirecting to a safer place...";
-        window.location.href = "https://www.google.com";
-        return;
-      }
-
-      if (routes[normalized]) {
-        terminalOutput.textContent = "launching " + normalized.replace("open ", "") + "...";
-        window.location.href = routes[normalized];
-        return;
-      }
-
-      if (normalized === "help") {
-        terminalOutput.textContent = "try: open alex, open hoodie, open riley, open val";
-        return;
-      }
-
-      if (normalized === "ls") {
-        terminalOutput.textContent = "alex/ hoodie/ riley/ valk/ temp/";
-        return;
-      }
-
-      if (normalized === "pwd") {
-        terminalOutput.textContent = "/";
-        return;
-      }
-
-      terminalOutput.textContent = "command not found: " + value;
-    });
 
     const songs = [
       { file: "Music1.mp3", credit: "Donkey Kong Country 2 - Stickerbush Symphony - Nintendo", icon: "Music1.png" },
@@ -450,13 +340,31 @@
       { file: "Music3.mp3", credit: "Deltarune Chapter 3 + 4 - 12 am - Toby Fox", icon: "Music3.png" }
     ];
 
-    let currentSong = Math.floor(Math.random() * songs.length);
+    const app = document.getElementById("app");
+    const modeLabel = document.getElementById("mode-label");
+    const terminalOutput = document.getElementById("terminal-output");
+    const terminalInput = document.getElementById("terminal-input");
     const audio = document.getElementById("bg-music");
     const songInfo = document.getElementById("song-info");
     const songIcon = document.getElementById("song-icon");
     const volumeSlider = document.getElementById("volume");
     const prevButton = document.getElementById("prev-button");
     const nextButton = document.getElementById("next-button");
+
+    let currentSong = Math.floor(Math.random() * songs.length);
+    let currentMode = "advanced";
+
+    function printLine(text) {
+      const line = document.createElement("p");
+      line.className = "line";
+      line.textContent = text;
+      terminalOutput.appendChild(line);
+      terminalOutput.scrollTop = terminalOutput.scrollHeight;
+    }
+
+    function printPrompt(command) {
+      printLine("bb@site:~$ " + command);
+    }
 
     function updateSongDisplay(index, messageOverride) {
       songIcon.src = songs[index].icon;
@@ -483,12 +391,128 @@
       playSong((currentSong - 1 + songs.length) % songs.length);
     }
 
+    function showAdvancedIntro() {
+      terminalOutput.innerHTML = "";
+      printLine("welcome to boogerboys advanced mode.");
+      printLine("type help for commands.");
+      printLine("available sites: alex hoodie riley valk temp");
+      printLine("to switch this page to simple mode from bash:");
+      printLine("sed -i 's/advanced/simple/g' site.txt");
+    }
+
+    function showSimpleIntro() {
+      terminalOutput.innerHTML = "";
+      printLine("simple mode enabled.");
+      printLine("use the links on the right or type cd <site> here.");
+      printLine("to switch back from bash:");
+      printLine("sed -i 's/simple/advanced/g' site.txt");
+    }
+
+    function setMode(mode) {
+      currentMode = mode === "simple" ? "simple" : "advanced";
+      app.className = "screen " + currentMode + "-mode";
+      modeLabel.textContent = "mode: " + currentMode;
+
+      if (currentMode === "simple") {
+        showSimpleIntro();
+      } else {
+        showAdvancedIntro();
+      }
+    }
+
+    function navigateToSite(name) {
+      const route = siteRoutes[name];
+      if (!route) {
+        printLine("cd: no such site: " + name);
+        return;
+      }
+
+      printLine("navigating to " + name + "...");
+      window.location.href = route;
+    }
+
+    function runCommand(rawValue) {
+      const value = rawValue.trim();
+      if (!value) {
+        return;
+      }
+
+      printPrompt(value);
+      const normalized = value.toLowerCase();
+      const parts = normalized.split(/\s+/);
+      const command = parts[0];
+      const arg = parts[1];
+
+      if (normalized === "help") {
+        printLine("commands: help, ls, pwd, clear, cat site.txt, cd <alex|hoodie|riley|valk|temp>");
+        return;
+      }
+
+      if (normalized === "ls") {
+        printLine("alex  hoodie  riley  valk  temp");
+        return;
+      }
+
+      if (normalized === "pwd") {
+        printLine("/home/bb");
+        return;
+      }
+
+      if (normalized === "clear") {
+        if (currentMode === "simple") {
+          showSimpleIntro();
+        } else {
+          showAdvancedIntro();
+        }
+        return;
+      }
+
+      if (normalized === "cat site.txt") {
+        printLine(currentMode);
+        return;
+      }
+
+      if (command === "cd") {
+        if (!arg) {
+          printLine("cd: missing site name");
+          return;
+        }
+        navigateToSite(arg);
+        return;
+      }
+
+      printLine("command not found: " + value);
+    }
+
+    terminalInput.addEventListener("keydown", event => {
+      if (event.key !== "Enter") {
+        return;
+      }
+
+      runCommand(terminalInput.value);
+      terminalInput.value = "";
+    });
+
     prevButton.addEventListener("click", prevSong);
     nextButton.addEventListener("click", nextSong);
     audio.addEventListener("ended", nextSong);
     volumeSlider.addEventListener("input", () => {
       audio.volume = parseFloat(volumeSlider.value);
     });
+
+    fetch("site.txt", { cache: "no-store" })
+      .then(response => response.ok ? response.text() : "advanced")
+      .then(text => {
+        const mode = text.trim().toLowerCase();
+        setMode(mode === "simple" ? "simple" : "advanced");
+      })
+      .catch(() => {
+        setMode("advanced");
+      })
+      .finally(() => {
+        terminalInput.focus();
+        updateSongDisplay(currentSong, "ready. press prev or next to start audio.");
+      });
   </script>
 </body>
 </html>
