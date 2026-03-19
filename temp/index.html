@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>placeholder terminal</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #020402;
+      --panel: #071107;
+      --line: #173417;
+      --text: #92ff92;
+      --text-dim: #5fd45f;
+      --text-soft: #356f35;
+      --warn: #e4ff8e;
+      --blue: #79c0ff;
+      --red: #ff7b72;
+      --cyan: #7ee7ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      font-family: "Consolas", "Liberation Mono", "Courier New", monospace;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background-image:
+        radial-gradient(circle at top, rgba(27, 92, 27, 0.16), transparent 34%),
+        linear-gradient(rgba(146, 255, 146, 0.03) 1px, transparent 1px);
+      background-size: auto, 100% 4px;
+    }
+
+    .terminal {
+      width: min(100%, 760px);
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(5, 12, 5, 0.97), rgba(2, 5, 2, 0.99));
+      box-shadow: 0 0 0 1px rgba(146, 255, 146, 0.08), 0 0 36px rgba(33, 92, 33, 0.18);
+      padding: 24px;
+    }
+
+    .titlebar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      margin-bottom: 18px;
+    }
+
+    .line,
+    .prompt {
+      margin: 0 0 10px;
+      line-height: 1.6;
+    }
+
+    .prompt::before {
+      content: "guest@boogerboys:~/temp$ ";
+      color: var(--warn);
+    }
+
+    .cmd { color: var(--blue); }
+    .flag { color: var(--red); }
+    .path { color: var(--cyan); }
+
+    .panel {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: 16px;
+    }
+
+    .home-link {
+      display: inline-block;
+      margin-top: 12px;
+      color: var(--text);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      padding: 10px 14px;
+      background: rgba(2, 5, 2, 0.9);
+    }
+
+    .home-link:hover,
+    .home-link:focus-visible {
+      border-color: var(--text-dim);
+      outline: none;
+    }
+
+    #jukebox {
+      margin-top: 20px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: 14px;
+      color: var(--text-dim);
+    }
+
+    .status-line {
+      color: var(--text-soft);
+      margin-top: 18px;
+    }
+  </style>
+</head>
+<body>
+  <audio id="bg-music" autoplay loop>
+    <source src="Temporary.mp3" type="audio/mpeg">
+  </audio>
+
+  <main class="terminal">
+    <div class="titlebar">
+      <span>placeholder shell</span>
+      <span>site not deployed</span>
+    </div>
+
+    <p class="prompt"><span class="cmd">cat</span> <span class="path">status.txt</span></p>
+    <p class="line">this page is a placeholder.</p>
+    <p class="line">the real site is not here yet, or someone broke something and left this terminal behind.</p>
+
+    <div class="panel">
+      <p class="prompt"><span class="cmd">help</span></p>
+      <p class="line">available actions:</p>
+      <p class="line"><span class="cmd">cd</span> <span class="path">..</span> and go back to the launcher.</p>
+      <p class="line"><span class="cmd">wait</span> for an actual page build.</p>
+      <a class="home-link" href="../index.html">return to launcher</a>
+    </div>
+
+    <div id="jukebox">
+      <p class="line">now looping: dialtone - toby fox</p>
+      <p class="line">if autoplay is blocked, click anywhere once.</p>
+    </div>
+
+    <p class="status-line">exit code: 127</p>
+  </main>
+
+  <script>
+    const audio = document.getElementById("bg-music");
+    audio.volume = 0.3;
+
+    function attemptPlay() {
+      audio.play().catch(() => {
+        /* autoplay can fail until interaction */
+      });
+    }
+
+    attemptPlay();
+    ["pointerdown", "keydown"].forEach(eventName => {
+      document.addEventListener(eventName, function handler() {
+        attemptPlay();
+        document.removeEventListener(eventName, handler);
+      });
+    });
+  </script>
+</body>
+</html>

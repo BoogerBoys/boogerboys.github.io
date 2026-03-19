@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>boogerboys terminal</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #020402;
+      --panel: #061006;
+      --panel-strong: #0b170b;
+      --line: #163416;
+      --text: #93ff93;
+      --text-dim: #63d963;
+      --text-soft: #347a34;
+      --warn: #e0ff8a;
+      --red: #ff7b72;
+      --blue: #79c0ff;
+      --cyan: #7ee7ff;
+      --magenta: #d2a8ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      font-family: "Consolas", "Liberation Mono", "Courier New", monospace;
+      color: var(--text);
+      min-height: 100vh;
+      background-image:
+        radial-gradient(circle at top, rgba(28, 92, 28, 0.18), transparent 36%),
+        linear-gradient(rgba(147, 255, 147, 0.035) 1px, transparent 1px);
+      background-size: auto, 100% 4px;
+      display: flex;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .terminal {
+      width: min(100%, 1180px);
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(5, 13, 5, 0.97), rgba(2, 5, 2, 0.99));
+      box-shadow: 0 0 0 1px rgba(147, 255, 147, 0.08), 0 0 40px rgba(34, 92, 34, 0.2);
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(300px, 390px);
+      overflow: hidden;
+    }
+
+    .main-pane {
+      padding: 24px;
+      border-right: 1px solid var(--line);
+    }
+
+    .side-pane {
+      padding: 24px;
+      background: rgba(4, 10, 4, 0.94);
+    }
+
+    .titlebar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      margin-bottom: 18px;
+      text-transform: lowercase;
+    }
+
+    .line,
+    .prompt-line {
+      margin: 0 0 10px;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .prompt-line::before {
+      content: "guest@boogerboys:~$ ";
+      color: var(--warn);
+    }
+
+    .intro {
+      margin-bottom: 26px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .syntax-command { color: var(--blue); }
+    .syntax-flag { color: var(--red); }
+    .syntax-path { color: var(--cyan); }
+    .syntax-user { color: var(--magenta); }
+
+    .command-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .command-card {
+      display: block;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: 16px;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+
+    .command-card:hover,
+    .command-card:focus-visible {
+      background: var(--panel-strong);
+      border-color: var(--text-dim);
+      transform: translateX(4px);
+      outline: none;
+    }
+
+    .command {
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .target {
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .note {
+      color: var(--text-dim);
+      font-size: 0.94rem;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      color: var(--warn);
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .help {
+      margin: 0 0 18px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .help li {
+      margin-bottom: 10px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    .help strong {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .status,
+    .input-shell,
+    #jukebox {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: 14px;
+      margin-bottom: 18px;
+    }
+
+    .fake-terminal {
+      display: grid;
+      gap: 10px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .input-prefix {
+      color: var(--warn);
+      white-space: nowrap;
+    }
+
+    #terminal-input {
+      flex: 1;
+      min-width: 0;
+      border: 1px solid var(--line);
+      background: #020502;
+      color: var(--text);
+      padding: 10px 12px;
+      font: inherit;
+    }
+
+    #terminal-input:focus {
+      outline: 1px solid var(--text-dim);
+      border-color: var(--text-dim);
+    }
+
+    #terminal-output {
+      min-height: 1.4em;
+      color: var(--text-dim);
+    }
+
+    .jukebox-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      color: var(--warn);
+    }
+
+    .song {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .song img {
+      width: 56px;
+      height: 56px;
+      object-fit: cover;
+      border: 1px solid var(--line);
+      background: #000;
+      image-rendering: pixelated;
+    }
+
+    #song-info {
+      color: var(--text);
+      line-height: 1.5;
+      font-size: 0.92rem;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    button,
+    input[type="range"] {
+      font: inherit;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: var(--panel-strong);
+      color: var(--text);
+      padding: 10px 12px;
+      cursor: pointer;
+    }
+
+    button:hover,
+    button:focus-visible {
+      border-color: var(--text-dim);
+      outline: none;
+    }
+
+    .volume-container {
+      display: grid;
+      gap: 8px;
+      color: var(--text-dim);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--text);
+    }
+
+    .footer-line {
+      margin-top: 18px;
+      color: var(--text-soft);
+    }
+
+    @media (max-width: 900px) {
+      body {
+        padding: 12px;
+      }
+
+      .terminal {
+        grid-template-columns: 1fr;
+      }
+
+      .main-pane {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+  </style>
+</head>
+<body>
+  <audio id="bg-music"></audio>
+
+  <main class="terminal">
+    <section class="main-pane">
+      <div class="titlebar">
+        <span>boogerboys bash</span>
+        <span>4 reachable sites</span>
+      </div>
+
+      <div class="intro">
+        <p class="prompt-line"><span class="syntax-command">cat</span> <span class="syntax-path">motd</span></p>
+        <p class="line">welcome to boogerboys.</p>
+        <p class="line">this index is now a launcher with fake bash syntax, terminal help text, and a still-working music player.</p>
+        <p class="line">click commands below or type one into the prompt panel.</p>
+      </div>
+
+      <p class="prompt-line"><span class="syntax-command">help</span></p>
+      <p class="line">available launch commands:</p>
+
+      <div class="command-list" aria-label="Site launcher commands">
+        <a class="command-card" href="alex/WoahItsMyReallyCoolSiteThatYouShouldStayOnForAReallyReallyLongTimeFromJustHowAwesomeItIs.html">
+          <div class="command"><span class="syntax-command">open</span> <span class="syntax-user">alex</span></div>
+          <div class="target"><span class="syntax-path">/alex/</span></div>
+          <div class="note">midnight's page.</div>
+        </a>
+
+        <a class="command-card" href="temp/">
+          <div class="command"><span class="syntax-command">open</span> <span class="syntax-user">hoodie</span></div>
+          <div class="target"><span class="syntax-path">/temp/</span></div>
+          <div class="note">placeholder page until the real site lands.</div>
+        </a>
+
+        <a class="command-card" href="riley/reallycool.html">
+          <div class="command"><span class="syntax-command">open</span> <span class="syntax-user">riley</span></div>
+          <div class="target"><span class="syntax-path">/riley/reallycool.html</span></div>
+          <div class="note">white space room.</div>
+        </a>
+
+        <a class="command-card" href="temp/">
+          <div class="command"><span class="syntax-command">open</span> <span class="syntax-user">val</span></div>
+          <div class="target"><span class="syntax-path">/temp/</span></div>
+          <div class="note">placeholder page until valk has a build.</div>
+        </a>
+      </div>
+
+      <p class="footer-line">easter egg enabled. one command is a terrible idea.</p>
+    </section>
+
+    <aside class="side-pane">
+      <div class="status">
+        <h2 class="section-title">Help</h2>
+        <ul class="help">
+          <li><strong>`open alex`</strong> launches Alex.</li>
+          <li><strong>`open hoodie`</strong> launches the temp placeholder.</li>
+          <li><strong>`open riley`</strong> launches Riley.</li>
+          <li><strong>`open val`</strong> launches the temp placeholder.</li>
+          <li><strong>`sudo rm -rf --no-preserve-root`</strong> does not end well.</li>
+        </ul>
+      </div>
+
+      <div class="input-shell">
+        <h2 class="section-title">Prompt</h2>
+        <div class="fake-terminal">
+          <div class="input-row">
+            <span class="input-prefix">guest@boogerboys:~$</span>
+            <input id="terminal-input" type="text" spellcheck="false" autocomplete="off" aria-label="Terminal input">
+          </div>
+          <div id="terminal-output">type a command and press enter.</div>
+        </div>
+      </div>
+
+      <div id="jukebox" aria-label="Music player">
+        <div class="jukebox-head">
+          <span>jukebox.service</span>
+          <span>online</span>
+        </div>
+
+        <div class="song">
+          <img id="song-icon" src="Music1.png" alt="Current song art">
+          <div id="song-info">ready. press prev or next to start audio.</div>
+        </div>
+
+        <div class="controls">
+          <button type="button" id="prev-button">prev</button>
+          <button type="button" id="next-button">next</button>
+        </div>
+
+        <label class="volume-container" for="volume">
+          <span>volume</span>
+          <input id="volume" type="range" min="0" max="1" step="0.01" value="0.85">
+        </label>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    const routes = {
+      "open alex": "alex/WoahItsMyReallyCoolSiteThatYouShouldStayOnForAReallyReallyLongTimeFromJustHowAwesomeItIs.html",
+      "open hoodie": "temp/",
+      "open riley": "riley/reallycool.html",
+      "open val": "temp/"
+    };
+
+    const dangerousCommand = "sudo rm -rf --no-preserve-root";
+    const terminalInput = document.getElementById("terminal-input");
+    const terminalOutput = document.getElementById("terminal-output");
+
+    terminalInput.addEventListener("keydown", event => {
+      if (event.key !== "Enter") {
+        return;
+      }
+
+      const value = terminalInput.value.trim();
+      const normalized = value.toLowerCase();
+
+      if (normalized === dangerousCommand) {
+        terminalOutput.textContent = "redirecting to a safer place...";
+        window.location.href = "https://www.google.com";
+        return;
+      }
+
+      if (routes[normalized]) {
+        terminalOutput.textContent = "launching " + normalized.replace("open ", "") + "...";
+        window.location.href = routes[normalized];
+        return;
+      }
+
+      if (normalized === "help") {
+        terminalOutput.textContent = "try: open alex, open hoodie, open riley, open val";
+        return;
+      }
+
+      if (normalized === "ls") {
+        terminalOutput.textContent = "alex/ hoodie/ riley/ valk/ temp/";
+        return;
+      }
+
+      if (normalized === "pwd") {
+        terminalOutput.textContent = "/";
+        return;
+      }
+
+      terminalOutput.textContent = "command not found: " + value;
+    });
+
+    const songs = [
+      { file: "Music1.mp3", credit: "Donkey Kong Country 2 - Stickerbush Symphony - Nintendo", icon: "Music1.png" },
+      { file: "Music2.mp3", credit: "Lisa: The Pointless OST - Soft Hearts (World's Last Autumn Version)", icon: "Music2.png" },
+      { file: "Music3.mp3", credit: "Deltarune Chapter 3 + 4 - 12 am - Toby Fox", icon: "Music3.png" }
+    ];
+
+    let currentSong = Math.floor(Math.random() * songs.length);
+    const audio = document.getElementById("bg-music");
+    const songInfo = document.getElementById("song-info");
+    const songIcon = document.getElementById("song-icon");
+    const volumeSlider = document.getElementById("volume");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+
+    function updateSongDisplay(index, messageOverride) {
+      songIcon.src = songs[index].icon;
+      songInfo.textContent = messageOverride || songs[index].credit;
+    }
+
+    function playSong(index) {
+      currentSong = index;
+      audio.src = songs[index].file;
+      audio.volume = parseFloat(volumeSlider.value);
+      updateSongDisplay(index, "loading " + songs[index].credit);
+      audio.play().then(() => {
+        updateSongDisplay(index);
+      }).catch(() => {
+        updateSongDisplay(index, "audio locked. press prev or next to authorize playback.");
+      });
+    }
+
+    function nextSong() {
+      playSong((currentSong + 1) % songs.length);
+    }
+
+    function prevSong() {
+      playSong((currentSong - 1 + songs.length) % songs.length);
+    }
+
+    prevButton.addEventListener("click", prevSong);
+    nextButton.addEventListener("click", nextSong);
+    audio.addEventListener("ended", nextSong);
+    volumeSlider.addEventListener("input", () => {
+      audio.volume = parseFloat(volumeSlider.value);
+    });
+  </script>
+</body>
+</html>

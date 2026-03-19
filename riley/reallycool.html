@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>riley's white space</title>
+  <link rel="preload" as="font" href="font.ttf" type="font/ttf" crossorigin>
+  <style>
+    @font-face {
+      font-family: "Whitespace";
+      src: url("font.ttf") format("truetype");
+      font-display: swap;
+    }
+
+    :root {
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+    }
+
+    body {
+      background: #fdfdfd;
+      color: #111;
+      font-family: "Whitespace", "IBM Plex Mono", monospace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      position: relative;
+      overflow: hidden;
+      cursor: none;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(#111 0.45px, transparent 0.45px);
+      background-size: 18px 18px;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .space {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+      width: 100%;
+    }
+
+    .room-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      width: min(100%, 760px);
+    }
+
+    .room {
+      position: relative;
+      width: 360px;
+      height: 340px;
+      border: 4px solid #111;
+      background: #fff;
+      box-shadow: 18px 18px 0 #111;
+      overflow: hidden;
+    }
+
+    .room::after {
+      content: "";
+      position: absolute;
+      inset: 20px;
+      border: 3px solid rgba(17, 17, 17, 0.18);
+      pointer-events: none;
+    }
+
+    .cord {
+      position: absolute;
+      top: -160px;
+      left: 50%;
+      width: 2px;
+      height: 160px;
+      background: #111;
+      transform: translateX(-50%);
+      z-index: 2;
+    }
+
+    .light {
+      position: absolute;
+      top: -124px;
+      left: 50%;
+      width: 44px;
+      transform: translateX(-50%);
+      image-rendering: pixelated;
+      z-index: 3;
+    }
+
+    .door-sprite {
+      position: absolute;
+      top: 40px;
+      left: 26px;
+      width: 80px;
+      cursor: pointer;
+      image-rendering: pixelated;
+      z-index: 1;
+    }
+
+    .tissue-sprite {
+      position: absolute;
+      bottom: 52px;
+      right: 36px;
+      width: 90px;
+      cursor: pointer;
+      image-rendering: pixelated;
+      z-index: 1;
+    }
+
+    .cat {
+      position: absolute;
+      bottom: 36px;
+      left: 44px;
+      width: 58px;
+      cursor: pointer;
+      image-rendering: pixelated;
+      z-index: 1;
+    }
+
+    #pc {
+      position: absolute;
+      bottom: 90px;
+      left: 50%;
+      width: 72px;
+      transform: translateX(-50%);
+      cursor: pointer;
+      image-rendering: pixelated;
+      transition: transform 0.2s ease;
+      z-index: 1;
+    }
+
+    #pc:hover {
+      transform: translateX(-50%) translateY(-4px);
+    }
+
+    #pc.wiggle {
+      animation: wiggle 0.45s ease;
+    }
+
+    #notebook {
+      position: absolute;
+      top: 72px;
+      right: 52px;
+      width: 68px;
+      cursor: pointer;
+      image-rendering: pixelated;
+      z-index: 1;
+    }
+
+    .song-gif {
+      width: 160px;
+      border: 4px solid #f8f8f8;
+      padding: 6px;
+      margin: 0 auto;
+      background: #0b0b0b;
+      image-rendering: pixelated;
+      display: none;
+    }
+
+    .song-gif.visible {
+      display: block;
+    }
+
+    .ui-row {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .panel-group {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      flex: 1 1 360px;
+    }
+
+    .panel {
+      background: #0b0b0b;
+      border: 4px solid #f8f8f8;
+      color: #f8f8f8;
+      padding: 22px 28px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: 12px 12px 0 #111;
+      position: relative;
+    }
+
+    .panel.hidden {
+      display: none;
+    }
+
+    .panel-dialog {
+      min-height: 128px;
+    }
+
+    .panel-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 96px;
+    }
+
+    .panel-lines .dialog-line {
+      margin: 0;
+      min-height: 1.2em;
+    }
+
+    .panel-menu {
+      min-height: 160px;
+      outline: none;
+    }
+
+    .menu-options {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .menu-options li {
+      position: relative;
+      padding-left: 44px;
+      cursor: pointer;
+    }
+
+    .menu-options li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 34px;
+      height: 20px;
+      background: none;
+    }
+
+    .menu-options li.selected::before {
+      background: url("hand.png") no-repeat center / contain;
+    }
+
+    .panel-sketchbook {
+      min-height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .sketch-pages {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 12px 18px;
+      border: 4px solid #f8f8f8;
+      background: #0b0b0b;
+    }
+
+    .sketch-pages img {
+      width: 180px;
+      height: 220px;
+      object-fit: contain;
+      background: #fff;
+      border: 2px solid #f8f8f8;
+    }
+
+    .sketch-nav {
+      background: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease;
+    }
+
+    .sketch-nav img {
+      width: 36px;
+      image-rendering: pixelated;
+    }
+
+    .sketch-nav:hover {
+      transform: translateX(-2px);
+    }
+
+    .sketch-nav.right:hover {
+      transform: translateX(2px);
+    }
+
+    .sketch-nav:disabled {
+      cursor: default;
+      opacity: 0.35;
+      transform: none;
+    }
+
+    .sketch-nav:disabled img {
+      filter: grayscale(1);
+    }
+
+    .jukebox-panel {
+      flex: 0 0 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-self: stretch;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      min-height: 160px;
+    }
+
+    .jukebox-panel h2 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .jukebox-track {
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .jukebox-note {
+      margin: 0;
+      font-size: 0.85rem;
+      color: rgba(248, 248, 248, 0.7);
+      line-height: 1.4;
+    }
+
+    .cursor-dot {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #111;
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-999px, -999px);
+      transition: width 0.1s ease, height 0.1s ease, border-width 0.1s ease, transform 0.08s ease;
+      z-index: 20;
+    }
+
+    .cursor-dot.hover {
+      width: 22px;
+      height: 22px;
+    }
+
+    .cursor-dot.pressed {
+      width: 12px;
+      height: 12px;
+      border-width: 3px;
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: translateX(-50%) rotate(0deg); }
+      25% { transform: translateX(-50%) rotate(3deg); }
+      75% { transform: translateX(-50%) rotate(-3deg); }
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 40px 12px;
+      }
+
+      .room {
+        width: 300px;
+        height: 310px;
+        box-shadow: 14px 14px 0 #111;
+      }
+
+      .panel-group {
+        flex: 1 1 100%;
+      }
+
+      .jukebox-panel {
+        flex: 1 1 100%;
+      }
+    }
+
+    @media (hover: none) {
+      body {
+        cursor: auto;
+      }
+
+      .cursor-dot {
+        display: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="cursor" class="cursor-dot"></div>
+  <audio id="music" preload="auto"></audio>
+
+  <main class="space">
+    <div class="room-stack">
+      <div class="room">
+        <div class="cord"></div>
+        <img id="light" src="light.webp" alt="hanging bulb" class="light hotspot">
+        <img src="door.png" alt="door" class="door-sprite hotspot" data-message="You stared at the door.">
+        <img src="tissues.png" alt="tissue box" class="tissue-sprite hotspot" data-message="A tissue box for wiping your sorrows away.">
+        <img src="noob.png" alt="sleepy cat" class="cat hotspot" data-message="The cat refuses to move. That means everything is fine.">
+        <img src="notebook.png" alt="notepad" id="notebook">
+        <img src="pc.gif" alt="tiny laptop" id="pc">
+      </div>
+
+      <div class="ui-row">
+        <section class="panel-group">
+          <div id="panel-dialog" class="panel panel-dialog hidden">
+            <div id="dialog-lines" class="panel-lines"></div>
+          </div>
+
+          <div id="panel-menu" class="panel panel-menu hidden" tabindex="-1">
+            <ul class="menu-options" id="menu-options"></ul>
+          </div>
+
+          <div id="panel-sketchbook" class="panel panel-sketchbook hidden">
+            <button type="button" class="sketch-nav left" id="sketch-prev" aria-label="Previous page">
+              <img src="hand.png" alt="">
+            </button>
+            <div class="sketch-pages">
+              <img id="sketch-left" src="empty.png" alt="Sketch left page">
+              <img id="sketch-right" src="empty.png" alt="Sketch right page">
+            </div>
+            <button type="button" class="sketch-nav right" id="sketch-next" aria-label="Next page">
+              <img src="hand.png" alt="">
+            </button>
+          </div>
+        </section>
+
+        <aside class="panel jukebox-panel" id="jukebox-panel">
+          <h2>jukebox</h2>
+          <p id="jukebox-track" class="jukebox-track">-- idle --</p>
+          <p class="jukebox-note">choose “play some music” on the laptop.</p>
+          <img id="song-gif" class="song-gif" alt="song art" hidden>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const music = document.getElementById("music");
+    const selectSound = new Audio("select.mp3");
+    selectSound.volume = 0.5;
+
+    const pc = document.getElementById("pc");
+    const notebook = document.getElementById("notebook");
+    const lightImg = document.getElementById("light");
+    const songGif = document.getElementById("song-gif");
+    const cursorDot = document.getElementById("cursor");
+    const interactables = document.querySelectorAll(".hotspot[data-message]");
+    const panelDialog = document.getElementById("panel-dialog");
+    const panelMenu = document.getElementById("panel-menu");
+    const panelSketchbook = document.getElementById("panel-sketchbook");
+    const dialogLinesContainer = document.getElementById("dialog-lines");
+    const jukeboxTrack = document.getElementById("jukebox-track");
+    const menuList = document.getElementById("menu-options");
+    const sketchLeft = document.getElementById("sketch-left");
+    const sketchRight = document.getElementById("sketch-right");
+    const sketchPrev = document.getElementById("sketch-prev");
+    const sketchNext = document.getElementById("sketch-next");
+
+    const placeholderImage = "empty.png";
+    const lightDefaultSrc = "light.webp";
+    const lightActiveSrc = "white.gif";
+
+    const songs = [
+      { file: "die_of_death.mp3", display: "DIE OF DEATH UNTITLED ORCHESTRAFUL THEME", gif: "die-of-death-artful.gif" },
+      { file: "compass.mp3", display: "COMPASS", gif: "limbus-company-ahab.gif" }
+    ];
+
+    const sketchPages = [];
+    for (let page = 0; page < 5; page++) {
+      const leftIndex = page * 2 + 1;
+      const rightIndex = leftIndex + 1;
+      sketchPages.push({
+        left: `img${leftIndex}.png`,
+        right: `img${rightIndex}.png`
+      });
+    }
+
+    let currentSong = -1;
+    let menuConfig = [];
+    let menuItems = [];
+    let menuHandler = null;
+    let menuCancelHandler = null;
+    let menuIndex = 0;
+    let activePanel = "idle";
+    let dialogVisible = false;
+    let dialogDismissible = false;
+    let lightEngaged = false;
+    let lightAwaitingDismiss = false;
+    let currentSketchPage = 0;
+
+    function playSelect() {
+      try {
+        selectSound.currentTime = 0;
+        void selectSound.play();
+      } catch {
+        /* ignore playback restrictions */
+      }
+    }
+
+    function setPanelState() {
+      panelDialog.classList.toggle("hidden", !dialogVisible);
+      panelMenu.classList.toggle("hidden", activePanel !== "menu");
+      panelSketchbook.classList.toggle("hidden", activePanel !== "sketchbook");
+      if (activePanel === "menu") {
+        panelMenu.focus();
+      }
+    }
+
+    function showDialog(message, options = {}) {
+      dialogVisible = true;
+      dialogDismissible = options.dismissible !== undefined ? options.dismissible : true;
+      const lines = Array.isArray(message) ? message : (message ? message.split(/\n+/) : []);
+      const maxLines = 3;
+      dialogLinesContainer.innerHTML = "";
+      for (let i = 0; i < maxLines; i++) {
+        const text = lines[i] ? lines[i] : "";
+        const line = document.createElement("p");
+        line.className = "dialog-line";
+        line.textContent = text.trim() === "" ? "\u00a0" : text;
+        dialogLinesContainer.appendChild(line);
+      }
+      if (activePanel !== "menu" && activePanel !== "sketchbook") {
+        activePanel = "dialog";
+      }
+      setPanelState();
+    }
+
+    function hideDialog() {
+      dialogVisible = false;
+      dialogLinesContainer.innerHTML = "";
+      if (lightEngaged || lightAwaitingDismiss) {
+        resetLight();
+      }
+      if (activePanel === "dialog") {
+        activePanel = "idle";
+      }
+      setPanelState();
+    }
+
+    function showMenu(items, handler, cancelHandler = null) {
+      menuConfig = items;
+      menuHandler = handler;
+      menuCancelHandler = cancelHandler;
+      menuList.innerHTML = "";
+      menuItems = items.map((item, index) => {
+        const li = document.createElement("li");
+        li.textContent = item.label;
+        li.addEventListener("mouseenter", () => highlightMenuItem(index));
+        li.addEventListener("click", () => {
+          playSelect();
+          if (menuHandler) {
+            menuHandler(item, index);
+          }
+        });
+        menuList.appendChild(li);
+        return li;
+      });
+      menuIndex = 0;
+      highlightMenuItem(0);
+      activePanel = "menu";
+      setPanelState();
+    }
+
+    function hideMenu() {
+      menuList.innerHTML = "";
+      menuItems = [];
+      menuConfig = [];
+      menuHandler = null;
+      menuCancelHandler = null;
+      menuIndex = 0;
+      activePanel = dialogVisible ? "dialog" : "idle";
+      setPanelState();
+    }
+
+    function highlightMenuItem(index) {
+      if (!menuItems.length) return;
+      menuIndex = (index + menuItems.length) % menuItems.length;
+      menuItems.forEach((item, i) => {
+        item.classList.toggle("selected", i === menuIndex);
+      });
+    }
+
+    function activateMenuItem(index) {
+      if (!menuItems.length || !menuHandler) return;
+      const normalized = (index + menuItems.length) % menuItems.length;
+      highlightMenuItem(normalized);
+      const item = menuConfig[normalized];
+      menuHandler(item, normalized);
+    }
+
+    function updateJukebox(track) {
+      if (track) {
+        jukeboxTrack.textContent = track.display;
+        songGif.hidden = false;
+        songGif.classList.add("visible");
+        songGif.src = track.gif;
+      } else {
+        jukeboxTrack.textContent = "-- idle --";
+        songGif.hidden = true;
+        songGif.classList.remove("visible");
+      }
+    }
+
+    function playSong(index) {
+      currentSong = index;
+      const track = songs[index];
+      music.src = track.file;
+      music.volume = 0.6;
+      music.play().then(() => {
+        updateJukebox(track);
+      }).catch(() => {
+        showDialog("The laptop needs audio permission.");
+        updateJukebox(null);
+      });
+    }
+
+    function playNextSong() {
+      const next = (currentSong + 1) % songs.length;
+      playSong(next);
+      return songs[next];
+    }
+
+    function engageLight() {
+      lightEngaged = true;
+      lightAwaitingDismiss = false;
+      lightImg.src = lightActiveSrc;
+    }
+
+    function resetLight() {
+      lightImg.src = lightDefaultSrc;
+      lightEngaged = false;
+      lightAwaitingDismiss = false;
+    }
+
+    function setImageWithFallback(target, src) {
+      target.onerror = null;
+      if (!src) {
+        target.src = placeholderImage;
+        return;
+      }
+      target.onerror = () => {
+        target.onerror = null;
+        target.src = placeholderImage;
+      };
+      target.src = src;
+    }
+
+    function setSketchPage(page) {
+      currentSketchPage = Math.max(0, Math.min(page, sketchPages.length - 1));
+      const data = sketchPages[currentSketchPage];
+      setImageWithFallback(sketchLeft, data.left);
+      setImageWithFallback(sketchRight, data.right);
+      sketchPrev.disabled = currentSketchPage === 0;
+      sketchNext.disabled = currentSketchPage === sketchPages.length - 1;
+    }
+
+    function openSketchbook() {
+      currentSketchPage = 0;
+      setSketchPage(0);
+      activePanel = "sketchbook";
+      setPanelState();
+    }
+
+    function closeSketchbook() {
+      activePanel = dialogVisible ? "dialog" : "idle";
+      setPanelState();
+    }
+
+    music.addEventListener("ended", playNextSong);
+
+    const laptopOptions = [
+      { label: "STARE AT THE SCREEN", action: "stare" },
+      { label: "PLAY SOME MUSIC", action: "music" },
+      { label: "OPEN YOUR JOURNAL", action: "journal" },
+      { label: "LOG OFF", action: "logoff" }
+    ];
+
+    const lightOptions = [
+      { label: "YES", action: "yes" },
+      { label: "NO", action: "no" }
+    ];
+
+    const sketchPromptOptions = [
+      { label: "YES", action: "yes" },
+      { label: "NO", action: "no" }
+    ];
+
+    pc.addEventListener("click", () => {
+      playSelect();
+      pc.classList.add("wiggle");
+      setTimeout(() => pc.classList.remove("wiggle"), 450);
+      showMenu(laptopOptions, item => {
+        if (!item) return;
+        hideMenu();
+        if (item.action === "stare") {
+          showDialog("You stared at the screen.");
+        } else if (item.action === "music") {
+          const track = playNextSong();
+          showDialog("The laptop begins to play music through its speaker.");
+        } else if (item.action === "journal") {
+          showDialog("The journal on the screen is still empty.");
+        } else if (item.action === "logoff") {
+          showDialog("The heat from the laptop warmed your lap. It felt nice.");
+        }
+      });
+    });
+
+    notebook.addEventListener("click", () => {
+      playSelect();
+      showDialog("Your sketchbook. Take a look inside?", { dismissible: false });
+      showMenu(sketchPromptOptions, item => {
+        if (!item) return;
+        hideMenu();
+        if (item.action === "yes") {
+          hideDialog();
+          openSketchbook();
+        } else {
+          hideDialog();
+        }
+      }, () => {
+        hideDialog();
+      });
+    });
+
+    lightImg.addEventListener("click", () => {
+      playSelect();
+      engageLight();
+      showDialog("A lightbulb hangs from the ceiling, wherever it is.\nLook into the lightbulb?", { dismissible: false });
+      showMenu(lightOptions, item => {
+        if (!item) return;
+        hideMenu();
+        if (item.action === "yes") {
+          lightAwaitingDismiss = true;
+          showDialog("It's pitch black inside. You can't see a thing.");
+        } else {
+          resetLight();
+          hideDialog();
+        }
+      }, () => {
+        resetLight();
+        hideDialog();
+      });
+    });
+
+    interactables.forEach(element => {
+      element.addEventListener("click", () => {
+        const message = element.dataset.message;
+        playSelect();
+        if (message) {
+          showDialog(message);
+        }
+      });
+      element.addEventListener("mouseenter", () => cursorDot.classList.add("hover"));
+      element.addEventListener("mouseleave", () => cursorDot.classList.remove("hover"));
+    });
+
+    [pc, notebook, lightImg, sketchPrev, sketchNext].forEach(target => {
+      if (!target) return;
+      target.addEventListener("mouseenter", () => cursorDot.classList.add("hover"));
+      target.addEventListener("mouseleave", () => cursorDot.classList.remove("hover"));
+    });
+
+    sketchPrev.addEventListener("click", () => {
+      if (sketchPrev.disabled) return;
+      playSelect();
+      setSketchPage(currentSketchPage - 1);
+    });
+
+    sketchNext.addEventListener("click", () => {
+      if (sketchNext.disabled) return;
+      playSelect();
+      setSketchPage(currentSketchPage + 1);
+    });
+
+    document.addEventListener("keydown", event => {
+      if (activePanel === "menu") {
+        if (!menuItems.length) {
+          return;
+        }
+        if (event.key === "ArrowDown") {
+          event.preventDefault();
+          highlightMenuItem(menuIndex + 1);
+        } else if (event.key === "ArrowUp") {
+          event.preventDefault();
+          highlightMenuItem(menuIndex - 1);
+        } else if (event.key === "Enter") {
+          event.preventDefault();
+          playSelect();
+          activateMenuItem(menuIndex);
+        } else if (event.key === "Escape") {
+          event.preventDefault();
+          playSelect();
+          const cancel = menuCancelHandler;
+          hideMenu();
+          if (cancel) {
+            cancel();
+          }
+        }
+        return;
+      }
+
+      if (activePanel === "sketchbook") {
+        if (event.key === "ArrowLeft") {
+          if (currentSketchPage > 0) {
+            event.preventDefault();
+            playSelect();
+            setSketchPage(currentSketchPage - 1);
+          }
+          return;
+        }
+        if (event.key === "ArrowRight") {
+          if (currentSketchPage < sketchPages.length - 1) {
+            event.preventDefault();
+            playSelect();
+            setSketchPage(currentSketchPage + 1);
+          }
+          return;
+        }
+        if (event.key === "Enter" || event.key === "Escape") {
+          event.preventDefault();
+          playSelect();
+          closeSketchbook();
+        }
+        return;
+      }
+
+      if (dialogVisible && dialogDismissible && event.key === "Enter") {
+        event.preventDefault();
+        playSelect();
+        hideDialog();
+      }
+    });
+
+    document.addEventListener("mousemove", event => {
+      cursorDot.style.transform = "translate(" + event.clientX + "px, " + event.clientY + "px)";
+    });
+
+    document.addEventListener("mousedown", () => cursorDot.classList.add("pressed"));
+    document.addEventListener("mouseup", () => cursorDot.classList.remove("pressed"));
+    document.addEventListener("mouseleave", () => {
+      cursorDot.style.transform = "translate(-999px, -999px)";
+    });
+
+    updateJukebox(null);
+    setPanelState();
+  </script>
+</body>
+</html>
